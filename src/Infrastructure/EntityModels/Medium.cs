@@ -19,6 +19,7 @@ public partial class Medium
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+    public string MediaID { get; set; } = null!;
 
     public virtual ActivityCost? ActivityCost { get; set; }
 

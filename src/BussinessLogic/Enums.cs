@@ -8,5 +8,12 @@ namespace BussinessLogic
         Pending = -1
 
     }
+    public enum MediaType
+    {
+        Images = 0,
+        Pdf = 1
+    }
+
+
 
 }

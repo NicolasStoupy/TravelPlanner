@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BussinessLogic", "BussinessLogic\BussinessLogic.csproj", "{EF635505-1550-4071-A470-2F35EFF694D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BussinessLogic", ".\BussinessLogic\BussinessLogic.csproj", "{EF635505-1550-4071-A470-2F35EFF694D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{1874F2D7-F448-4D45-B8FE-2861AE14425F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", ".\Infrastructure\Infrastructure.csproj", "{1874F2D7-F448-4D45-B8FE-2861AE14425F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commons", "Commons\Commons.csproj", "{7EF70127-A04A-42B3-9E1C-624622F10F8D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commons", ".\Commons\Commons.csproj", "{7EF70127-A04A-42B3-9E1C-624622F10F8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation.MAUI", "Presentation.MAUI\Presentation.MAUI.csproj", "{AA63EA63-0BF1-4AAD-B807-96129BB6F6E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation.MAUI", ".\Presentation.MAUI\Presentation.MAUI.csproj", "{AA63EA63-0BF1-4AAD-B807-96129BB6F6E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation.ConsoleApp", "Presentation.ConsoleApp\Presentation.ConsoleApp.csproj", "{88466666-102A-4B78-9809-EFE2DC8992BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation.ConsoleApp", ".\Presentation.ConsoleApp\Presentation.ConsoleApp.csproj", "{88466666-102A-4B78-9809-EFE2DC8992BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

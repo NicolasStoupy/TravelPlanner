@@ -4,30 +4,45 @@
              x:Class="Presentation.MAUI.MainPage">
 
     <ScrollView>
-        <VerticalStackLayout            Padding="30,0"            Spacing="25">
+        <VerticalStackLayout
+            Spacing="25"
+            Padding="30,0"
+            VerticalOptions="Center">
+
             <Image
+                x:Name="monimage"
                 Source="dotnet_bot.png"
-                HeightRequest="185"
-                Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a hovercraft number nine" />
+                SemanticProperties.Description="Cute dot net bot waving hi to you!"
+                HeightRequest="200"
+                HorizontalOptions="Center" />
 
             <Label
                 Text="Hello, World!"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+                SemanticProperties.HeadingLevel="Level1"
+                FontSize="32"
+                HorizontalOptions="Center" />
 
             <Label
-                Text="Welcome to &#10;.NET Multi-platform App UI"
-                Style="{StaticResource SubHeadline}"
+                Text="Welcome to .NET Multi-platform App UI"
                 SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
+                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
+                FontSize="18"
+                HorizontalOptions="Center" />
 
             <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
+                x:Name="PickImage"
+                Text="Pick Image"
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
+                HorizontalOptions="Center" />
+            <Image x:Name="MyImage" WidthRequest="200" HeightRequest="200" />
+            <Button
+                x:Name="PickImages"
+                Text="Pick Images"
+                SemanticProperties.Hint="Counts the number of times you click"
+                Clicked="PickImages_Clicked"
+                HorizontalOptions="Center" />
+
         </VerticalStackLayout>
     </ScrollView>
 

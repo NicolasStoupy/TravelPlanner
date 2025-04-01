@@ -4,5 +4,7 @@
     {
         IExpenseService ExpenseService { get; }
         ITripService TripService { get; }
+
+        IMediaService MediaService { get; }
     }
 }

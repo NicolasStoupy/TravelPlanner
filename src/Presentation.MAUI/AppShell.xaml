@@ -19,7 +19,10 @@
             Title="Trips"
             ContentTemplate="{DataTemplate local:TripPage}"
             Route="About" />
-
+        <ShellContent
+       Title="ImputFile"
+       ContentTemplate="{DataTemplate local:LoadFilePage}"
+       Route="Trip.l" />
         <ShellContent
     Title="NewTrips"
     ContentTemplate="{DataTemplate local:NewTripPage}"

@@ -7,10 +7,13 @@ namespace BussinessLogic.Services
         public IExpenseService ExpenseService { get; }
         public ITripService TripService { get; }
 
-        public ApplicationService(IExpenseService expenseService, ITripService tripService)
+        public IMediaService MediaService { get; }
+
+        public ApplicationService(IExpenseService expenseService, ITripService tripService, IMediaService mediaService)
         {
             ExpenseService = expenseService;
             TripService = tripService;
+            MediaService = mediaService;
         }
     }
 }
