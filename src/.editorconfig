@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# DGPT001: Member lacks XML documentation
+dotnet_diagnostic.DGPT001.severity = none

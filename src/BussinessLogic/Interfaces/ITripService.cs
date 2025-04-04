@@ -9,7 +9,6 @@ namespace BussinessLogic.Interfaces
     {
         Task<ExecutionStatus> CreateTrip(TripDTO newTrip);
         List<TripDTO> GetTrips();
-
         List<byte[]> GetTripsMedia(MediaType mediaType,int tripId);
         
     }

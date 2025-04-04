@@ -7,8 +7,14 @@ namespace Presentation.MAUI
     {
         public static IServiceCollection AddPresentation(this IServiceCollection collection)
         {
-            _ = collection.AddTransient<TripViewModel>();
-            _ = collection.AddTransient<NewTripViewModel>();
+            // - Transient : toujours une nouvelle instance
+            // - Scoped    : une instance par scope (utile pour les pages)
+            // - Singleton : une instance globale partagée
+
+            collection.AddTransient<MainPage>();
+            collection.AddTransient<TripViewModel>(); 
+            collection.AddTransient<NewTripViewModel>();
+            collection.AddTransient<TripMainPageViewModel>();
             return collection;
         }
     }

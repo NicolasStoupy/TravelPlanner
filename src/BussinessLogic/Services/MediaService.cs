@@ -42,7 +42,7 @@ namespace BussinessLogic.Services
         }
 
 
-        public byte[]? GetMedia(Guid fileGuid) => _document.GetFile(fileGuid);
+        public byte[]? GetMedia(Guid fileGuid) { _document.SetMediaType("Images");return _document.GetFile(fileGuid); }
 
         public Guid? SaveMedia(byte[] fileBytes, MediaType mediaType)
         {

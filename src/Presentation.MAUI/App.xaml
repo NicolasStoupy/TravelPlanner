@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Presentation.MAUI"
+             xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
              x:Class="Presentation.MAUI.App">
     <Application.Resources>
         <ResourceDictionary>

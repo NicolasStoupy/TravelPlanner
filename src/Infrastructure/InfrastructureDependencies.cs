@@ -13,11 +13,10 @@ namespace Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection collection, IConfiguration configuration)
         {
             collection.AddDbContext<TravelPlannerContext>
-            (opt =>
-                opt.UseSqlServer(configuration.GetConnectionString("DbConnection")));
+            (opt => opt.UseSqlServer(configuration.GetConnectionString("DbConnection")));
 
 
-            
+
 
             return collection;
         }
