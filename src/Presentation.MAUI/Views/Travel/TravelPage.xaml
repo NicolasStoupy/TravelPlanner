@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"            
+             xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
+             xmlns:entities="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
+             xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
+             x:DataType="vm:TravelPageViewModel"
+             x:Class="Presentation.MAUI.Views.Travel.TravelPage"
+             Title="{Binding Title}">
+
+    <!-- Converters -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"></conv:ByteArrayToImageConverter>
+            <conv:StringLimitConverter x:Key="StringLimitConverter"></conv:StringLimitConverter>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <!-- Converters -->
+
+    <!-- Content -->
+    <Border StrokeThickness="1"
+            StrokeShape="RoundRectangle 10"
+            Margin="8"
+            >
+        <Grid RowDefinitions="Auto,Auto,1*,Auto">
+            <!-- SearchBar Grid row 1 -->
+            <Border StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    Margin="8"
+                    >
+            <Grid Grid.Row="1" Padding="10" ColumnDefinitions="1*,1*">
+                <SearchBar Grid.Column="0" Placeholder="Chercher un voyage"
+                   Text="{Binding  SearchText, Mode=TwoWay}"
+                   SearchCommand="{Binding FilterItemsCommand}"
+                   PlaceholderColor="Gray"
+                   TextColor="Black" />
+
+                <Button Grid.Column="1"
+                    Background="DarkBlue"
+                        TextColor="White"
+                    Text="Nouveau Voyage"
+                    HeightRequest="40"
+                    Margin="10,0,0,0"
+                    Command="{Binding NewTravelCommand}" />
+            </Grid>
+            </Border>
+
+            <!-- Contenu scrollable Grid row 2 -->
+            <ScrollView Grid.Row="2">
+                <FlexLayout Direction="Row"
+                    Wrap="Wrap"
+                    JustifyContent="Start"
+                    AlignItems="Start"
+                    Margin="10"
+                    BindableLayout.ItemsSource="{Binding TravelItems}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="entities:TravelItem">
+                            <Border WidthRequest="200"
+                            HeightRequest="350"
+                            Stroke="LightGray"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"
+                            BackgroundColor="White"
+                            Margin="8"
+                            Padding="10">
+                                <Grid RowDefinitions="Auto,*">
+                                    <VerticalStackLayout Grid.Row="0" Spacing="5">
+                                        <Image Source="{Binding image, Converter={StaticResource ByteArrayToImageConverter}}"
+                                       HeightRequest="150"
+                                       Aspect="AspectFill" />
+                                        <Label Text="{Binding name}"
+                                       FontAttributes="Bold"
+                                       FontSize="14"
+                                       LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding description, Converter={StaticResource StringLimitConverter}, ConverterParameter='40|[...]'}"
+                                       FontSize="12"
+                                       TextColor="Gray" />
+                                        <Label Text="{Binding travelDate}" 
+                                       FontSize="12"
+                                       TextColor="DarkGray" />
+                                        <Label FontSize="11" TextColor="Gray">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="Du " />
+                                                    <Span Text="{Binding StartDate}" />
+                                                    <Span Text=" au " />
+                                                    <Span Text="{Binding EndDate}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </VerticalStackLayout>
+
+                                    <Button Grid.Row="1"
+                                    Text="Voir"
+                                    BackgroundColor="Green"
+                                    TextColor="White"
+                                    CornerRadius="6"
+                                    VerticalOptions="End"
+                                    HorizontalOptions="Fill"
+                                    HeightRequest="40"
+                                    Margin="0,10,0,0"
+                                    Command="{Binding BindingContext.TravelDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                    CommandParameter="{Binding .}"    
+                                     />
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </ScrollView>
+
+            <!-- Spinner -->
+            <ActivityIndicator 
+        Grid.Row="3"
+        IsRunning="{Binding IsBusy}" 
+        IsVisible="{Binding IsBusy}" 
+        Color="DeepPink"
+        HorizontalOptions="Center"
+        WidthRequest="100"
+        HeightRequest="150" />
+
+        </Grid>
+    </Border>
+
+
+    <!-- Content -->
+
+</ContentPage>

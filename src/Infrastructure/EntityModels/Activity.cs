@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.EntityModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.EntityModels;
 
 public partial class Activity
 {
@@ -22,13 +25,13 @@ public partial class Activity
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual ICollection<ActivityCost> ActivityCosts { get; set; } = [];
+    public virtual ICollection<ActivityCost> ActivityCosts { get; set; } = new List<ActivityCost>();
 
     public virtual ActivityType ActivityType { get; set; } = null!;
 
-    public virtual ICollection<Attendee> Attendees { get; set; } = [];
+    public virtual ICollection<Attendee> Attendees { get; set; } = new List<Attendee>();
 
-    public virtual ICollection<LogBook> LogBooks { get; set; } = [];
+    public virtual ICollection<LogBook> LogBooks { get; set; } = new List<LogBook>();
 
     public virtual Trip Trip { get; set; } = null!;
 }

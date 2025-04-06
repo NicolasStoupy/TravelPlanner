@@ -29,14 +29,7 @@ namespace BussinessLogic.Services
         public List<byte[]> GetMediasFromTrip(Trip trip, List<MediaType> mediaTypes)
         {
             var result = new List<byte[]>();
-            foreach (var media in trip.Media)
-            {
-                var guid = ConvertToGuid(media.MediaID);
-
-                var file = _document.GetFile(ConvertToGuid(media.MediaID));
-                if (file != null)
-                    result.Add(file);
-            }
+     
 
             return result;
         }

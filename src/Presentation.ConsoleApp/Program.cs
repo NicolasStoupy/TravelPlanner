@@ -1,5 +1,4 @@
 ﻿using BussinessLogic;
-using BussinessLogic.DTOs;
 using BussinessLogic.Interfaces;
 using Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -18,25 +17,9 @@ namespace Presentation.ConsoleApp
             IConfiguration config = LoadConfiguration();
             ServiceProvider serviceProvider = ConfigureServices(config);
             using IServiceScope scope = serviceProvider.CreateScope();
-            ITripService tripService = scope.ServiceProvider.GetRequiredService<ITripService>();
+            ITravelService tripService = scope.ServiceProvider.GetRequiredService<ITravelService>();
 
-            foreach (TripDTO trip in tripService.GetTrips())
-            {
-                Console.WriteLine($"{trip.Name}:{trip.NumberPeople}");
-            }
-
-            TripDTO newTrip = new()
-            {
-                Name = "Mon Voyage en France ",
-                Description = "Mon super Voyage en france",
-                NumberPeople = 10,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(20),
-                Budget = 1000,
-                CurrencyCode = "EUR"
-            };
-
-            _ = tripService.CreateTrip(newTrip);
+          
 
 
 

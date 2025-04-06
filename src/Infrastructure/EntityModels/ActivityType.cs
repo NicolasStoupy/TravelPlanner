@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.EntityModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.EntityModels;
 
 public partial class ActivityType
 {
@@ -10,5 +13,5 @@ public partial class ActivityType
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual ICollection<Activity> Activities { get; set; } = [];
+    public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
 }

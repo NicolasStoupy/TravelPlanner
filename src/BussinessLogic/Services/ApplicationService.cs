@@ -5,14 +5,14 @@ namespace BussinessLogic.Services
     public class ApplicationService : IApplicationService
     {
         public IExpenseService ExpenseService { get; }
-        public ITripService TripService { get; }
+        public ITravelService TravelService { get; }
 
         public IMediaService MediaService { get; }
 
-        public ApplicationService(IExpenseService expenseService, ITripService tripService, IMediaService mediaService)
+        public ApplicationService(IExpenseService expenseService, ITravelService tripService, IMediaService mediaService)
         {
             ExpenseService = expenseService;
-            TripService = tripService;
+            TravelService = tripService;
             MediaService = mediaService;
         }
     }

@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.EntityModels;
+
 public partial class TravelPlannerContext : DbContext
 {
     public TravelPlannerContext()
@@ -31,254 +34,255 @@ public partial class TravelPlannerContext : DbContext
     public virtual DbSet<Trip> Trips { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=TravelPlanner;Trusted_Connection=True;Encrypt=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        _ = modelBuilder.Entity<Activity>(entity =>
+        modelBuilder.Entity<Activity>(entity =>
         {
-            _ = entity.HasKey(e => new { e.TripId, e.ActivityId });
+            entity.HasKey(e => new { e.TripId, e.ActivityId });
 
-            _ = entity.ToTable("Activity");
+            entity.ToTable("Activity");
 
-            _ = entity.HasIndex(e => new { e.TripId, e.Sequence }, "UQ_Activity_Sequence").IsUnique();
+            entity.HasIndex(e => new { e.TripId, e.Sequence }, "UQ_Activity_Sequence").IsUnique();
 
-            _ = entity.Property(e => e.TripId).HasColumnName("TripID");
-            _ = entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
-            _ = entity.Property(e => e.ActivityTypeId).HasColumnName("ActivityTypeID");
-            _ = entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.TripId).HasColumnName("TripID");
+            entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
+            entity.Property(e => e.ActivityTypeId).HasColumnName("ActivityTypeID");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.Description).IsUnicode(false);
-            _ = entity.Property(e => e.GoogleLink).IsUnicode(false);
-            _ = entity.Property(e => e.Name)
+            entity.Property(e => e.Description).IsUnicode(false);
+            entity.Property(e => e.GoogleLink).IsUnicode(false);
+            entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.PlannedCost)
+            entity.Property(e => e.PlannedCost)
                 .HasDefaultValue(0m)
                 .HasColumnType("money");
-            _ = entity.Property(e => e.UpdatedAt)
+            entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
 
-            _ = entity.HasOne(d => d.ActivityType).WithMany(p => p.Activities)
+            entity.HasOne(d => d.ActivityType).WithMany(p => p.Activities)
                 .HasForeignKey(d => d.ActivityTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Activity_ActivityType");
 
-            _ = entity.HasOne(d => d.Trip).WithMany(p => p.Activities)
+            entity.HasOne(d => d.Trip).WithMany(p => p.Activities)
                 .HasForeignKey(d => d.TripId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Activity_Trip");
         });
 
-        _ = modelBuilder.Entity<ActivityCost>(entity =>
+        modelBuilder.Entity<ActivityCost>(entity =>
         {
-            _ = entity.ToTable("ActivityCost");
+            entity.ToTable("ActivityCost");
 
-            _ = entity.Property(e => e.ActivityCostId).HasColumnName("ActivityCostID");
-            _ = entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
-            _ = entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.ActivityCostId).HasColumnName("ActivityCostID");
+            entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.CurrencyCode)
+            entity.Property(e => e.CurrencyCode)
                 .HasMaxLength(3)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.Name)
+            entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.Price).HasColumnType("money");
-            _ = entity.Property(e => e.TripId).HasColumnName("TripID");
-            _ = entity.Property(e => e.UpdatedAt)
+            entity.Property(e => e.Price).HasColumnType("money");
+            entity.Property(e => e.TripId).HasColumnName("TripID");
+            entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
 
-            _ = entity.HasOne(d => d.CurrencyCodeNavigation).WithMany(p => p.ActivityCosts)
+            entity.HasOne(d => d.CurrencyCodeNavigation).WithMany(p => p.ActivityCosts)
                 .HasForeignKey(d => d.CurrencyCode)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ActivityCost_Currency");
 
-            _ = entity.HasOne(d => d.Activity).WithMany(p => p.ActivityCosts)
+            entity.HasOne(d => d.Activity).WithMany(p => p.ActivityCosts)
                 .HasForeignKey(d => new { d.TripId, d.ActivityId })
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ActivityCost_Activity");
         });
 
-        _ = modelBuilder.Entity<ActivityType>(entity =>
+        modelBuilder.Entity<ActivityType>(entity =>
         {
-            _ = entity.ToTable("ActivityType");
+            entity.ToTable("ActivityType");
 
-            _ = entity.HasIndex(e => e.Description, "UQ_ActivityType_Description").IsUnique();
+            entity.HasIndex(e => e.Description, "UQ_ActivityType_Description").IsUnique();
 
-            _ = entity.HasIndex(e => e.Description, "UQ__Activity__4EBBBAC98AA0B9A1").IsUnique();
+            entity.HasIndex(e => e.Description, "UQ__Activity__4EBBBAC9B0F1C15F").IsUnique();
 
-            _ = entity.Property(e => e.ActivityTypeId).HasColumnName("ActivityTypeID");
-            _ = entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.ActivityTypeId).HasColumnName("ActivityTypeID");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.Description)
+            entity.Property(e => e.Description)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.UpdatedAt)
+            entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
         });
 
-        _ = modelBuilder.Entity<Attendee>(entity =>
+        modelBuilder.Entity<Attendee>(entity =>
         {
-            _ = entity.ToTable("Attendee");
+            entity.ToTable("Attendee");
 
-            _ = entity.Property(e => e.AttendeeId).HasColumnName("AttendeeID");
-            _ = entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
-            _ = entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.AttendeeId).HasColumnName("AttendeeID");
+            entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.Email)
+            entity.Property(e => e.Email)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.LastName)
+            entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.Name)
+            entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.TripId).HasColumnName("TripID");
-            _ = entity.Property(e => e.UpdatedAt)
+            entity.Property(e => e.TripId).HasColumnName("TripID");
+            entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
 
-            _ = entity.HasOne(d => d.Activity).WithMany(p => p.Attendees)
+            entity.HasOne(d => d.Activity).WithMany(p => p.Attendees)
                 .HasForeignKey(d => new { d.TripId, d.ActivityId })
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Attendee_Activity");
         });
 
-        _ = modelBuilder.Entity<Currency>(entity =>
+        modelBuilder.Entity<Currency>(entity =>
         {
-            _ = entity.HasKey(e => e.CurrencyCode);
+            entity.HasKey(e => e.CurrencyCode);
 
-            _ = entity.ToTable("Currency");
+            entity.ToTable("Currency");
 
-            _ = entity.Property(e => e.CurrencyCode)
+            entity.Property(e => e.CurrencyCode)
                 .HasMaxLength(3)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.ExchangeRate).HasColumnType("decimal(10, 4)");
-            _ = entity.Property(e => e.Name)
+            entity.Property(e => e.ExchangeRate).HasColumnType("decimal(10, 4)");
+            entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.Symbol)
+            entity.Property(e => e.Symbol)
                 .HasMaxLength(5)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.UpdatedAt)
+            entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
         });
 
-        _ = modelBuilder.Entity<LogBook>(entity =>
+        modelBuilder.Entity<LogBook>(entity =>
         {
-            _ = entity.ToTable("LogBook");
+            entity.ToTable("LogBook");
 
-            _ = entity.Property(e => e.LogBookId).HasColumnName("LogBookID");
-            _ = entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
-            _ = entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.LogBookId).HasColumnName("LogBookID");
+            entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.Description).IsUnicode(false);
-            _ = entity.Property(e => e.TripId).HasColumnName("TripID");
-            _ = entity.Property(e => e.UpdatedAt)
+            entity.Property(e => e.Description).IsUnicode(false);
+            entity.Property(e => e.TripId).HasColumnName("TripID");
+            entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
 
-            _ = entity.HasOne(d => d.TripLogBookNavigation).WithMany(p => p.LogBooks)
+            entity.HasOne(d => d.TripLogBookNavigation).WithMany(p => p.LogBooks)
                 .HasForeignKey(d => d.TripLogBook)
                 .HasConstraintName("FK_LogBook_Trip");
 
-            _ = entity.HasOne(d => d.Activity).WithMany(p => p.LogBooks)
+            entity.HasOne(d => d.Activity).WithMany(p => p.LogBooks)
                 .HasForeignKey(d => new { d.TripId, d.ActivityId })
                 .HasConstraintName("FK_LogBook_Activity");
         });
 
-        _ = modelBuilder.Entity<MediaType>(entity =>
+        modelBuilder.Entity<MediaType>(entity =>
         {
-            _ = entity.HasKey(e => e.MediaType1);
+            entity.HasKey(e => e.MediaType1);
 
-            _ = entity.ToTable("MediaType");
+            entity.ToTable("MediaType");
 
-            _ = entity.HasIndex(e => e.Description, "UQ_MediaType_Description").IsUnique();
+            entity.HasIndex(e => e.Description, "UQ_MediaType_Description").IsUnique();
 
-            _ = entity.Property(e => e.MediaType1).HasColumnName("MediaType");
-            _ = entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.MediaType1).HasColumnName("MediaType");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.Description)
+            entity.Property(e => e.Description)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.UpdatedAt)
+            entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
         });
 
-        _ = modelBuilder.Entity<Medium>(entity =>
+        modelBuilder.Entity<Medium>(entity =>
         {
-            _ = entity.HasKey(e => e.MediaId);
+            entity.HasKey(e => e.MediaId);
 
-            _ = entity.Property(e => e.MediaId).HasColumnName("MediaID");
-            _ = entity.Property(e => e.ActivityCostId).HasColumnName("ActivityCostID");
-            _ = entity.Property(e => e.CreatedAt)
+            entity.HasIndex(e => e.FileGuid, "UQ_FileGUID").IsUnique();
+
+            entity.Property(e => e.MediaId).HasColumnName("MediaID");
+            entity.Property(e => e.ActivityCostId).HasColumnName("ActivityCostID");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.Description).IsUnicode(false);
-            _ = entity.Property(e => e.FilePath).IsUnicode(false);
-            _ = entity.Property(e => e.TripId).HasColumnName("TripID");
-            _ = entity.Property(e => e.UpdatedAt)
+            entity.Property(e => e.Description).IsUnicode(false);
+            entity.Property(e => e.FileGuid).HasColumnName("FileGUID");
+            entity.Property(e => e.TripId).HasColumnName("TripID");
+            entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.UploadedAt)
+            entity.Property(e => e.UploadedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
 
-            _ = entity.HasOne(d => d.ActivityCost).WithMany(p => p.Media)
+            entity.HasOne(d => d.ActivityCost).WithMany(p => p.Media)
                 .HasForeignKey(d => d.ActivityCostId)
                 .HasConstraintName("FK_Media_ActivityCost");
 
-            _ = entity.HasOne(d => d.MediaTypeNavigation).WithMany(p => p.Media)
+            entity.HasOne(d => d.MediaTypeNavigation).WithMany(p => p.Media)
                 .HasForeignKey(d => d.MediaType)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Media_MediaType");
 
-            _ = entity.HasOne(d => d.Trip).WithMany(p => p.Media)
+            entity.HasOne(d => d.Trip).WithMany(p => p.Media)
                 .HasForeignKey(d => d.TripId)
                 .HasConstraintName("FK_Media_Trip");
         });
 
-        _ = modelBuilder.Entity<Trip>(entity =>
+        modelBuilder.Entity<Trip>(entity =>
         {
-            _ = entity.ToTable("Trip");
+            entity.ToTable("Trip");
 
-            _ = entity.Property(e => e.TripId).HasColumnName("TripID");
-            _ = entity.Property(e => e.Budget).HasColumnType("money");
-            _ = entity.Property(e => e.CreatedAt)
+            entity.Property(e => e.TripId).HasColumnName("TripID");
+            entity.Property(e => e.Budget).HasColumnType("money");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            _ = entity.Property(e => e.CurrencyCode)
+            entity.Property(e => e.CurrencyCode)
                 .HasMaxLength(3)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.Description).IsUnicode(false);
-            _ = entity.Property(e => e.IsActive).HasDefaultValue(true);
-            _ = entity.Property(e => e.Name)
+            entity.Property(e => e.Description).IsUnicode(false);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            _ = entity.Property(e => e.TripBackgroundPath).IsUnicode(false);
-            _ = entity.Property(e => e.UpdatedAt)
+            entity.Property(e => e.TripBackgroundGuid).HasColumnName("TripBackgroundGUID");
+            entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
 
-            _ = entity.HasOne(d => d.CurrencyCodeNavigation).WithMany(p => p.Trips)
+            entity.HasOne(d => d.CurrencyCodeNavigation).WithMany(p => p.Trips)
                 .HasForeignKey(d => d.CurrencyCode)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Trip_CurrencyCode");

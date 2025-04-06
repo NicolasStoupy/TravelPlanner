@@ -3,7 +3,7 @@
     public interface IApplicationService
     {
         IExpenseService ExpenseService { get; }
-        ITripService TripService { get; }
+        ITravelService TravelService { get; }
 
         IMediaService MediaService { get; }
     }

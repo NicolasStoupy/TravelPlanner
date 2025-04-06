@@ -3,29 +3,64 @@
     x:Class="Presentation.MAUI.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:Presentation.MAUI"
-    xmlns:tripView="clr-namespace:Presentation.MAUI.Views.Trip"
+    xmlns:activity="clr-namespace:Presentation.MAUI.Views.Activity"
+    xmlns:travel="clr-namespace:Presentation.MAUI.Views.Travel"
     Shell.FlyoutBehavior="Flyout"
-    Title="Presentation.MAUI">
-    <!-- Menu latéral -->
+    Title="Carnet de voyage">
+    <Shell.Resources>
+       
 
-
-    <FlyoutItem  Title="Voyages" FlyoutDisplayOptions="AsMultipleItems">
-
+        <Style TargetType="Shell">
+            <Setter Property="Shell.BackgroundColor" Value="#ffffff" />
+            
+            <Setter Property="Shell.DisabledColor" Value="#aaaaaa" />
+            <Setter Property="Shell.UnselectedColor" Value="#999999" />
+            <Setter Property="Shell.ForegroundColor" Value="#0077cc" />
+            <!-- Couleur du texte actif -->
+        </Style>
+    </Shell.Resources>
+    <!--VOYAGES -->
+    <FlyoutItem Title="Voyages"  Icon="trip.png">
         <ShellContent Title="Mes Voyages"
-                      Route="trips"
-                      ContentTemplate="{DataTemplate tripView:MyTravelPage}" />
+                      Route="TravelPage"
+                      ContentTemplate="{DataTemplate travel:TravelPage}" />
+        <ShellContent Title="Mes Voyages"
+              Route="NewTravelPage"
+              ContentTemplate="{DataTemplate travel:NewTravelPage}" />
+        <ShellContent Title="Informations"
+                      Route="InformationPage"
+                      ContentTemplate="{DataTemplate travel:InformationPage}" />
 
-        <ShellContent Title="Nouveau Voyage"
-                      Route="trips/new"
-                     ContentTemplate="{DataTemplate tripView:MyTravelPage}" />
+        <ShellContent Title="Notes"
+                      Route="LoggingPage"
+                      ContentTemplate="{DataTemplate travel:LoggingPage}" />
 
+        <ShellContent Title="Souvenirs"
+                      Route="MemoriesPage"
+                      ContentTemplate="{DataTemplate travel:MemoriesPage}" />
 
-        <ShellContent Title="Importer"
-                      Route="trips/import"
-                     ContentTemplate="{DataTemplate tripView:MyTravelPage}" />
+        <ShellContent Title="Activités liées"
+                      Route="TravelActivityPage"
+                      ContentTemplate="{DataTemplate travel:ActivityPage}" />
+    </FlyoutItem>
 
+    <!--ACTIVITÉS -->
+    <FlyoutItem Title="Activités"  Icon="activity.png">
+        <ShellContent Title="Activité"
+                      Route="ActivityPage"
+                      ContentTemplate="{DataTemplate activity:ActivityPage}" />
 
+        <ShellContent Title="Participants"
+                      Route="AttendeePage"
+                      ContentTemplate="{DataTemplate activity:AttendeePage}" />
+
+        <ShellContent Title="Notes"
+                      Route="LoggingPageActivity"
+                      ContentTemplate="{DataTemplate activity:LoggingPage}" />
+
+        <ShellContent Title="Dépenses"
+                      Route="CostPage"
+                      ContentTemplate="{DataTemplate activity:CostPage}" />
     </FlyoutItem>
 
 </Shell>

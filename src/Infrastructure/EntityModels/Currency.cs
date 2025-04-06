@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.EntityModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.EntityModels;
 
 public partial class Currency
 {
@@ -14,7 +17,7 @@ public partial class Currency
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual ICollection<ActivityCost> ActivityCosts { get; set; } = [];
+    public virtual ICollection<ActivityCost> ActivityCosts { get; set; } = new List<ActivityCost>();
 
-    public virtual ICollection<Trip> Trips { get; set; } = [];
+    public virtual ICollection<Trip> Trips { get; set; } = new List<Trip>();
 }

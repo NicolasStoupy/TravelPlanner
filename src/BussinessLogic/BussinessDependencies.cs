@@ -13,7 +13,7 @@ namespace BussinessLogic
         {
 
             collection.AddScoped<IExpenseService, ExpenseService>();
-            collection.AddScoped<ITripService, TripService>();
+            collection.AddScoped<ITravelService, TravelService>();
             collection.AddScoped<IMediaService, MediaService>();
             collection.AddScoped<DocumentProvider>();
             collection.AddScoped<IApplicationService, ApplicationService>();

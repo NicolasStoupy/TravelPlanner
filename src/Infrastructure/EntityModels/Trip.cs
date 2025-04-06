@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+
 namespace Infrastructure.EntityModels;
 
 public partial class Trip
@@ -19,7 +21,7 @@ public partial class Trip
 
     public int NumberPeople { get; set; }
 
-    public string? TripBackgroundPath { get; set; }
+    public Guid? TripBackgroundGuid { get; set; }
 
     public string CurrencyCode { get; set; } = null!;
 
@@ -27,11 +29,11 @@ public partial class Trip
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual ICollection<Activity> Activities { get; set; } = [];
+    public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
 
     public virtual Currency CurrencyCodeNavigation { get; set; } = null!;
 
-    public virtual ICollection<LogBook> LogBooks { get; set; } = [];
+    public virtual ICollection<LogBook> LogBooks { get; set; } = new List<LogBook>();
 
-    public virtual ICollection<Medium> Media { get; set; } = [];
+    public virtual ICollection<Medium> Media { get; set; } = new List<Medium>();
 }

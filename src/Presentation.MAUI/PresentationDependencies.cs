@@ -1,4 +1,5 @@
-﻿using Presentation.MAUI.ViewModel;
+﻿using Presentation.MAUI.Services;
+using Presentation.MAUI.ViewModel;
 
 
 namespace Presentation.MAUI
@@ -11,10 +12,9 @@ namespace Presentation.MAUI
             // - Scoped    : une instance par scope (utile pour les pages)
             // - Singleton : une instance globale partagée
 
-            collection.AddTransient<MainPage>();
-            collection.AddTransient<TripViewModel>(); 
-            collection.AddTransient<NewTripViewModel>();
-            collection.AddTransient<TripMainPageViewModel>();
+
+            collection.AddSingleton<INavigationService, NavigationService>();
+            collection.AddTransient<TravelPageViewModel>();
             return collection;
         }
     }

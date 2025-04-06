@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.EntityModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.EntityModels;
 
 public partial class Attendee
 {

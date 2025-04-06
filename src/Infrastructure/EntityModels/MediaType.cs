@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.EntityModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.EntityModels;
 
 public partial class MediaType
 {
@@ -10,5 +13,5 @@ public partial class MediaType
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual ICollection<Medium> Media { get; set; } = [];
+    public virtual ICollection<Medium> Media { get; set; } = new List<Medium>();
 }

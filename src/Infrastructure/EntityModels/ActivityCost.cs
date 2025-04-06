@@ -1,4 +1,7 @@
-﻿namespace Infrastructure.EntityModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.EntityModels;
 
 public partial class ActivityCost
 {
@@ -22,5 +25,5 @@ public partial class ActivityCost
 
     public virtual Currency CurrencyCodeNavigation { get; set; } = null!;
 
-    public virtual ICollection<Medium> Media { get; set; } = [];
+    public virtual ICollection<Medium> Media { get; set; } = new List<Medium>();
 }

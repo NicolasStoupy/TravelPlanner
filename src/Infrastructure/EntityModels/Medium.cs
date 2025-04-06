@@ -1,10 +1,13 @@
-﻿namespace Infrastructure.EntityModels;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Infrastructure.EntityModels;
 
 public partial class Medium
 {
     public int MediaId { get; set; }
 
-    public string FilePath { get; set; } = null!;
+    public Guid FileGuid { get; set; }
 
     public string Description { get; set; } = null!;
 
@@ -19,7 +22,6 @@ public partial class Medium
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
-    public string MediaID { get; set; } = null!;
 
     public virtual ActivityCost? ActivityCost { get; set; }
 
