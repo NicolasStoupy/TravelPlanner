@@ -14,7 +14,7 @@ namespace BussinessLogic.Interfaces
         List<byte[]> GetMediasFromActivity(Activity activity, List<MediaType> mediaTypes);
         List<byte[]> GetMediasFromCosting(ActivityCost activity, List<MediaType> mediaTypes);
         byte[]? GetMedia(Guid fileGuid);
-        Guid? SaveMedia(byte[] fileBytes, MediaType mediaType);
-
+        Guid? SaveMedia(byte[]? fileBytes, MediaType mediaType);
+      
     }
 }

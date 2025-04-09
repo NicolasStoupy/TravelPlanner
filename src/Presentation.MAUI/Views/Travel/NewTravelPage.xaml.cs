@@ -1,9 +1,23 @@
+using Presentation.MAUI.ViewModel;
+
 namespace Presentation.MAUI.Views.Travel;
 
 public partial class NewTravelPage : ContentPage
 {
-	public NewTravelPage()
+	public NewTravelPage( NewTravelPageViewModel vm)
 	{
 		InitializeComponent();
+
+		this.BindingContext = vm;
 	}
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (BindingContext is NewTravelPageViewModel vm)
+        {
+            vm.Reset();
+        }
+    }
 }

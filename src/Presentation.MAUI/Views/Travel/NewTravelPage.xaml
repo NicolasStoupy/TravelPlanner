@@ -2,11 +2,116 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Presentation.MAUI.Views.Travel.NewTravelPage"
-             Title="NewTravelPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"    
+             xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
+           
+             x:DataType="vm:NewTravelPageViewModel"
+             Title="{Binding Title}">
+    <!-- Converters -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"></conv:ByteArrayToImageConverter>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <!-- Converters -->
+    <ScrollView>
+        <VerticalStackLayout Padding="0" Spacing="20">
+
+            <Border Stroke="Gray"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    Margin="20"
+                    Padding="25">
+                <VerticalStackLayout Spacing="25">
+
+                    <!-- Infos générales -->
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Informations générales" FontAttributes="Bold" FontSize="Medium" />
+                        <Entry Text="{Binding Name, Mode=TwoWay}" Placeholder="Nom du voyage" />
+                        <Entry x:Name="Description" Placeholder="Description du voyage" Text="{Binding Description,Mode=TwoWay}" />
+
+                    </VerticalStackLayout>
+
+                    <!-- Grid 4 colonnes -->
+                    <Grid ColumnSpacing="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Début -->
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Début" FontSize="Small" />
+                            <DatePicker x:Name="StartDate" Date="{Binding StartDate, Mode=TwoWay}"></DatePicker>
+                        </VerticalStackLayout>
+
+                        <!-- Fin -->
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Fin"  FontSize="Small" />
+                            <DatePicker x:Name="EndDate" Date="{Binding EndDate, Mode=TwoWay}" />
+                        </VerticalStackLayout>
+
+                        <!-- Budget + Devise -->
+                        <VerticalStackLayout Grid.Column="2" Spacing="4">
+                            <Label Text="Budget" FontSize="Small" />
+                            <HorizontalStackLayout Spacing="5">
+                                <Entry x:Name="Budget" Placeholder="Montant" Keyboard="Numeric" />
+                                <Picker ItemsSource="{Binding CurrencyList}"
+                                        SelectedItem="{Binding Currency}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
+                        <!-- Participants -->
+                        <VerticalStackLayout Grid.Column="3" Spacing="4">
+                            <Label Text="Participants" FontSize="Small" />
+                            <Entry x:Name="NumberPeople" Text="{Binding NumberPeople}" Keyboard="Numeric" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Photo -->
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Photo souvenir" FontAttributes="Bold" FontSize="Medium" />
+
+                        <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
+                            <Border Stroke="LightGray"
+                                    StrokeThickness="1"
+                                    BackgroundColor="#f0f0f0"
+                                    StrokeShape="RoundRectangle 8"
+                                    HeightRequest="100"
+                                    WidthRequest="100"
+                                    HorizontalOptions="Start"
+                                    VerticalOptions="Center">
+                                <Image Source="{Binding TravelImage , Converter={StaticResource ByteArrayToImageConverter}}"
+                                       x:Name="ImageLoaded"
+                                       Aspect="AspectFit"
+                                       HeightRequest="100"
+                                       WidthRequest="100" />
+                            </Border>
+
+                            <Button Text="Définir photo"
+                                    VerticalOptions="Center"
+                                    CornerRadius="8"
+                                    BackgroundColor="#5C6BC0"
+                                    TextColor="White"
+                                    HeightRequest="40"
+                                    Padding="15,0"  Command="{Binding LoadImageCommand}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+
+                </VerticalStackLayout>
+
+            </Border>
+            <Button Text="Enregistrer"
+        BackgroundColor="Green"
+        TextColor="White"
+        FontAttributes="Bold"
+        HeightRequest="50"
+        Margin="0,20"
+        Command="{Binding ValidateAndSaveCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

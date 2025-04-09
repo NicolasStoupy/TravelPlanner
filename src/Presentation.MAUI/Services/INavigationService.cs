@@ -11,5 +11,7 @@ namespace Presentation.MAUI.Services
     {
         Task NavigateToNewTravelPageAsync();
         Task NavigateToTravelDetailsPageAsync(TravelItem travelItem);
+    
+
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Presentation.MAUI.Services;
 using Presentation.MAUI.ViewModel;
+using Presentation.MAUI.Views.Travel;
+
 
 
 namespace Presentation.MAUI
@@ -15,6 +17,8 @@ namespace Presentation.MAUI
 
             collection.AddSingleton<INavigationService, NavigationService>();
             collection.AddTransient<TravelPageViewModel>();
+            collection.AddTransient<NewTravelPageViewModel>();
+            
             return collection;
         }
     }

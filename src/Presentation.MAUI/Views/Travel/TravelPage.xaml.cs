@@ -12,5 +12,13 @@ public partial class TravelPage : ContentPage
 		InitializeComponent();
 		BindingContext = vm;
     }
-    
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (BindingContext is TravelPageViewModel vm)
+        {
+            vm.Reset();
+        }
+    }
 }

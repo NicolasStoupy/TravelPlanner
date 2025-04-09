@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
+using BussinessLogic.Models;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
-using Microsoft.EntityFrameworkCore;
 
 
 
@@ -25,7 +25,7 @@ namespace BussinessLogic.Services
         public List<TravelItem> GetTravelItems()
         {
             List<TravelItem> travelItems = new List<TravelItem>();
-            var trips = _context.Trips;
+            var trips = _context.Trips.OrderBy(t => t.CreatedAt);
             _document.SetMediaType(MediaType.Images.ToString());
             foreach (var trip in trips)
             {
@@ -44,6 +44,26 @@ namespace BussinessLogic.Services
             }
 
             return travelItems;
+        }
+    
+        public async Task<Result> SaveTrip(Trip trip, byte[]? image)
+        {
+
+            try
+            {
+                _context.Trips.Add(trip);
+                await _context.SaveChangesAsync();
+                // Save document only if adding success
+                trip.TripBackgroundGuid = _document.SaveFile(image);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+
+                return Result.Failure(ex.Message);
+            }
+
+            return Result.Success();
         }
     }
 }

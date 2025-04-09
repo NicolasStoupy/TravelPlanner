@@ -7,24 +7,22 @@ using Presentation.MAUI.Services;
 using System.Collections.ObjectModel;
 
 namespace Presentation.MAUI.ViewModel;
-public partial class TravelPageViewModel : BaseObservableObject
+public partial class TravelPageViewModel : BaseViewModel
 {
-    private readonly IApplicationService _applicationService;
+    
  
     private List<TravelItem> _allTravelItems = new();
 
     [ObservableProperty]
     private string _searchText = string.Empty;
 
-    [ObservableProperty]
+    [ObservableProperty]   
     private ObservableCollection<TravelItem> _travelItems = new();
 
-    public TravelPageViewModel(IApplicationService applicationService, INavigationService navigationService) : base(navigationService)
+    public TravelPageViewModel(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
     {
         Title = "Voyages";
-        _applicationService = applicationService;       
-
-        _allTravelItems = _applicationService.TravelService.GetTravelItems();
+        Reset();
         FilterItems(); // premier affichage
     }
 
@@ -70,5 +68,16 @@ public partial class TravelPageViewModel : BaseObservableObject
         IsBusy = true;
 
         await _navigationService.NavigateToNewTravelPageAsync();
+        IsBusy = false;
+    }
+
+    public override void Reset()
+    {
+        IsBusy = true;
+        _allTravelItems.Clear();
+        TravelItems.Clear();
+        _allTravelItems = _applicationService.TravelService.GetTravelItems();
+        TravelItems = new ObservableCollection<TravelItem>(_allTravelItems);
+        IsBusy = false;
     }
 }

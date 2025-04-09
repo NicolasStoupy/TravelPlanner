@@ -14,6 +14,11 @@ namespace BussinessLogic
         Pdf = 1
     }
 
+    public enum Currency
+    {
+        EUR,USD
+    }
+
 
 
 }

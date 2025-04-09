@@ -11,8 +11,7 @@
        
 
         <Style TargetType="Shell">
-            <Setter Property="Shell.BackgroundColor" Value="#ffffff" />
-            
+            <Setter Property="Shell.BackgroundColor" Value="#ffffff" />            
             <Setter Property="Shell.DisabledColor" Value="#aaaaaa" />
             <Setter Property="Shell.UnselectedColor" Value="#999999" />
             <Setter Property="Shell.ForegroundColor" Value="#0077cc" />
@@ -24,7 +23,7 @@
         <ShellContent Title="Mes Voyages"
                       Route="TravelPage"
                       ContentTemplate="{DataTemplate travel:TravelPage}" />
-        <ShellContent Title="Mes Voyages"
+        <ShellContent Title="Créer Voyages"
               Route="NewTravelPage"
               ContentTemplate="{DataTemplate travel:NewTravelPage}" />
         <ShellContent Title="Informations"
