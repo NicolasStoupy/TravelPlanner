@@ -1,4 +1,5 @@
 ﻿
+using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +16,7 @@ namespace Infrastructure
             collection.AddDbContext<TravelPlannerContext>
             (opt => opt.UseSqlServer(configuration.GetConnectionString("DbConnection")), ServiceLifetime.Scoped);// Scoped pour une instance par requête
 
-
+            collection.AddScoped<DocumentProvider>();
 
 
             return collection;

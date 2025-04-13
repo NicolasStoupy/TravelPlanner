@@ -6,6 +6,7 @@ namespace BussinessLogic.Interfaces
 {
     public interface ITravelService
     {
+        Task<Result> DeleteTrip(int tripId);
         List<TravelItem> GetTravelItems();
 
         /// <summary>

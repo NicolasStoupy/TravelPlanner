@@ -12,7 +12,7 @@ namespace Presentation.MAUI.ViewModel
     /// ViewModel for creating a new travel entry.
     /// Handles form validation, image selection, and trip persistence via the application service layer.
     /// </summary>
-    public partial class NewTravelPageViewModel : BaseViewModel,IValidatableObject
+    public partial class NewTravelPageViewModel : BaseViewModel
     {
         [ObservableProperty]
         [Required(ErrorMessage = "Le nom du voyage est obligatoire.")]
@@ -143,14 +143,6 @@ namespace Presentation.MAUI.ViewModel
             Currency = null;
         }
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (Budget <= 0)
-            {
-                yield return new ValidationResult(
-                    "Le budget doit être strictement supérieur à 0.",
-                    new[] { nameof(Budget) });
-            }
-        }
+      
     }
 }

@@ -5,14 +5,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:activity="clr-namespace:Presentation.MAUI.Views.Activity"
     xmlns:travel="clr-namespace:Presentation.MAUI.Views.Travel"
-    Shell.FlyoutBehavior="Flyout"
+    Shell.FlyoutBehavior="Locked"
     Title="Carnet de voyage">
-    <Shell.Resources>
-       
-
+    <Shell.Resources>      
         <Style TargetType="Shell">
-            <Setter Property="Shell.BackgroundColor" Value="#ffffff" />            
-            <Setter Property="Shell.DisabledColor" Value="#aaaaaa" />
+            <Setter Property="Shell.BackgroundColor" Value="#ffffff" />
+            <Setter Property="Shell.DisabledColor" Value="#0077cc" />
             <Setter Property="Shell.UnselectedColor" Value="#999999" />
             <Setter Property="Shell.ForegroundColor" Value="#0077cc" />
             <!-- Couleur du texte actif -->

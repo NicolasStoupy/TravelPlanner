@@ -71,6 +71,26 @@ public partial class TravelPageViewModel : BaseViewModel
         IsBusy = false;
     }
 
+    [RelayCommand]
+    private async Task DeleteTravel(int tripId)
+    {
+        IsBusy= true;
+        try
+        {
+            await _applicationService.TravelService.DeleteTrip(tripId);
+            await DisplayAlert(MessageType.Success, "Trip Supprimé avec succès");
+
+            Reset();
+        }
+        catch (Exception ex )
+        {
+
+           await DisplayAlert(MessageType.Error, ex.Message);
+        }
+     
+        IsBusy = false;
+    }
+
     public override void Reset()
     {
         IsBusy = true;

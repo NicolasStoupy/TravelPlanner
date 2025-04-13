@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using Commons;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Documents;
@@ -33,21 +35,9 @@ public class DocumentProvider
     /// Définit le type de média à utiliser pour le chemin de sauvegarde.
     /// </summary>
     /// <param name="mediaType">Le nom du type de média (ex: 'images', 'videos').</param>
-    public void SetMediaType(string mediaType)
+    public void SetMediaType(TypeMedia typeMedia)
     {
-        if (string.IsNullOrWhiteSpace(mediaType))
-        {
-            _logger.LogWarning("Type de média vide ou invalide.");
-            return;
-        }
-
-        // Nettoyage du nom du dossier
-        foreach (char c in Path.GetInvalidFileNameChars())
-        {
-            mediaType = mediaType.Replace(c.ToString(), string.Empty);
-        }
-
-        _mediaFilePath = Path.Combine(_basePath, mediaType);
+        _mediaFilePath = Path.Combine(_basePath, typeMedia.ToString());
         _logger.LogInformation("Chemin média défini sur : {Path}", _mediaFilePath);
     }
 
@@ -158,5 +148,31 @@ public class DocumentProvider
         }
 
         return false;
+    }
+
+    public bool RemoveFile(Guid fileGuid, TypeMedia typeMedia)
+    {
+        SetMediaType(typeMedia);
+        var fileName = fileGuid.ToString();
+        var fullPath = Path.Combine(_mediaFilePath, fileName);
+        try
+        {
+
+            if (!File.Exists(fullPath))
+            {
+                _logger.LogWarning("Fichier non trouvé : {Path}", fullPath);
+                return false;
+            }
+            var file = new FileInfo(fullPath);
+
+            file.Delete();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erreur lors de la lecture du fichier : {Path}", fullPath);
+            return false;
+        }
     }
 }

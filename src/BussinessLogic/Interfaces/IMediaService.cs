@@ -1,9 +1,5 @@
-﻿using Infrastructure.EntityModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Commons;
+using Infrastructure.EntityModels;
 
 namespace BussinessLogic.Interfaces
 {
@@ -13,8 +9,10 @@ namespace BussinessLogic.Interfaces
         List<byte[]> GetMediasFromTrip(Trip trip, List<MediaType> mediaTypes);
         List<byte[]> GetMediasFromActivity(Activity activity, List<MediaType> mediaTypes);
         List<byte[]> GetMediasFromCosting(ActivityCost activity, List<MediaType> mediaTypes);
-        byte[]? GetMedia(Guid fileGuid);
-        Guid? SaveMedia(byte[]? fileBytes, MediaType mediaType);
+        byte[]? GetMedia(Guid fileGuid,TypeMedia typeMedia  );
+        Guid? SaveMedia(byte[]? fileBytes, TypeMedia typeMedia);
+
+    
       
     }
 }
