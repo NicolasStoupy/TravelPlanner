@@ -28,8 +28,8 @@
                     <!-- Infos générales -->
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Informations générales" FontAttributes="Bold" FontSize="Medium" />
-                        <Entry Text="{Binding Name, Mode=TwoWay}" Placeholder="Nom du voyage" />
-                        <Entry x:Name="Description" Placeholder="Description du voyage" Text="{Binding Description,Mode=TwoWay}" />
+                        <Entry Text="{Binding Travel.name, Mode=TwoWay}" Placeholder="Nom du voyage" />
+                        <Entry x:Name="Description" Placeholder="Description du voyage" Text="{Binding Travel.description,Mode=TwoWay}" />
 
                     </VerticalStackLayout>
 
@@ -45,29 +45,29 @@
                         <!-- Début -->
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
                             <Label Text="Début" FontSize="Small" />
-                            <DatePicker x:Name="StartDate" Date="{Binding StartDate, Mode=TwoWay}"></DatePicker>
+                            <DatePicker x:Name="StartDate" Date="{Binding Travel.StartDate, Mode=TwoWay}"></DatePicker>
                         </VerticalStackLayout>
 
                         <!-- Fin -->
                         <VerticalStackLayout Grid.Column="1" Spacing="4">
                             <Label Text="Fin"  FontSize="Small" />
-                            <DatePicker x:Name="EndDate" Date="{Binding EndDate, Mode=TwoWay}" />
+                            <DatePicker x:Name="EndDate" Date="{Binding Travel.EndDate, Mode=TwoWay}" />
                         </VerticalStackLayout>
 
                         <!-- Budget + Devise -->
                         <VerticalStackLayout Grid.Column="2" Spacing="4">
                             <Label Text="Budget" FontSize="Small" />
                             <HorizontalStackLayout Spacing="5">
-                                <Entry x:Name="Budget" Placeholder="Montant" Keyboard="Numeric" />
+                                <Entry x:Name="Budget" Text="{Binding Travel.budget,Mode=TwoWay}" Placeholder="Montant" Keyboard="Numeric" />
                                 <Picker ItemsSource="{Binding CurrencyList}"
-                                        SelectedItem="{Binding Currency}" />
+                                        SelectedItem="{Binding CurrencySelected}" />
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
 
                         <!-- Participants -->
                         <VerticalStackLayout Grid.Column="3" Spacing="4">
                             <Label Text="Participants" FontSize="Small" />
-                            <Entry x:Name="NumberPeople" Text="{Binding NumberPeople}" Keyboard="Numeric" />
+                            <Entry x:Name="NumberPeople" Text="{Binding Travel.people}" Keyboard="Numeric" />
                         </VerticalStackLayout>
                     </Grid>
 
@@ -84,7 +84,7 @@
                                     WidthRequest="100"
                                     HorizontalOptions="Start"
                                     VerticalOptions="Center">
-                                <Image Source="{Binding TravelImage , Converter={StaticResource ByteArrayToImageConverter}}"
+                                <Image Source="{Binding  ImageSelected , Converter={StaticResource ByteArrayToImageConverter}}"
                                        x:Name="ImageLoaded"
                                        Aspect="AspectFit"
                                        HeightRequest="100"
@@ -105,7 +105,7 @@
                 </VerticalStackLayout>
 
             </Border>
-            <Button Text="Enregistrer"
+            <Button Text="{Binding CurrentModeFriendly}"
         BackgroundColor="Green"
         TextColor="White"
         FontAttributes="Bold"

@@ -77,20 +77,41 @@ public class DocumentProvider
         }
     }
 
+    public Guid? ReplaceFile(Guid? fileToReplaceID, byte[] newFile)
+    {
+        if (fileToReplaceID == null) return SaveFile(newFile);
+        if (string.IsNullOrWhiteSpace(_mediaFilePath))
+        {
+            _logger.LogWarning("Chemin média non défini. Appelez SetMediaType d'abord.");
+            return null;
+        }
+        var fileName = $"{fileToReplaceID}";
+        var fullPath = Path.Combine(_mediaFilePath, fileName.ToString());
+        try
+        {
+
+            File.WriteAllBytes(fullPath, newFile);
+            _logger.LogInformation("Fichier remplacé sur  : {FilePath}", fullPath);
+            return fileToReplaceID;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erreur lors de l'écriture du fichier : {Path}", fullPath);
+            return null;
+        }
+
+    }
+
 
     /// <summary>
     /// Récupère un fichier binaire à partir de son identifiant.
     /// </summary>
     /// <param name="guid">Identifiant du fichier à récupérer.</param>
     /// <returns>Contenu binaire du fichier, ou null s'il est introuvable ou en cas d'erreur.</returns>
-    public byte[]? GetFile(Guid guid)
+    public byte[]? GetFile(Guid? guid, TypeMedia typeMedia)
     {
-        if (string.IsNullOrWhiteSpace(_mediaFilePath))
-        {
-            _logger.LogWarning("Chemin média non défini. Appelez SetMediaType d'abord.");
-            return null;
-        }
-
+        if (guid == null) return null;
+        SetMediaType(typeMedia);
         var fileName = guid.ToString();
         var fullPath = Path.Combine(_mediaFilePath, fileName);
 

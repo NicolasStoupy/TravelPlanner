@@ -1,0 +1,58 @@
+﻿using AutoMapper;
+using BussinessLogic.Entities;
+using BussinessLogic.Mappings.Converters;
+using BussinessLogic.Mappings.Resolvers;
+using Infrastructure.EntityModels;
+
+
+namespace BussinessLogic.Mappings
+{
+    public class MappingProfiles : Profile
+    {
+        public MappingProfiles()
+        {
+            // Enregistrement des converters globaux
+            CreateMap<DateOnly, DateTime>().ConvertUsing<DateOnlyToDateTimeConverter>();
+            CreateMap<DateTime, DateOnly>().ConvertUsing<DateTimeToDateOnlyConverter>();
+
+
+
+            CreateMap<Trip, Travel>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TripId))
+                .ForMember(dest => dest.description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.budget, opt => opt.MapFrom(src => src.Budget))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.travelDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.currencie, opt => opt.MapFrom(src => src.CurrencyCode))
+                .ForMember(dest=>dest.imageID,opt=>opt.MapFrom(src=>src.TripBackgroundGuid))
+                .ForMember(dest => dest.image, opt => opt.MapFrom<TravelImageResolver>())
+                .ForMember(dest => dest.TravelNotes, opt => opt.MapFrom<TravelNotesResolver>());
+            CreateMap<Travel, Trip>()
+                .ForMember(dest => dest.TripId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.description))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.name))
+                .ForMember(dest => dest.Budget, opt => opt.MapFrom(src => src.budget))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest=> dest.TripBackgroundGuid, opt=>opt.MapFrom(src=>src.imageID))
+                .ForMember(dest => dest.CurrencyCode, opt => opt.MapFrom(src => src.currencie));
+             
+              
+
+
+            CreateMap<TravelActivity, Activity>()
+           .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+           .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+           .ForMember(dest => dest.Sequence, opt => opt.MapFrom(src => src.Sequence))
+           .ForMember(dest => dest.GoogleLink, opt => opt.MapFrom(src => src.GoogleLink))
+           .ForMember(dest => dest.PlannedCost, opt => opt.MapFrom(src => src.PlannedCost))
+           .ForMember(dest => dest.ActivityType, opt => opt.MapFrom(src => src.ActivityType));
+
+
+            CreateMap<LogBook, Note>()
+             .ForMember(dest => dest.NoteContent, opt => opt.MapFrom(src => src.Description));
+        }
+    }
+}

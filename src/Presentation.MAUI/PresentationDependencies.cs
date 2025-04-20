@@ -16,9 +16,9 @@ namespace Presentation.MAUI
 
 
             collection.AddSingleton<INavigationService, NavigationService>();
-            collection.AddTransient<TravelPageViewModel>();
-            collection.AddTransient<NewTravelPageViewModel>();
-            
+            collection.AddScoped<TravelPageViewModel>();
+            collection.AddScoped<NewTravelPageViewModel>();
+            collection.AddScoped<TravelNotePageViewModel>();
             return collection;
         }
     }

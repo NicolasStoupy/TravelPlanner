@@ -4,22 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BussinessLogic.Models
+namespace Commons.Models
 {
     public class Result
     {
         public bool IsSuccess { get; }
-        public string? ErrorMessage { get; }
+        public string? Message { get; }
 
         public bool IsFailure => !IsSuccess;
 
-        private Result(bool isSuccess, string? errorMessage = null)
+        private Result(bool isSuccess, string? message = null)
         {
             IsSuccess = isSuccess;
-            ErrorMessage = errorMessage;
+            Message = message;
         }
 
-        public static Result Success() => new Result(true);
+        public static Result Success(string message ="") => new Result(true,message);
         public static Result Failure(string errorMessage) => new Result(false, errorMessage);
     }
 

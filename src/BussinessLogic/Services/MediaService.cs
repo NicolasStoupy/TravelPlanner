@@ -36,7 +36,7 @@ namespace BussinessLogic.Services
         }
 
 
-        public byte[]? GetMedia(Guid fileGuid, TypeMedia typeMedia) { _document.SetMediaType(typeMedia);return _document.GetFile(fileGuid); }
+        public byte[]? GetMedia(Guid fileGuid, TypeMedia typeMedia) { return _document.GetFile(fileGuid,typeMedia); }
 
         public Guid? SaveMedia(byte[]? fileBytes, TypeMedia typeMedia)
         {

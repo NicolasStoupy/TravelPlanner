@@ -1,5 +1,5 @@
-﻿using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
+﻿using BussinessLogic.Interfaces;
+using BussinessLogic.Entities;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Presentation.MAUI.Models;
@@ -7,26 +7,33 @@ using Presentation.MAUI.Services;
 using System.Collections.ObjectModel;
 
 namespace Presentation.MAUI.ViewModel;
+
 public partial class TravelPageViewModel : BaseViewModel
 {
-    
- 
-    private List<TravelItem> _allTravelItems = new();
+    private List<Travel> _allTravelItems = [];
 
     [ObservableProperty]
     private string _searchText = string.Empty;
 
-    [ObservableProperty]   
-    private ObservableCollection<TravelItem> _travelItems = new();
+    [ObservableProperty]
+    private ObservableCollection<Travel> _travelItems = [];
 
     public TravelPageViewModel(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
     {
         Title = "Voyages";
         Reset();
-        FilterItems(); // premier affichage
+        FilterItems();
     }
 
-    private IEnumerable<TravelItem> GetFilteredItems()
+    /// <summary>
+    /// Returns a filtered list of travel items based on the search text.
+    /// </summary>
+    /// <returns>
+    /// An <see cref="IEnumerable{TravelItem}"/> containing all travel items
+    /// whose name or description contains the specified search text,
+    /// ignoring case. If the search text is null or whitespace, all items are returned.
+    /// </returns>
+    private IEnumerable<Travel> GetFilteredItems()
     {
         if (string.IsNullOrWhiteSpace(SearchText))
             return _allTravelItems;
@@ -38,6 +45,12 @@ public partial class TravelPageViewModel : BaseViewModel
             );
     }
 
+    /// <summary>
+    /// Triggered when the search text value changes.
+    /// Sets the busy state, filters the travel items accordingly,
+    /// and then resets the busy state.
+    /// </summary>
+    /// <param name="value">The new search text entered by the user.</param>
     partial void OnSearchTextChanged(string value)
     {
         isBusy = true;
@@ -45,23 +58,36 @@ public partial class TravelPageViewModel : BaseViewModel
         isBusy = false;
     }
 
+    /// <summary>
+    /// Filters the list of travel items based on the current search text
+    /// and updates the <see cref="TravelItems"/> collection.
+    /// Sets the busy state while filtering is in progress.
+    /// </summary>
     [RelayCommand]
     private void FilterItems()
     {
         IsBusy = true;
-        TravelItems = new ObservableCollection<TravelItem>(GetFilteredItems());
+        TravelItems = [.. GetFilteredItems()];
         IsBusy = false;
     }
 
+    /// <summary>
+    /// Navigates to the travel details page for the specified travel item.
+    /// </summary>
+    /// <param name="travelItem">The <see cref="Travel"/> to display details for. If null, the method exits.</param>
     [RelayCommand]
-    private async Task TravelDetails(TravelItem travelItem)
+    private async Task TravelDetails(Travel travelItem)
     {
         if (travelItem is null)
             return;
 
-        await _navigationService.NavigateToTravelDetailsPageAsync(travelItem);
+        await _navigationService.NavigateToTravelDetailsPageAsync(travelItem.Id.ToString());
     }
 
+    /// <summary>
+    /// Navigates to the page for creating a new travel entry.
+    /// Sets the busy state during the navigation process.
+    /// </summary>
     [RelayCommand]
     private async Task NewTravel()
     {
@@ -71,33 +97,32 @@ public partial class TravelPageViewModel : BaseViewModel
         IsBusy = false;
     }
 
+    /// <summary>
+    /// Deletes the travel entry with the specified ID, displays a confirmation alert,
+    /// and resets the state. Sets the busy state during the operation.
+    /// </summary>
+    /// <param name="tripId">The ID of the trip to delete.</param>
     [RelayCommand]
     private async Task DeleteTravel(int tripId)
     {
-        IsBusy= true;
-        try
-        {
-            await _applicationService.TravelService.DeleteTrip(tripId);
-            await DisplayAlert(MessageType.Success, "Trip Supprimé avec succès");
+        IsBusy = true;
 
-            Reset();
-        }
-        catch (Exception ex )
-        {
-
-           await DisplayAlert(MessageType.Error, ex.Message);
-        }
-     
+        await DisplayAlert(await _applicationService.TravelService.DeleteTravel(tripId));
+        Reset();
         IsBusy = false;
     }
 
+    /// <summary>
+    /// Resets the travel item lists by clearing and reloading them
+    /// from the travel service. Sets the busy state during the operation.
+    /// </summary>
     public override void Reset()
     {
         IsBusy = true;
         _allTravelItems.Clear();
         TravelItems.Clear();
-        _allTravelItems = _applicationService.TravelService.GetTravelItems();
-        TravelItems = new ObservableCollection<TravelItem>(_allTravelItems);
+        _allTravelItems = _applicationService.TravelService.GetTravels();
+        TravelItems = [.. _allTravelItems];
         IsBusy = false;
     }
 }

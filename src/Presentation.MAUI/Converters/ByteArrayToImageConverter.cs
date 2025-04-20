@@ -7,12 +7,22 @@ namespace Presentation.MAUI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is byte[] bytes && bytes.Length > 0)
+            try
             {
-                return ImageSource.FromStream(() => new MemoryStream(bytes));
+                if (value is byte[] bytes && bytes.Length > 0)
+                {
+
+                    return ImageSource.FromStream(() => new MemoryStream(bytes));
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return "noimage.png";
             }
 
-            return "noimage.png"; 
+
+            return "noimage.png";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -1,10 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
+using Commons.Extensions;
+using Commons.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Infrastructure.EntityModels;
+using FluentValidation;
 using Presentation.MAUI.Models;
 using Presentation.MAUI.Services;
+using Presentation.MAUI.Validators;
 
 namespace Presentation.MAUI.ViewModel
 {
@@ -12,39 +16,40 @@ namespace Presentation.MAUI.ViewModel
     /// ViewModel for creating a new travel entry.
     /// Handles form validation, image selection, and trip persistence via the application service layer.
     /// </summary>
+
+    [QueryProperty(nameof(TravelID), "travelID")]
     public partial class NewTravelPageViewModel : BaseViewModel
     {
         [ObservableProperty]
-        [Required(ErrorMessage = "Le nom du voyage est obligatoire.")]
-        private string name = string.Empty;
+        private string _travelID;
+        partial void OnTravelIDChanged(string value) => NavigationDetails(value);
+        [ObservableProperty]
+        private Travel _travel = new();
+        partial void OnTravelChanged(Travel value) => Travel = value;
 
         [ObservableProperty]
-        [Required(ErrorMessage = "La description est obligatoire.")]
-        private string description = string.Empty;
+        private List<string> _currencyList = new();
 
         [ObservableProperty]
-        private DateTime startDate ;
+        private byte[]? _imageSelected;
+        partial void OnImageSelectedChanged(byte[]? value) => Travel.image = value;
+        [ObservableProperty]
+        private string? _currencySelected;
+        partial void OnCurrencySelectedChanged(string? value) => Travel.currencie = value;
+        protected override IValidator? GetValidator() => new NewTravelPageViewModelValidator();
 
         [ObservableProperty]
-        private DateTime endDate;
+        private Mode _currentMode = Mode.New;
+        partial void OnCurrentModeChanged(Mode value) => CurrentModeFriendly = value.ToDisplayName();
 
         [ObservableProperty]
-        [Range(0, 999999, ErrorMessage = "Le budget doit être positif.")]
-        private decimal budget;
+        private string _currentModeFriendly;
 
-        [ObservableProperty]
-        [Range(1, 999, ErrorMessage = "Au moins 1 participant est requis.")]
-        private int numberPeople;
+        #region ChangeEnventBehavior     
 
-        [ObservableProperty]
-        private byte[]? travelImage;
 
-        [ObservableProperty]
-        [Required(ErrorMessage = "La devise est obligatoire")]
-        private string? currency;
 
-        [ObservableProperty]
-        private List<string> currencyList = new List<string>();
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NewTravelPageViewModel"/> class.
@@ -54,8 +59,9 @@ namespace Presentation.MAUI.ViewModel
         public NewTravelPageViewModel(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
         {
             title = "Créer un nouveau voyage";
-            currencyList = _applicationService.ExpenseService.GetCurrencies();
+            CurrencyList = _applicationService.ExpenseService.GetCurrencies();
         }
+
 
         /// <summary>
         /// Opens the file picker to allow the user to select an image.
@@ -79,7 +85,7 @@ namespace Presentation.MAUI.ViewModel
                 using var memoryStream = new MemoryStream();
                 stream.Position = 0;
                 await stream.CopyToAsync(memoryStream);
-                TravelImage = memoryStream.ToArray();
+                ImageSelected = memoryStream.ToArray();
             }
         }
 
@@ -90,59 +96,62 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         private async Task ValidateAndSave()
         {
-            
-            if (await base.ValidateAll())
+            if (!await ValidateAll())
+                return;
+
+            Result result;
+
+            switch (CurrentMode)
             {
-                //Success
-                var result = await _applicationService.TravelService.SaveTrip(ToEntity(),TravelImage);
-                if (result.IsSuccess)
-                {
-                    await BaseViewModel.DisplayAlert(MessageType.Success, "Voyage enregistré");
-                    Reset();
-                }
-                else
-                {
-                    await BaseViewModel.DisplayAlert(MessageType.Error, result.ErrorMessage);
-                }
+                case Mode.New:
+                    result = await _applicationService.TravelService.SaveTravel(Travel);
+                    await HandleResultAndReset(result, true);
+                    break;
+
+                case Mode.Edit:
+                 
+                    result = await _applicationService.TravelService.UpdateTravel(Travel);
+                    await HandleResultAndReset(result, false);
+                    break;
+
+                default:
+                    result = Result.Failure("Mode de traitement inconnu.");
+                    await HandleResultAndReset(result, false);
+                    break;
+            }
+
+        }
+        private void NavigationDetails(string value)
+        {
+            if (value == null)
+            {
+                Reset();
+                CurrentMode = Mode.New;
+            }
+            else
+            {
+                int travelId = int.Parse(value);
+                CurrentMode = Mode.Edit;
+                Travel = _applicationService.TravelService.GetTravel(travelId);
+                ImageSelected = Travel.image;
+                CurrencySelected = Travel.currencie;
+                CurrentTravel= Travel;
             }
         }
 
-        /// <summary>
-        /// Converts the current ViewModel values into a <see cref="Trip"/> entity
-        /// to be used for saving to the database.
-        /// </summary>
-        /// <returns>A new <see cref="Trip"/> entity populated with the ViewModel data.</returns>
-        private Trip ToEntity()
-        {
-          
 
-            return new Trip
-            {
-                Name = this.Name,
-                Description = this.Description,
-                StartDate = DateOnly.FromDateTime(StartDate),
-                EndDate = DateOnly.FromDateTime(EndDate),
-                Budget = this.Budget,
-                NumberPeople = this.NumberPeople,            
-                CurrencyCode = this.Currency
-            };
-        }
 
         /// <summary>
         /// Resets all form fields to their default state.
         /// </summary>
         public override void Reset()
         {
-            Name = string.Empty;
-            Description = string.Empty;
-            StartDate = DateTime.Today;
-            EndDate = DateTime.Today;
-            Budget = 0;
-            NumberPeople = 1;
-            TravelImage = null;
-            Currency = null;
+            Travel = new Travel();
+            ImageSelected = null;
+            CurrencySelected = null;
         }
 
-      
+
+
     }
 }

@@ -15,9 +15,6 @@ public partial class NewTravelPage : ContentPage
     {
         base.OnAppearing();
 
-        if (BindingContext is NewTravelPageViewModel vm)
-        {
-            vm.Reset();
-        }
+      
     }
 }

@@ -24,13 +24,11 @@
         <ShellContent Title="Créer Voyages"
               Route="NewTravelPage"
               ContentTemplate="{DataTemplate travel:NewTravelPage}" />
-        <ShellContent Title="Informations"
-                      Route="InformationPage"
-                      ContentTemplate="{DataTemplate travel:InformationPage}" />
+       
 
         <ShellContent Title="Notes"
                       Route="LoggingPage"
-                      ContentTemplate="{DataTemplate travel:LoggingPage}" />
+                      ContentTemplate="{DataTemplate travel:NotePage}" />
 
         <ShellContent Title="Souvenirs"
                       Route="MemoriesPage"

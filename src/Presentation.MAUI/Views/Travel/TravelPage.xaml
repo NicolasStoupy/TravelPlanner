@@ -54,7 +54,7 @@
                     Margin="10"
                     BindableLayout.ItemsSource="{Binding TravelItems}">
                     <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="entities:TravelItem">
+                        <DataTemplate x:DataType="entities:Travel">
                             <Border WidthRequest="200"
                             HeightRequest="350"
                             Stroke="LightGray"
@@ -108,6 +108,7 @@
                                                 Command="{Binding BindingContext.TravelDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                                 CommandParameter="{Binding .}" />
                                         <Button Grid.Column="1"
+                                               
                                                 Text="Supprimer"
                                                 BackgroundColor="Red"
                                                 TextColor="White"
