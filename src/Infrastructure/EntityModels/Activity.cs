@@ -25,6 +25,8 @@ public partial class Activity
 
     public int ActivityId { get; set; }
 
+    public DateOnly? ActivityDate { get; set; }
+
     public virtual ICollection<ActivityCost> ActivityCosts { get; set; } = new List<ActivityCost>();
 
     public virtual ActivityType ActivityType { get; set; } = null!;

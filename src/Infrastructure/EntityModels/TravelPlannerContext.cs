@@ -6,8 +6,7 @@ namespace Infrastructure.EntityModels;
 
 public partial class TravelPlannerContext : DbContext
 {
-   
-
+  
     public TravelPlannerContext(DbContextOptions<TravelPlannerContext> options)
         : base(options)
     {
@@ -32,7 +31,6 @@ public partial class TravelPlannerContext : DbContext
     public virtual DbSet<Trip> Trips { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { return; }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
