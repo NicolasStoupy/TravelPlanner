@@ -4,7 +4,7 @@ namespace Presentation.MAUI.Views.Travel;
 
 public partial class NewTravelPage : ContentPage
 {
-	public NewTravelPage( NewTravelPageViewModel vm)
+	public NewTravelPage( NewTravelVM vm)
 	{
 		InitializeComponent();
 

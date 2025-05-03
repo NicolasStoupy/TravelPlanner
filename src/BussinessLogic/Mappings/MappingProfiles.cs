@@ -28,7 +28,10 @@ namespace BussinessLogic.Mappings
                 .ForMember(dest => dest.currencie, opt => opt.MapFrom(src => src.CurrencyCode))
                 .ForMember(dest => dest.imageID, opt => opt.MapFrom(src => src.TripBackgroundGuid))
                 .ForMember(dest => dest.image, opt => opt.MapFrom<TravelImageResolver>())
-                .ForMember(dest => dest.TravelNotes, opt => opt.MapFrom<TravelNotesResolver>());
+                .ForMember(dest => dest.TravelNotes, opt => opt.MapFrom<TravelNotesResolver>())
+                .ForMember(dest => dest.TravelActivities, opt => opt.MapFrom<TravelActivitiesResolver>());
+
+            ;
             CreateMap<Travel, Trip>()
                 .ForMember(dest => dest.TripId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.description))
@@ -47,9 +50,16 @@ namespace BussinessLogic.Mappings
            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
            .ForMember(dest => dest.Sequence, opt => opt.MapFrom(src => src.Sequence))
            .ForMember(dest => dest.GoogleLink, opt => opt.MapFrom(src => src.GoogleLink))
-           .ForMember(dest => dest.PlannedCost, opt => opt.MapFrom(src => src.PlannedCost))
-           .ForMember(dest => dest.ActivityType, opt => opt.MapFrom(src => src.ActivityType));
+           .ForMember(dest => dest.PlannedCost, opt => opt.MapFrom(src => src.PlannedCost));
 
+
+            CreateMap<Activity, TravelActivity>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.Sequence, opt => opt.MapFrom(src => src.Sequence))
+            .ForMember(dest => dest.GoogleLink, opt => opt.MapFrom(src => src.GoogleLink))
+            .ForMember(dest => dest.PlannedCost, opt => opt.MapFrom(src => src.PlannedCost));
+           
 
             CreateMap<LogBook, Note>()
              .ForMember(dest => dest.NoteId, opt => opt.MapFrom(src => src.LogBookId))
@@ -59,5 +69,7 @@ namespace BussinessLogic.Mappings
              .ForMember(dest => dest.LogBookId, opt => opt.MapFrom(src => src.NoteId))
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.NoteContent));
         }
+
+
     }
 }

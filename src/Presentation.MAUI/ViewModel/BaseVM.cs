@@ -12,15 +12,13 @@ namespace Presentation.MAUI.Models
     /// Includes support for validation, busy state, title management, and navigation helpers.
     /// </summary>
     /// <remarks>
-    /// Initializes a new instance of the <see cref="BaseViewModel"/> class.
+    /// Initializes a new instance of the <see cref="BaseVM"/> class.
     /// </remarks>
     /// <param name="navigationService">The navigation service used for page transitions.</param>
     /// <param name="applicationService">The application service providing access to business logic.</param>
-    public abstract partial class BaseViewModel(INavigationService navigationService, IApplicationService applicationService) : ObservableValidator
+    public abstract partial class BaseVM(INavigationService navigationService, IApplicationService applicationService) : ObservableValidator
     {
-        protected virtual IValidator? GetValidator() => null;
-
-        protected static Travel? CurrentTravel { get; set; }
+        protected virtual IValidator? GetValidator() => null;       
 
         /// <summary>
         /// Indicates whether the ViewModel is performing a background operation.

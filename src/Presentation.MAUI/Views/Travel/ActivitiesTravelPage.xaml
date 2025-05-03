@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Presentation.MAUI.Views.Travel.ActivitiesTravelPage"
+             xmlns:entities="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
+             xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
+             x:DataType="vm:ActivitiesTravelVM"
+             Title="ActivityPage">
+    <VerticalStackLayout Padding="10" Spacing="10">
+
+        <!-- Bouton pour ajouter une activité -->
+        <Button Text="Ajouter une activité"  WidthRequest="150" TextColor="Black"
+                Command="{Binding AddActivityCommand}" />
+
+        <!-- Liste des activités -->
+        <CollectionView ItemsSource="{Binding Activities}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="entities:TravelActivity">
+                    <Grid Padding="5" ColumnSpacing="5" RowSpacing="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Séquence + Up/Down -->
+                        <StackLayout Grid.Column="0" Orientation="Horizontal" HorizontalOptions="Center">
+                            <Label Text="{Binding Sequence}" VerticalOptions="Center"/>
+                            <StackLayout Orientation="Vertical">
+                                <Button Text="▲" HeightRequest="20" />
+                                <Button Text="▼" HeightRequest="20"/>
+                            </StackLayout>
+                        </StackLayout>
+
+                        <!-- Type -->
+                        <Label Grid.Column="1" Text="{Binding ActivityType}" VerticalOptions="Center"/>
+
+                        <!-- Nom -->
+                        <Label Grid.Column="2" Text="{Binding Name}" VerticalOptions="Center"/>
+
+                        <!-- Description -->
+                        <Label Grid.Column="3" Text="{Binding Description}" VerticalOptions="Center"/>
+
+                        <!-- Prix estimé -->
+                        <Label Grid.Column="5" Text="{Binding PlannedCost, StringFormat='{}{0:F2}'}" TextColor="Blue" VerticalOptions="Center"/>
+
+                        <!-- Prix réel -->
+                        <Entry Grid.Column="6" Text="{Binding Cost.Price}" Keyboard="Numeric" Placeholder="[ ]"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+
+
+
+
+</ContentPage>

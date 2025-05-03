@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Presentation.MAUI.Views.Travel.NotePage"
+             x:Class="Presentation.MAUI.Views.Travel.NoteTravelPage"
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
              xmlns:bu="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
-             x:DataType="vm:TravelNotePageViewModel"
+             x:DataType="vm:NoteTravelVM"
              Title="Notes de l'activité">
 
     <!-- Content -->
@@ -78,7 +78,7 @@
                                             CornerRadius="6"
                                             Margin="10,0,5,0"
                                             HeightRequest="36"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TravelNotePageViewModel}}, Path=EditNoteCommand}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NoteTravelVM}}, Path=EditNoteCommand}"
                                             CommandParameter="{Binding .}" />
 
                                     <Button Grid.Column="2"
@@ -87,7 +87,7 @@
                                             TextColor="White"
                                             CornerRadius="6"
                                             HeightRequest="36"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TravelNotePageViewModel}}, Path=DeleteNoteCommand}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NoteTravelVM}}, Path=DeleteNoteCommand}"
                                             CommandParameter="{Binding .}" />
                                 </Grid>
                             </Border>

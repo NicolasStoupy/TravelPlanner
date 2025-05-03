@@ -4,8 +4,8 @@
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
              xmlns:entities="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
              xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
-             x:DataType="vm:TravelPageViewModel"
-             x:Class="Presentation.MAUI.Views.Travel.TravelPage"
+             x:DataType="vm:FinderTravelPageVM"
+             x:Class="Presentation.MAUI.Views.Travel.FinderTravelPage"
              Title="{Binding Title}">
 
     <!-- Converters -->

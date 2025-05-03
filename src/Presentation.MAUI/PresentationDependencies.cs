@@ -1,5 +1,6 @@
 ﻿using Presentation.MAUI.Services;
 using Presentation.MAUI.ViewModel;
+using Presentation.MAUI.ViewModel.Activity;
 using Presentation.MAUI.Views.Travel;
 
 
@@ -16,9 +17,11 @@ namespace Presentation.MAUI
 
 
             collection.AddSingleton<INavigationService, NavigationService>();
-            collection.AddScoped<TravelPageViewModel>();
-            collection.AddScoped<NewTravelPageViewModel>();
-            collection.AddScoped<TravelNotePageViewModel>();
+            collection.AddScoped<FinderTravelPageVM>();
+            collection.AddScoped<NewTravelVM>();
+            collection.AddScoped<NoteTravelVM>();
+            collection.AddScoped<ActivitiesTravelVM>();
+            collection.AddScoped<NewActivityVM>();
             return collection;
         }
     }

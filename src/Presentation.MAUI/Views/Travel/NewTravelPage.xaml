@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"    
              xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
            
-             x:DataType="vm:NewTravelPageViewModel"
+             x:DataType="vm:NewTravelVM"
              Title="{Binding Title}">
     <!-- Converters -->
     <ContentPage.Resources>

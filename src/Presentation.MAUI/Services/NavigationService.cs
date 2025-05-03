@@ -20,13 +20,23 @@ namespace Presentation.MAUI.Services
 
         public async Task NavigateToNewTravelPageAsync()
         {
-            await Shell.Current.GoToAsync($"//NewTravelPage");
+            await Shell.Current.GoToAsync($"//TravelInformations");
         }
 
-        public async Task NavigateToTravelDetailsPageAsync(string travelID)
+        public async Task NavigateToNewTravel(string travelID)
         {
             
-            await Shell.Current.GoToAsync($"//NewTravelPage?travelID={travelID}");
+            await Shell.Current.GoToAsync($"//TravelInformations?travelID={travelID}");
+        }
+
+        public async Task NavigateToTravelFinder()
+        {
+            await Shell.Current.GoToAsync("//TravelFinder");
+        }
+
+        public async Task NavigateToNewActivity()
+        {
+            await Shell.Current.GoToAsync("ActivityNew");
         }
     }
 }

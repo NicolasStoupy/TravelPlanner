@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              x:Class="Presentation.MAUI.Views.Activity.NewActivityPage"
+             xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel.Activity"
+             xmlns:em="clr-namespace:Infrastructure.EntityModels;assembly=Infrastructure"
+             x:DataType="vm:NewActivityVM"
+             Title="Nouvelle activité">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Nom de l'activité" />
+            <Entry Text="{Binding TravelActivity.Name}" Placeholder="Nom" />
+
+            <Label Text="Description" />
+            <Editor Text="{Binding TravelActivity.Description}" Placeholder="Description" AutoSize="TextChanges" />
+
+            <Label Text="Ordre (séquence)" />
+            <Entry Text="{Binding TravelActivity.Sequence}" Keyboard="Numeric" />
+
+            <Label Text="Lien Google (facultatif)" />
+            <Entry Text="{Binding TravelActivity.GoogleLink}" Placeholder="https://..." />
+
+            <Label Text="Coût prévu (€)" />
+            <Entry Text="{Binding TravelActivity.PlannedCost}" Keyboard="Numeric" Placeholder="0.00" />
+            <Picker  ItemsSource="{Binding ActivityType}"
+                     SelectedItem="{Binding TravelActivity.ActivityType}"
+                     ItemDisplayBinding="{Binding Description}"/>
+
+            <Button Text="{Binding ModeDisplay}"
+                    BackgroundColor="Green"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    Margin="0,20"
+                    Command="{Binding SaveCommand }" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

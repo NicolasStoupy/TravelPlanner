@@ -2,9 +2,9 @@ using Presentation.MAUI.ViewModel;
 
 namespace Presentation.MAUI.Views.Travel;
 
-public partial class NotePage : ContentPage
+public partial class NoteTravelPage : ContentPage
 {
-    public NotePage(TravelNotePageViewModel vm)
+    public NoteTravelPage(NoteTravelVM vm)
     {
         InitializeComponent();
         BindingContext = vm;
@@ -13,7 +13,7 @@ public partial class NotePage : ContentPage
     {
         base.OnAppearing();
 
-        if (BindingContext is TravelNotePageViewModel vm)
+        if (BindingContext is NoteTravelVM vm)
         {
             vm.Reset();
         }

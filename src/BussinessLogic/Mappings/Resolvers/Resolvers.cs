@@ -60,4 +60,24 @@ namespace BussinessLogic.Mappings.Resolvers
 
 
     }
+
+
+    public class TravelActivitiesResolver : IValueResolver<Trip, Travel, List<TravelActivity>>
+    {
+        private readonly TravelPlannerContext _context;
+        private readonly IMapper _mapper;
+
+        public TravelActivitiesResolver(TravelPlannerContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public List<TravelActivity> Resolve(Trip source, Travel destination, List<TravelActivity> destMember, ResolutionContext context)
+        {
+            var activities = source.Activities;
+
+            return _mapper.Map<List<TravelActivity>>(activities);
+        }
+    }
 }

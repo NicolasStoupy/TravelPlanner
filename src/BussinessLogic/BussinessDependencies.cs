@@ -16,14 +16,15 @@ namespace BussinessLogic
             collection.AddScoped<IExpenseService, ExpenseService>();
             collection.AddScoped<ITravelService, TravelService>();
             collection.AddScoped<IMediaService, MediaService>();
+            collection.AddScoped<IActivityService, ActivityService>();
             collection.AddScoped<DocumentProvider>();
-           collection.AddScoped<TravelImageResolver>();
+            collection.AddScoped<TravelImageResolver>();
             collection.AddScoped<TravelNotesResolver>();
             collection.AddScoped<IApplicationService, ApplicationService>();
- 
+
             collection.AddAutoMapper(typeof(MappingProfiles).Assembly);
-      
-           
+
+
             return collection;
         }
     }

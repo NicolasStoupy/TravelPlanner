@@ -5,6 +5,7 @@ namespace BussinessLogic.Entities
     public class TravelActivity
     {
      
+
         public string Name { get; set; } = null!;
 
         public string? Description { get; set; }

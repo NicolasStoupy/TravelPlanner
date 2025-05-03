@@ -9,11 +9,14 @@ namespace BussinessLogic.Services
 
         public IMediaService MediaService { get; }
 
-        public ApplicationService(IExpenseService expenseService, ITravelService tripService, IMediaService mediaService)
+        public IActivityService ActivityService { get; }
+
+        public ApplicationService(IExpenseService expenseService, ITravelService tripService, IMediaService mediaService, IActivityService activityService)
         {
             ExpenseService = expenseService;
             TravelService = tripService;
             MediaService = mediaService;
+            ActivityService = activityService;
         }
     }
 }

@@ -1,12 +1,10 @@
-﻿
-using BussinessLogic.Entities;
+﻿using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
 using Commons.Extensions;
 using Commons.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentValidation;
-using Presentation.MAUI.Models;
 using Presentation.MAUI.Services;
 using Presentation.MAUI.Validators;
 
@@ -18,52 +16,47 @@ namespace Presentation.MAUI.ViewModel
     /// </summary>
 
     [QueryProperty(nameof(TravelID), "travelID")]
-    public partial class NewTravelPageViewModel : BaseViewModel
+    public partial class NewTravelVM : TravelVM
     {
-        [ObservableProperty]
-        private string _travelID;
-        partial void OnTravelIDChanged(string value) => NavigationDetails(value);
-        [ObservableProperty]
-        private Travel _travel = new();
+        [ObservableProperty] private string _travelID;
+
+        partial  void OnTravelIDChanged(string value) => NavigationDetails(value);
+
+        [ObservableProperty] private Travel _travel = new();
+
         partial void OnTravelChanged(Travel value) => Travel = value;
 
-        [ObservableProperty]
-        private List<string> _currencyList = new();
+        [ObservableProperty] private List<string> _currencyList = new();
 
-        [ObservableProperty]
-        private byte[]? _imageSelected;
+        [ObservableProperty] private byte[]? _imageSelected;
+
         partial void OnImageSelectedChanged(byte[]? value) => Travel.image = value;
-        [ObservableProperty]
-        private string? _currencySelected;
+
+        [ObservableProperty] private string? _currencySelected;
+
         partial void OnCurrencySelectedChanged(string? value) => Travel.currencie = value;
-        protected override IValidator? GetValidator() => new NewTravelPageViewModelValidator();
+
+        protected override IValidator? GetValidator() => new NewTravelVMValidator();
 
         [ObservableProperty]
         private Mode _currentMode = Mode.New;
+
         partial void OnCurrentModeChanged(Mode value) => CurrentModeFriendly = value.ToDisplayName();
 
         [ObservableProperty]
         private string _currentModeFriendly;
 
-        #region ChangeEnventBehavior     
-
-
-
-        #endregion
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="NewTravelPageViewModel"/> class.
+        /// Initializes a new instance of the <see cref="NewTravelVM"/> class.
         /// </summary>
         /// <param name="navigationService">The injected navigation service.</param>
         /// <param name="applicationService">The injected application/business service.</param>
-        public NewTravelPageViewModel(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
+        public NewTravelVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
         {
-
             title = "Créer un nouveau voyage";
 
             CurrencyList = _applicationService.ExpenseService.GetCurrencies();
         }
-
 
         /// <summary>
         /// Opens the file picker to allow the user to select an image.
@@ -121,8 +114,8 @@ namespace Presentation.MAUI.ViewModel
                     await HandleResultAndReset(result, false);
                     break;
             }
-
         }
+
         private void NavigationDetails(string value)
         {
             if (value == null)
@@ -134,11 +127,11 @@ namespace Presentation.MAUI.ViewModel
             {
                 int travelId = int.Parse(value);
                 CurrentMode = Mode.Edit;
-               
+
                 Travel = _applicationService.TravelService.GetTravel(travelId);
                 ImageSelected = Travel.image;
                 CurrencySelected = Travel.currencie;
-                CurrentTravel = Travel; 
+                CurrentTravel = Travel;
                 if (CurrentMode == Mode.Edit && CurrentTravel != null)
                 {
                     Title = CurrentTravel.description;
@@ -149,8 +142,6 @@ namespace Presentation.MAUI.ViewModel
             }
         }
 
-
-
         /// <summary>
         /// Resets all form fields to their default state.
         /// </summary>
@@ -160,8 +151,5 @@ namespace Presentation.MAUI.ViewModel
             ImageSelected = null;
             CurrencySelected = null;
         }
-
-
-
     }
 }

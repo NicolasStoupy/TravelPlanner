@@ -2,9 +2,9 @@ using Presentation.MAUI.ViewModel;
 
 namespace Presentation.MAUI.Views.Travel;
 
-public partial class TravelPage : ContentPage
+public partial class FinderTravelPage : ContentPage
 {
-    public TravelPage(TravelPageViewModel vm)
+    public FinderTravelPage(FinderTravelPageVM vm)
     {
         try
         {
@@ -24,7 +24,7 @@ public partial class TravelPage : ContentPage
         {
             base.OnAppearing();
 
-            if (BindingContext is TravelPageViewModel vm)
+            if (BindingContext is FinderTravelPageVM vm)
             {
                 vm.Reset();
             }

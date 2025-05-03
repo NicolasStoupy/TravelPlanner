@@ -110,11 +110,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\Travel\NotePage.xaml.cs">
-	    <DependentUpon>NotePage.xaml</DependentUpon>
+	  <Compile Update="Views\Travel\ActivitiesTravelPage.xaml.cs">
+	    <DependentUpon>ActivitiesTravelPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Views\Travel\TravelPage.xaml.cs">
-	    <DependentUpon>TravelPage.xaml</DependentUpon>
+	  <Compile Update="Views\Travel\MemoriesTravelPage.xaml.cs">
+	    <DependentUpon>MemoriesTravelPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Travel\NoteTravelPage.xaml.cs">
+	    <DependentUpon>NoteTravelPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Travel\FinderTravelPage.xaml.cs">
+	    <DependentUpon>FinderTravelPage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
@@ -122,25 +128,16 @@
 	  <MauiXaml Update="Resources\Styles\StyleListView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Activity\ActivityPage.xaml">
+	  <MauiXaml Update="Views\Activity\NewActivityPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Activity\AttendeePage.xaml">
+	  <MauiXaml Update="Views\Travel\ActivitiesTravelPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Activity\CostPage.xaml">
+	  <MauiXaml Update="Views\Travel\NoteTravelPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Activity\LoggingPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\Travel\ActivityPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\Travel\NotePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\Travel\MemoriesPage.xaml">
+	  <MauiXaml Update="Views\Travel\MemoriesTravelPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Travel\NewTravelPage.xaml">

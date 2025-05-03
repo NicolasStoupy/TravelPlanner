@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace Presentation.MAUI.ViewModel;
 
-public partial class TravelPageViewModel : BaseViewModel
+public partial class FinderTravelPageVM : TravelVM
 {
     private List<Travel> _allTravelItems = [];
 
@@ -18,7 +18,7 @@ public partial class TravelPageViewModel : BaseViewModel
     [ObservableProperty]
     private ObservableCollection<Travel> _travelItems = [];
 
-    public TravelPageViewModel(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
+    public FinderTravelPageVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
     {
         Title = "Voyages";
         Reset();
@@ -81,7 +81,7 @@ public partial class TravelPageViewModel : BaseViewModel
         if (travelItem is null)
             return;
 
-        await _navigationService.NavigateToTravelDetailsPageAsync(travelItem.Id.ToString());
+        await _navigationService.NavigateToNewTravel(travelItem.Id.ToString());
     }
 
     /// <summary>

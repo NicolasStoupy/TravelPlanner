@@ -18,28 +18,25 @@
     </Shell.Resources>
 
     <MenuItem>
-        
+
     </MenuItem>
     <!--VOYAGES -->
     <FlyoutItem Title="Voyages"  Icon="trip.png">
         <ShellContent Title="Mes Voyages"
-                      Route="TravelPage"
-                      ContentTemplate="{DataTemplate travel:TravelPage}" />
+                      Route="TravelFinder"
+                      ContentTemplate="{DataTemplate travel:FinderTravelPage}" />
         <ShellContent Title="Informations"
-              Route="NewTravelPage"
-              ContentTemplate="{DataTemplate travel:NewTravelPage}" />
-
+                      Route="TravelInformations"
+                      ContentTemplate="{DataTemplate travel:NewTravelPage}" />
         <ShellContent Title="Notes"
-                      Route="LoggingPage"
-                      ContentTemplate="{DataTemplate travel:NotePage}" />
-
+                      Route="Travel/Notes"
+                      ContentTemplate="{DataTemplate travel:NoteTravelPage}" />
         <ShellContent Title="Souvenirs"
-                      Route="MemoriesPage"
-                      ContentTemplate="{DataTemplate travel:MemoriesPage}" />
-
+                      Route="TravelMemories"
+                      ContentTemplate="{DataTemplate travel:MemoriesTravelPage}" />
         <ShellContent Title="Activités liées"
-                      Route="TravelActivityPage"
-                      ContentTemplate="{DataTemplate travel:ActivityPage}" />
+                      Route="TravelActivities"
+                      ContentTemplate="{DataTemplate travel:ActivitiesTravelPage}" />
     </FlyoutItem>
 
 

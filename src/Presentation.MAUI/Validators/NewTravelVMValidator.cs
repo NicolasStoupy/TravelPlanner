@@ -5,9 +5,9 @@ using Presentation.MAUI.ViewModel;
 
 namespace Presentation.MAUI.Validators
 {
-    public class NewTravelPageViewModelValidator : AbstractValidator<NewTravelPageViewModel>
+    public class NewTravelVMValidator : AbstractValidator<NewTravelVM>
     {
-        public NewTravelPageViewModelValidator()
+        public NewTravelVMValidator()
         {
 
             RuleFor(x => x.Travel.name)
