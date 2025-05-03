@@ -6,16 +6,34 @@ public partial class TravelPage : ContentPage
 {
     public TravelPage(TravelPageViewModel vm)
     {
-        InitializeComponent();
-        BindingContext = vm;
+        try
+        {
+            InitializeComponent();
+            BindingContext = vm;
+        }
+        catch (Exception ex)
+        {
+
+            Console.WriteLine(ex.Message);
+        }
+
     }
     protected override void OnAppearing()
     {
-        base.OnAppearing();
-
-        if (BindingContext is TravelPageViewModel vm)
+        try
         {
-            vm.Reset();
+            base.OnAppearing();
+
+            if (BindingContext is TravelPageViewModel vm)
+            {
+                vm.Reset();
+            }
         }
+        catch (Exception ex)
+        {
+
+            Console.WriteLine(ex.Message);
+        }
+
     }
 }

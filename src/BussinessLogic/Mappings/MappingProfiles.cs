@@ -26,7 +26,7 @@ namespace BussinessLogic.Mappings
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
                 .ForMember(dest => dest.travelDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.currencie, opt => opt.MapFrom(src => src.CurrencyCode))
-                .ForMember(dest=>dest.imageID,opt=>opt.MapFrom(src=>src.TripBackgroundGuid))
+                .ForMember(dest => dest.imageID, opt => opt.MapFrom(src => src.TripBackgroundGuid))
                 .ForMember(dest => dest.image, opt => opt.MapFrom<TravelImageResolver>())
                 .ForMember(dest => dest.TravelNotes, opt => opt.MapFrom<TravelNotesResolver>());
             CreateMap<Travel, Trip>()
@@ -36,10 +36,10 @@ namespace BussinessLogic.Mappings
                 .ForMember(dest => dest.Budget, opt => opt.MapFrom(src => src.budget))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
-                .ForMember(dest=> dest.TripBackgroundGuid, opt=>opt.MapFrom(src=>src.imageID))
+                .ForMember(dest => dest.TripBackgroundGuid, opt => opt.MapFrom(src => src.imageID))
                 .ForMember(dest => dest.CurrencyCode, opt => opt.MapFrom(src => src.currencie));
-             
-              
+
+
 
 
             CreateMap<TravelActivity, Activity>()
@@ -52,7 +52,12 @@ namespace BussinessLogic.Mappings
 
 
             CreateMap<LogBook, Note>()
+             .ForMember(dest => dest.NoteId, opt => opt.MapFrom(src => src.LogBookId))
              .ForMember(dest => dest.NoteContent, opt => opt.MapFrom(src => src.Description));
+
+            CreateMap<Note, LogBook>()
+             .ForMember(dest => dest.LogBookId, opt => opt.MapFrom(src => src.NoteId))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.NoteContent));
         }
     }
 }

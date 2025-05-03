@@ -16,6 +16,9 @@ namespace BussinessLogic.Interfaces
 
         Task<Result> SaveTravel(Travel travel);
         Task<Result> UpdateTravel(Travel travel);
+        Task<Result> AddNote(Note? note, int travelID);
+        Task<Result> DeleteNote(Note note);
+        Task<Result> EditNote(Note note);
 
         // Updating
     }

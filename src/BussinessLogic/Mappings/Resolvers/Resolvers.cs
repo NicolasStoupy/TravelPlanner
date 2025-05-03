@@ -50,11 +50,10 @@ namespace BussinessLogic.Mappings.Resolvers
         }
 
         public List<Note> Resolve(Trip source, Travel destination, List<Note> destMember, ResolutionContext context)
-        {        
+        {
 
-            var logBooks = _context.LogBooks
-           .Where(l => l.TripId == source.TripId)
-           .ToList();
+            var logBooks = source.LogBooks;
+           
 
             return _mapper.Map<List<Note>>(logBooks);
         }

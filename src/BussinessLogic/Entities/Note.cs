@@ -8,6 +8,7 @@ namespace BussinessLogic.Entities
 {
     public class Note
     {
+        public int NoteId { get; set; }
         public string NoteContent { get; set; } = string.Empty;
     }
 }

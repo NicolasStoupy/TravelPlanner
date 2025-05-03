@@ -110,9 +110,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="AboutPage.xaml.cs">
-	    <DependentUpon>AboutPage.xaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="Views\Travel\NotePage.xaml.cs">
 	    <DependentUpon>NotePage.xaml</DependentUpon>
 	  </Compile>
@@ -122,9 +119,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="AboutPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Resources\Styles\StyleListView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

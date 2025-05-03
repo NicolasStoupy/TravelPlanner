@@ -58,7 +58,9 @@ namespace Presentation.MAUI.ViewModel
         /// <param name="applicationService">The injected application/business service.</param>
         public NewTravelPageViewModel(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
         {
+
             title = "Créer un nouveau voyage";
+
             CurrencyList = _applicationService.ExpenseService.GetCurrencies();
         }
 
@@ -109,7 +111,7 @@ namespace Presentation.MAUI.ViewModel
                     break;
 
                 case Mode.Edit:
-                 
+
                     result = await _applicationService.TravelService.UpdateTravel(Travel);
                     await HandleResultAndReset(result, false);
                     break;
@@ -132,10 +134,18 @@ namespace Presentation.MAUI.ViewModel
             {
                 int travelId = int.Parse(value);
                 CurrentMode = Mode.Edit;
+               
                 Travel = _applicationService.TravelService.GetTravel(travelId);
                 ImageSelected = Travel.image;
                 CurrencySelected = Travel.currencie;
-                CurrentTravel= Travel;
+                CurrentTravel = Travel; 
+                if (CurrentMode == Mode.Edit && CurrentTravel != null)
+                {
+                    Title = CurrentTravel.description;
+                }
+
+                var appShell = (AppShell)Shell.Current;
+                appShell.SetShellBackground(CurrentTravel.image);
             }
         }
 

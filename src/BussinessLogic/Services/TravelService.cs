@@ -160,7 +160,7 @@ namespace BussinessLogic.Services
         public async Task<Result> UpdateTravel(Travel travel)
         {
             var trip = _mapper.Map<Trip>(travel);
-          
+
 
             Guid? savedFileGuid = null;
 
@@ -183,7 +183,7 @@ namespace BussinessLogic.Services
                 if (travel.image != null)
                 {
                     _document.SetMediaType(Commons.TypeMedia.Images);
-                    savedFileGuid = _document.ReplaceFile(travel.imageID,travel.image);
+                    savedFileGuid = _document.ReplaceFile(travel.imageID, travel.image);
 
                     // 3. Mise à jour du GUID image
                     existingTrip.TripBackgroundGuid = savedFileGuid;
@@ -206,6 +206,61 @@ namespace BussinessLogic.Services
                 }
 
                 return Result.Failure($"Une erreur est survenue lors de la mise à jour : {ex.Message}");
+            }
+        }
+
+        public Task<Result> AddNote(Note? note, int travelID)
+        {
+            var log = _mapper.Map<LogBook>(note);
+            var trip = _context.Trips.FirstOrDefault(t => t.TripId == travelID);
+            if (trip != null)
+            {
+
+                trip.LogBooks.Add(log);
+                _context.SaveChanges();
+
+                return Task.FromResult(Result.Success("Note Ajoutée aevc success"));
+            }
+            else
+            {
+                return Task.FromResult(Result.Failure("Le Voyage n'existe pas "));
+            }
+        }
+
+        public Task<Result> DeleteNote(Note note)
+        {
+            try
+            {
+                var log = _context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
+                if(log == null) return Task.FromResult(Result.Failure("Note not found"));
+                _context.LogBooks.Remove(log);
+                _context.SaveChanges();
+                return Task.FromResult(Result.Success("Supprimé"));
+            }
+            catch (Exception ex )
+            {
+
+                return Task.FromResult( Result.Failure(ex.Message));
+            }
+
+
+        }
+
+        public Task<Result> EditNote(Note note)
+        {
+            try
+            {
+                var log = _context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
+                if (log == null) return Task.FromResult(Result.Failure("Note not found"));
+                log.Description = note.NoteContent;
+                _context.LogBooks.Update(log);
+                _context.SaveChanges();
+                return Task.FromResult(Result.Success("Updated"));
+            }
+            catch (Exception ex)
+            {
+
+                return Task.FromResult(Result.Failure(ex.Message));
             }
         }
     }

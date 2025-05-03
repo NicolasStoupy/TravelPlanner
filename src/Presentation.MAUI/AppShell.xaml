@@ -5,26 +5,29 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:activity="clr-namespace:Presentation.MAUI.Views.Activity"
     xmlns:travel="clr-namespace:Presentation.MAUI.Views.Travel"
-    Shell.FlyoutBehavior="Locked"
+    Shell.FlyoutBehavior="Disabled"
     Title="Carnet de voyage">
-    <Shell.Resources>      
+    <Shell.Resources>
         <Style TargetType="Shell">
             <Setter Property="Shell.BackgroundColor" Value="#ffffff" />
             <Setter Property="Shell.DisabledColor" Value="#0077cc" />
             <Setter Property="Shell.UnselectedColor" Value="#999999" />
             <Setter Property="Shell.ForegroundColor" Value="#0077cc" />
-            <!-- Couleur du texte actif -->
+            <Setter Property="Shell.BackgroundImageSource" Value="splash.png" />
         </Style>
     </Shell.Resources>
+
+    <MenuItem>
+        
+    </MenuItem>
     <!--VOYAGES -->
     <FlyoutItem Title="Voyages"  Icon="trip.png">
         <ShellContent Title="Mes Voyages"
                       Route="TravelPage"
                       ContentTemplate="{DataTemplate travel:TravelPage}" />
-        <ShellContent Title="Créer Voyages"
+        <ShellContent Title="Informations"
               Route="NewTravelPage"
               ContentTemplate="{DataTemplate travel:NewTravelPage}" />
-       
 
         <ShellContent Title="Notes"
                       Route="LoggingPage"
@@ -39,23 +42,6 @@
                       ContentTemplate="{DataTemplate travel:ActivityPage}" />
     </FlyoutItem>
 
-    <!--ACTIVITÉS -->
-    <FlyoutItem Title="Activités"  Icon="activity.png">
-        <ShellContent Title="Activité"
-                      Route="ActivityPage"
-                      ContentTemplate="{DataTemplate activity:ActivityPage}" />
 
-        <ShellContent Title="Participants"
-                      Route="AttendeePage"
-                      ContentTemplate="{DataTemplate activity:AttendeePage}" />
-
-        <ShellContent Title="Notes"
-                      Route="LoggingPageActivity"
-                      ContentTemplate="{DataTemplate activity:LoggingPage}" />
-
-        <ShellContent Title="Dépenses"
-                      Route="CostPage"
-                      ContentTemplate="{DataTemplate activity:CostPage}" />
-    </FlyoutItem>
 
 </Shell>

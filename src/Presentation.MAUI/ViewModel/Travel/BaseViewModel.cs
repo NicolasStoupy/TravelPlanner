@@ -19,7 +19,8 @@ namespace Presentation.MAUI.Models
     public abstract partial class BaseViewModel(INavigationService navigationService, IApplicationService applicationService) : ObservableValidator
     {
         protected virtual IValidator? GetValidator() => null;
-        public static Travel? CurrentTravel { get; set; }
+
+        protected static Travel? CurrentTravel { get; set; }
 
         /// <summary>
         /// Indicates whether the ViewModel is performing a background operation.
