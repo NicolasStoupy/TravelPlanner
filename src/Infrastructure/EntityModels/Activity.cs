@@ -7,8 +7,6 @@ public partial class Activity
 {
     public int TripId { get; set; }
 
-    public int ActivityId { get; set; }
-
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
@@ -24,6 +22,8 @@ public partial class Activity
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public int ActivityId { get; set; }
 
     public virtual ICollection<ActivityCost> ActivityCosts { get; set; } = new List<ActivityCost>();
 

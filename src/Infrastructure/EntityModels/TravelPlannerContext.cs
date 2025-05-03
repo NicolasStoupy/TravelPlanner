@@ -47,7 +47,9 @@ public partial class TravelPlannerContext : DbContext
             entity.HasIndex(e => new { e.TripId, e.Sequence }, "UQ_Activity_Sequence").IsUnique();
 
             entity.Property(e => e.TripId).HasColumnName("TripID");
-            entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
+            entity.Property(e => e.ActivityId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("ActivityID");
             entity.Property(e => e.ActivityTypeId).HasColumnName("ActivityTypeID");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
