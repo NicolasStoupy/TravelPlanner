@@ -14,5 +14,6 @@ namespace Presentation.MAUI.Services
 
         Task NavigateToTravelFinder();
         Task NavigateToNewActivity();
+        Task GoBack();
     }
 }

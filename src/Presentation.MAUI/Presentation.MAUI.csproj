@@ -131,6 +131,9 @@
 	  <MauiXaml Update="Views\Activity\NewActivityPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\NavigationLayout.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Travel\ActivitiesTravelPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

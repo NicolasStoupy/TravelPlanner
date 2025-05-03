@@ -2,16 +2,17 @@
 using Commons;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace BussinessLogic.Services
 {
     public class MediaService : IMediaService
     {
 
-        private readonly TravelPlannerContext _context;
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
         private readonly DocumentProvider _document;
 
-        public MediaService(TravelPlannerContext context, DocumentProvider documentProvider)
+        public MediaService(IDbContextFactory<TravelPlannerContext> context, DocumentProvider documentProvider)
         {
             _context = context;
             _document = documentProvider;

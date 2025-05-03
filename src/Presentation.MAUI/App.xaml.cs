@@ -6,8 +6,10 @@ namespace Presentation.MAUI
     {
         public App()
         {            
-            InitializeComponent();
+        
            
+            
+            InitializeComponent();
         }
 
         private void CurrentDomain_FirstChanceException(object? sender, FirstChanceExceptionEventArgs e)
@@ -19,5 +21,6 @@ namespace Presentation.MAUI
         {
             return new Window(new AppShell());
         }
+
     }
 }

@@ -5,29 +5,61 @@ using CommunityToolkit.Mvvm.Input;
 using Infrastructure.EntityModels;
 using Presentation.MAUI.Services;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 
 namespace Presentation.MAUI.ViewModel
 {
     public partial class ActivitiesTravelVM : TravelVM
     {
-        [ObservableProperty]
-        private ObservableCollection<TravelActivity> _activities;
 
+        [ObservableProperty]
+        private ObservableCollection<Infrastructure.EntityModels.Activity> _activities;
+
+        [ObservableProperty]
+        private bool _saveButtonVisible;
+
+        public decimal TotalPlannedCost => 0;
+        public decimal TotalRealCost =>0;
         public ActivitiesTravelVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
         {
-            LoadData();
         }
+     
 
-        public void LoadData()
+        [RelayCommand]
+        private void MoveUp(TravelActivity activity) { return; }
+
+        [RelayCommand]
+        private void MoveDown(TravelActivity activity) { return; }
+        public async Task LoadData()
         {
-            _activities = new ObservableCollection<TravelActivity>(CurrentTravel?.TravelActivities);
-
+            if (CurrentTravel == null)
+            {
+                await NoTravelSelected();
+                return;
+            }
+            else
+            {
+                Activities = new ObservableCollection<Infrastructure.EntityModels.Activity>(
+                                  _applicationService.ActivityService.GetActivities(CurrentTravel.Id));
+                SaveButtonVisible = false;
+            }
         }
 
         [RelayCommand]
         public async Task AddActivity() => await _navigationService.NavigateToNewActivity();
+        public async Task OnAppearingAsync()
+        {
 
+            await LoadData();
+        }
+
+        [RelayCommand]
+        public async Task SaveActivity()
+        {
+            await DisplayAlert(MAUI.Models.MessageType.Success, "OK");
+
+        }
 
     }
 }

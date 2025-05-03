@@ -45,9 +45,6 @@ namespace Presentation.MAUI.ViewModel.Activity
             {
                 await NoTravelSelected();
             }
-
-
-
         }
     }
 }

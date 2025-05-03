@@ -5,11 +5,13 @@
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel.Activity"
              xmlns:em="clr-namespace:Infrastructure.EntityModels;assembly=Infrastructure"
              x:DataType="vm:NewActivityVM"
+              xmlns:views="clr-namespace:Presentation.MAUI.Views"
              Title="Nouvelle activité">
 
+  
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
-
+            <views:NavigationLayout></views:NavigationLayout>
             <Label Text="Nom de l'activité" />
             <Entry Text="{Binding TravelActivity.Name}" Placeholder="Nom" />
 

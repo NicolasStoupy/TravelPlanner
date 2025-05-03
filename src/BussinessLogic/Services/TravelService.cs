@@ -5,12 +5,13 @@ using Commons.Models;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace BussinessLogic.Services
 {
-    public class TravelService(TravelPlannerContext context, IMapper mapper, DocumentProvider document) : ITravelService
+    public class TravelService(IDbContextFactory<TravelPlannerContext> context, IMapper mapper, DocumentProvider document) : ITravelService
     {
-        private readonly TravelPlannerContext _context = context;
+        private readonly IDbContextFactory<TravelPlannerContext> _context = context;
         private readonly DocumentProvider _document = document;
         private readonly IMapper _mapper = mapper;
 
@@ -24,7 +25,8 @@ namespace BussinessLogic.Services
         /// </returns>
         public Travel GetTravel(int travelID)
         {
-            var trip = _context.Trips.Where(t => t.TripId == travelID).FirstOrDefault();
+            using var context = _context.CreateDbContext();
+            var trip = context.Trips.Where(t => t.TripId == travelID).FirstOrDefault();
 
             var Travel = _mapper.Map<Travel>(trip);
 
@@ -40,7 +42,8 @@ namespace BussinessLogic.Services
         /// </returns>
         public List<Travel> GetTravels(bool includeActivity = false, bool includeNotes = false, bool includeFollowers = false)
         {
-            var trips = _context.Trips.OrderBy(t => t.CreatedAt).ToList();
+            using var context = _context.CreateDbContext();
+            var trips = context.Trips.OrderBy(t => t.CreatedAt).ToList();
 
             var travelItems = _mapper.Map<List<Travel>>(trips);
 
@@ -59,9 +62,10 @@ namespace BussinessLogic.Services
         /// </returns>
         public async Task<Result> DeleteTravel(int travelID)
         {
+            using var context = _context.CreateDbContext();
             try
             {
-                var trip = await _context.Trips
+                var trip = await context.Trips
                     .Include(t => t.LogBooks)
                     .Include(t => t.Media)
                     .Include(t => t.Activities)
@@ -75,29 +79,29 @@ namespace BussinessLogic.Services
                 {
                     return Result.Failure("Trip not exist");
                 }
-                _context.RemoveRange(trip.Media);
+                context.RemoveRange(trip.Media);
 
                 foreach (var activity in trip.Activities)
                 {
                     // Supprimer les LogBooks des Activity
-                    _context.LogBooks.RemoveRange(activity.LogBooks);
+                    context.LogBooks.RemoveRange(activity.LogBooks);
 
                     foreach (var activityCost in activity.ActivityCosts)
                     {
                         // Supprimer les Media des ActivityCost
-                        _context.Media.RemoveRange(activityCost.Media);
+                        context.Media.RemoveRange(activityCost.Media);
                     }
 
                     // Supprimer les Attendees
-                    _context.Attendees.RemoveRange(activity.Attendees);
+                    context.Attendees.RemoveRange(activity.Attendees);
 
                     // Supprimer les ActivityCosts
-                    _context.ActivityCosts.RemoveRange(activity.ActivityCosts);
-                    _context.Remove(activity);
+                    context.ActivityCosts.RemoveRange(activity.ActivityCosts);
+                    context.Remove(activity);
                 }
 
-                _context.Remove(trip);
-                await _context.SaveChangesAsync();
+                context.Remove(trip);
+                await context.SaveChangesAsync();
                 return Result.Success("Le Voyage a été supprimé avec success");
             }
             catch (Exception ex)
@@ -118,16 +122,17 @@ namespace BussinessLogic.Services
         /// </returns>
         public async Task<Result> SaveTravel(Travel travel)
         {
+            using var context = _context.CreateDbContext();
             var trip = _mapper.Map<Trip>(travel);
             trip.CurrencyCode = travel.currencie;
             Guid? savedFileGuid = null;
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
                 // 1. Save The trip without image
-                _context.Trips.Add(trip);
-                await _context.SaveChangesAsync();
+                context.Trips.Add(trip);
+                await context.SaveChangesAsync();
 
                 // 2. Save Image
                 if (travel.image != null)
@@ -137,8 +142,8 @@ namespace BussinessLogic.Services
 
                     // 3. Update the trip information
                     trip.TripBackgroundGuid = savedImageGuid;
-                    _context.Trips.Update(trip);
-                    await _context.SaveChangesAsync();
+                    context.Trips.Update(trip);
+                    await context.SaveChangesAsync();
                 }
 
                 await transaction.CommitAsync();
@@ -159,25 +164,26 @@ namespace BussinessLogic.Services
 
         public async Task<Result> UpdateTravel(Travel travel)
         {
+            using var context = _context.CreateDbContext();
             var trip = _mapper.Map<Trip>(travel);
 
 
             Guid? savedFileGuid = null;
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
-                var existingTrip = await _context.Trips.FindAsync(trip.TripId);
+                var existingTrip = await context.Trips.FindAsync(trip.TripId);
                 if (existingTrip == null)
                 {
                     return Result.Failure($"Le voyage avec l'ID {trip.TripId} est introuvable.");
                 }
 
                 // 1. Update les propriétés (hors image pour le moment)
-                _context.Entry(existingTrip).CurrentValues.SetValues(trip);
+                context.Entry(existingTrip).CurrentValues.SetValues(trip);
 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
                 // 2. Save nouvelle image si nécessaire
                 if (travel.image != null)
@@ -187,8 +193,8 @@ namespace BussinessLogic.Services
 
                     // 3. Mise à jour du GUID image
                     existingTrip.TripBackgroundGuid = savedFileGuid;
-                    _context.Trips.Update(existingTrip);
-                    await _context.SaveChangesAsync();
+                    context.Trips.Update(existingTrip);
+                    await context.SaveChangesAsync();
                 }
 
                 await transaction.CommitAsync();
@@ -211,13 +217,14 @@ namespace BussinessLogic.Services
 
         public Task<Result> AddNote(Note? note, int travelID)
         {
+            using var context = _context.CreateDbContext();
             var log = _mapper.Map<LogBook>(note);
-            var trip = _context.Trips.FirstOrDefault(t => t.TripId == travelID);
+            var trip = context.Trips.FirstOrDefault(t => t.TripId == travelID);
             if (trip != null)
             {
 
                 trip.LogBooks.Add(log);
-                _context.SaveChanges();
+                context.SaveChanges();
 
                 return Task.FromResult(Result.Success("Note Ajoutée aevc success"));
             }
@@ -229,12 +236,13 @@ namespace BussinessLogic.Services
 
         public Task<Result> DeleteNote(Note note)
         {
+            using var context = _context.CreateDbContext();
             try
             {
-                var log = _context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
+                var log = context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
                 if(log == null) return Task.FromResult(Result.Failure("Note not found"));
-                _context.LogBooks.Remove(log);
-                _context.SaveChanges();
+                context.LogBooks.Remove(log);
+                context.SaveChanges();
                 return Task.FromResult(Result.Success("Supprimé"));
             }
             catch (Exception ex )
@@ -248,13 +256,14 @@ namespace BussinessLogic.Services
 
         public Task<Result> EditNote(Note note)
         {
+            using var context = _context.CreateDbContext();
             try
             {
-                var log = _context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
+                var log = context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
                 if (log == null) return Task.FromResult(Result.Failure("Note not found"));
                 log.Description = note.NoteContent;
-                _context.LogBooks.Update(log);
-                _context.SaveChanges();
+                context.LogBooks.Update(log);
+                context.SaveChanges();
                 return Task.FromResult(Result.Success("Updated"));
             }
             catch (Exception ex)

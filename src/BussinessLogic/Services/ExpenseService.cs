@@ -1,5 +1,7 @@
 ﻿using BussinessLogic.Interfaces;
 using Infrastructure.EntityModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 
 namespace BussinessLogic.Services
@@ -8,16 +10,17 @@ namespace BussinessLogic.Services
     {
 
 
-        private readonly TravelPlannerContext _context;
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
 
-        public ExpenseService(TravelPlannerContext travelPlannerContext)
+        public ExpenseService(IDbContextFactory<TravelPlannerContext> travelPlannerContext)
         {
             _context = travelPlannerContext;
         }
 
         public List<string> GetCurrencies()
         {
-            return _context.Currencies.Select(c => c.CurrencyCode).ToList();
+            using var context = _context.CreateDbContext();
+            return context.Currencies.Select(c => c.CurrencyCode).ToList();
         }
 
 

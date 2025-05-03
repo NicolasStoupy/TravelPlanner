@@ -38,5 +38,10 @@ namespace Presentation.MAUI.Services
         {
             await Shell.Current.GoToAsync("ActivityNew");
         }
+
+        public async Task GoBack()
+        {
+            await Shell.Current.GoToAsync("..");
+        }
     }
 }

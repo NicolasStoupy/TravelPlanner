@@ -7,8 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="HttpClient\" />
-    <Folder Include="Repositories\" />
+    <Compile Remove="HttpClient\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="HttpClient\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="HttpClient\**" />
+    <None Remove="Repositories\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="EntityModels\Partial\DocumentTracker.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +29,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Commons\Commons.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="EntityModels\Partial\" />
   </ItemGroup>
 
 </Project>

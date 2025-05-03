@@ -39,6 +39,7 @@
                       ContentTemplate="{DataTemplate travel:ActivitiesTravelPage}" />
     </FlyoutItem>
 
-
+    <!-- Barre de navigation personnalisée -->
+   
 
 </Shell>

@@ -13,8 +13,8 @@ namespace Infrastructure
 
         public static IServiceCollection AddInfrastructure(this IServiceCollection collection, IConfiguration configuration)
         {
-            collection.AddDbContext<TravelPlannerContext>
-            (opt => opt.UseSqlServer(configuration.GetConnectionString("DbConnection")), ServiceLifetime.Scoped);// Scoped pour une instance par requête
+            collection.AddDbContextFactory<TravelPlannerContext>
+            (opt => opt.UseSqlServer(configuration.GetConnectionString("DbConnection")));// Scoped pour une instance par requête
 
             collection.AddScoped<DocumentProvider>();
 

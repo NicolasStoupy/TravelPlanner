@@ -6,9 +6,7 @@ namespace Infrastructure.EntityModels;
 
 public partial class TravelPlannerContext : DbContext
 {
-    public TravelPlannerContext()
-    {
-    }
+   
 
     public TravelPlannerContext(DbContextOptions<TravelPlannerContext> options)
         : base(options)
