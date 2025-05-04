@@ -13,6 +13,7 @@ namespace BussinessLogic.Mappings.Resolvers
     public class TravelImageResolver : IValueResolver<Trip, Travel, byte[]?>
     {
         private readonly DocumentProvider _documentProvider;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TravelImageResolver"/> class with the specified document provider.
         /// </summary>
@@ -38,7 +39,9 @@ namespace BussinessLogic.Mappings.Resolvers
         }
     }
 
-
+    /// <summary>
+    /// AutoMapper resolver that maps <see cref="Trip"/> logbook entries to a list of <see cref="Note"/> for a <see cref="Travel"/> object.
+    /// </summary>
     public class TravelNotesResolver : IValueResolver<Trip, Travel, List<Note>>
     {
         private readonly IDbContextFactory<TravelPlannerContext> _context;
@@ -55,15 +58,14 @@ namespace BussinessLogic.Mappings.Resolvers
             var dbcontext = _context.CreateDbContext();
             var logBooks = dbcontext.LogBooks.Where(l => l.TripLogBook == source.TripId);
 
-
-
             return _mapper.Map<List<Note>>(logBooks);
         }
-
-
     }
 
-
+    /// <summary>
+    /// AutoMapper resolver that retrieves and maps all <see cref="Activity"/> entities linked to a <see cref="Trip"/>
+    /// into a list of <see cref="TravelActivity"/> for the destination <see cref="Travel"/>.
+    /// </summary>
     public class TravelActivitiesResolver : IValueResolver<Trip, Travel, List<TravelActivity>>
     {
         private readonly IDbContextFactory<TravelPlannerContext> _context;
@@ -78,12 +80,16 @@ namespace BussinessLogic.Mappings.Resolvers
         public List<TravelActivity> Resolve(Trip source, Travel destination, List<TravelActivity> destMember, ResolutionContext context)
         {
             var dbcontext = _context.CreateDbContext();
-            var activities = dbcontext.Activities.Where(a=>a.TripId == source.TripId);
+            var activities = dbcontext.Activities.Where(a => a.TripId == source.TripId);
 
             return _mapper.Map<List<TravelActivity>>(activities);
         }
     }
 
+    /// <summary>
+    /// AutoMapper resolver that maps all <see cref="Attendee"/> entries related to an <see cref="Activity"/>
+    /// into a list of <see cref="Follower"/> for the <see cref="TravelActivity"/>.
+    /// </summary>
     public class TravelActivityFollowerResolver : IValueResolver<Activity, TravelActivity, List<Follower>>
     {
         private readonly IDbContextFactory<TravelPlannerContext> _context;
@@ -104,6 +110,10 @@ namespace BussinessLogic.Mappings.Resolvers
         }
     }
 
+    /// <summary>
+    /// AutoMapper resolver that maps all <see cref="ActivityCost"/> entries for a given <see cref="Activity"/>
+    /// into a list of <see cref="Cost"/> for the <see cref="TravelActivity"/> destination.
+    /// </summary>
     public class TravelActivityCostResolver : IValueResolver<Activity, TravelActivity, List<Cost>>
     {
         private readonly IDbContextFactory<TravelPlannerContext> _context;
@@ -123,6 +133,11 @@ namespace BussinessLogic.Mappings.Resolvers
             return _mapper.Map<List<Cost>>(attendees);
         }
     }
+
+    /// <summary>
+    /// AutoMapper resolver that maps <see cref="LogBook"/> entries related to a specific <see cref="Activity"/>
+    /// into a list of <see cref="Note"/> for the <see cref="TravelActivity"/>.
+    /// </summary>
     public class TravelActivityNotesResolver : IValueResolver<Activity, TravelActivity, List<Note>>
     {
         private readonly IDbContextFactory<TravelPlannerContext> _context;

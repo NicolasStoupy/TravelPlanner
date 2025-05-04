@@ -1,6 +1,6 @@
 ﻿using BussinessLogic.Entities;
 using Commons.Models;
-using Infrastructure.EntityModels;
+
 
 namespace BussinessLogic.Interfaces
 {

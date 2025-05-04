@@ -7,12 +7,10 @@ using Presentation.MAUI.Services;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-
 namespace Presentation.MAUI.ViewModel
 {
     public partial class ActivitiesTravelVM : TravelVM
     {
-
         [ObservableProperty]
         private ObservableCollection<TravelActivity>? _activities;
 
@@ -21,16 +19,19 @@ namespace Presentation.MAUI.ViewModel
 
         public decimal TotalPlannedCost => 0;
         public decimal TotalRealCost => 0;
+
         public ActivitiesTravelVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
         {
         }
 
+        [RelayCommand]
+        private void MoveUp(TravelActivity activity)
+        { return; }
 
         [RelayCommand]
-        private void MoveUp(TravelActivity activity) { return; }
+        private void MoveDown(TravelActivity activity)
+        { return; }
 
-        [RelayCommand]
-        private void MoveDown(TravelActivity activity) { return; }
         public async Task LoadData()
         {
             if (CurrentTravel == null)
@@ -48,19 +49,18 @@ namespace Presentation.MAUI.ViewModel
 
         [RelayCommand]
         public async Task AddActivity() => await _navigationService.NavigateToNewActivity();
+
         public async Task OnAppearingAsync()
         {
-
             await LoadData();
-            
         }
 
         [RelayCommand]
         public async Task SaveActivity()
         {
             await DisplayAlert(MAUI.Models.MessageType.Success, "OK");
-
         }
+
         [RelayCommand]
         public async Task DeleteActivity(TravelActivity activity)
         {
@@ -79,7 +79,7 @@ namespace Presentation.MAUI.ViewModel
 
             if (!confirm)
                 return;
-          
+
             await DisplayAlert(await _applicationService.ActivityService.DeleteActivity(activity));
             await LoadData();
         }

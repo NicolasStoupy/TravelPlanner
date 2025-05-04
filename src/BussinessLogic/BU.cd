@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BussinessLogic.Services.ActivityService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="1.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAIAAAAAAAAEAAAABAAAIAEAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Services\ActivityService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Services.ApplicationService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAQAIAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Services\ApplicationService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Services.ExpenseService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\ExpenseService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Services.LogBookService" Collapsed="true">
+    <Position X="8.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\LogBookService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Services.MediaService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="3" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAARABAAAAAAAAAgABAAAAAAAAIAAAAAEA=</HashCode>
+      <FileName>Services\MediaService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Services.TravelService" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAFQABAAAAgABAAAEAAAAAAQAAAAIAAAIAAA=</HashCode>
+      <FileName>Services\TravelService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.BussinessDependencies" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>BussinessDependencies.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Constants" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Constants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Entities.Cost" Collapsed="true">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Cost.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Entities.Follower" Collapsed="true">
+    <Position X="6.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Entities\Follower.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Entities.Note" Collapsed="true">
+    <Position X="4.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Note.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Entities.Ticket" Collapsed="true">
+    <Position X="6.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Ticket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Entities.Travel" Collapsed="true">
+    <Position X="8.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACgAAABAAgQAAgIgAAAAAgEAAEBAAACACAAEAAAQA=</HashCode>
+      <FileName>Entities\Travel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Entities.TravelActivity" Collapsed="true">
+    <Position X="3" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQgIAAASAAgAAAgAAAAABQAAAAAAAAAAAIAAAkAABA=</HashCode>
+      <FileName>Entities\TravelActivity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Entities.TypeOfActivity" Collapsed="true">
+    <Position X="6.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\TypeOfActivity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BussinessLogic.Mappings.Resolvers.TravelImageResolver" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="1.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappings\Resolvers\Resolvers.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Mappings.Resolvers.TravelNotesResolver" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="3" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACABAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappings\Resolvers\Resolvers.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Mappings.Resolvers.TravelActivitiesResolver" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="1.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACABAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappings\Resolvers\Resolvers.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Mappings.Resolvers.TravelActivityFollowerResolver" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACABAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappings\Resolvers\Resolvers.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Mappings.Resolvers.TravelActivityCostResolver" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACABAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappings\Resolvers\Resolvers.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Mappings.Resolvers.TravelActivityNotesResolver" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACABAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappings\Resolvers\Resolvers.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Mappings.Converters.DateOnlyToDateTimeConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="1.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappings\Converters\DateTimeConverters.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Mappings.Converters.DateTimeToDateOnlyConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="3" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappings\Converters\DateTimeConverters.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="BussinessLogic.Mappings.MappingProfiles" Collapsed="true">
+    <Position X="1.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mappings\MappingProfiles.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="BussinessLogic.Interfaces.IActivityService" Collapsed="true">
+    <Position X="1.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAIAAAAAAAAEAAAAAAAAAAEAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Interfaces\IActivityService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BussinessLogic.Interfaces.IApplicationService" Collapsed="true">
+    <Position X="3" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAQAIAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IApplicationService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BussinessLogic.Interfaces.IExpenseService" Collapsed="true">
+    <Position X="4.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IExpenseService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BussinessLogic.Interfaces.IMediaService" Collapsed="true">
+    <Position X="6.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQABAAAAAAAAAgABAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Interfaces\IMediaService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="BussinessLogic.Interfaces.ITravelService" Collapsed="true">
+    <Position X="8.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIABQAAAAAAgAAAAAEAAAAAAQAAAAIAAAIAAA=</HashCode>
+      <FileName>Interfaces\ITravelService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="BussinessLogic.ExecutionStatus" Collapsed="true">
+    <Position X="3" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAgAAAACAAAAAIAAAAAA=</HashCode>
+      <FileName>Enums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="BussinessLogic.Currency" Collapsed="true">
+    <Position X="1.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Enums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
