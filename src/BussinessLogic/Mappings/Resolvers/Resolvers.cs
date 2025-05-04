@@ -2,6 +2,7 @@
 using BussinessLogic.Entities;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace BussinessLogic.Mappings.Resolvers
 {
@@ -40,10 +41,10 @@ namespace BussinessLogic.Mappings.Resolvers
 
     public class TravelNotesResolver : IValueResolver<Trip, Travel, List<Note>>
     {
-        private readonly TravelPlannerContext _context;
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
         private readonly IMapper _mapper;
 
-        public TravelNotesResolver(TravelPlannerContext context, IMapper mapper)
+        public TravelNotesResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -51,9 +52,10 @@ namespace BussinessLogic.Mappings.Resolvers
 
         public List<Note> Resolve(Trip source, Travel destination, List<Note> destMember, ResolutionContext context)
         {
+            var dbcontext = _context.CreateDbContext();
+            var logBooks = dbcontext.LogBooks.Where(l => l.TripLogBook == source.TripId);
 
-            var logBooks = source.LogBooks;
-           
+
 
             return _mapper.Map<List<Note>>(logBooks);
         }
@@ -64,10 +66,10 @@ namespace BussinessLogic.Mappings.Resolvers
 
     public class TravelActivitiesResolver : IValueResolver<Trip, Travel, List<TravelActivity>>
     {
-        private readonly TravelPlannerContext _context;
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
         private readonly IMapper _mapper;
 
-        public TravelActivitiesResolver(TravelPlannerContext context, IMapper mapper)
+        public TravelActivitiesResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -75,9 +77,69 @@ namespace BussinessLogic.Mappings.Resolvers
 
         public List<TravelActivity> Resolve(Trip source, Travel destination, List<TravelActivity> destMember, ResolutionContext context)
         {
-            var activities = source.Activities;
+            var dbcontext = _context.CreateDbContext();
+            var activities = dbcontext.Activities.Where(a=>a.TripId == source.TripId);
 
             return _mapper.Map<List<TravelActivity>>(activities);
+        }
+    }
+
+    public class TravelActivityFollowerResolver : IValueResolver<Activity, TravelActivity, List<Follower>>
+    {
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
+        private readonly IMapper _mapper;
+
+        public TravelActivityFollowerResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public List<Follower> Resolve(Activity source, TravelActivity destination, List<Follower> destMember, ResolutionContext context)
+        {
+            var dbcontext = _context.CreateDbContext();
+            var attendees = dbcontext.Attendees.Where(a => a.ActivityId == source.ActivityId && a.TripId == source.TripId);
+
+            return _mapper.Map<List<Follower>>(attendees);
+        }
+    }
+
+    public class TravelActivityCostResolver : IValueResolver<Activity, TravelActivity, List<Cost>>
+    {
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
+        private readonly IMapper _mapper;
+
+        public TravelActivityCostResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public List<Cost> Resolve(Activity source, TravelActivity destination, List<Cost> destMember, ResolutionContext context)
+        {
+            var dbcontext = _context.CreateDbContext();
+            var attendees = dbcontext.ActivityCosts.Where(c => c.ActivityId == source.ActivityId && c.TripId == source.TripId);
+
+            return _mapper.Map<List<Cost>>(attendees);
+        }
+    }
+    public class TravelActivityNotesResolver : IValueResolver<Activity, TravelActivity, List<Note>>
+    {
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
+        private readonly IMapper _mapper;
+
+        public TravelActivityNotesResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public List<Note> Resolve(Activity source, TravelActivity destination, List<Note> destMember, ResolutionContext context)
+        {
+            var dbcontext = _context.CreateDbContext();
+            var attendees = dbcontext.LogBooks.Where(c => c.ActivityId == source.ActivityId && c.TripId == source.TripId);
+
+            return _mapper.Map<List<Note>>(attendees);
         }
     }
 }

@@ -14,17 +14,17 @@ namespace Presentation.MAUI.ViewModel
     {
 
         [ObservableProperty]
-        private ObservableCollection<Infrastructure.EntityModels.Activity> _activities;
+        private ObservableCollection<TravelActivity>? _activities;
 
         [ObservableProperty]
         private bool _saveButtonVisible;
 
         public decimal TotalPlannedCost => 0;
-        public decimal TotalRealCost =>0;
+        public decimal TotalRealCost => 0;
         public ActivitiesTravelVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
         {
         }
-     
+
 
         [RelayCommand]
         private void MoveUp(TravelActivity activity) { return; }
@@ -40,7 +40,7 @@ namespace Presentation.MAUI.ViewModel
             }
             else
             {
-                Activities = new ObservableCollection<Infrastructure.EntityModels.Activity>(
+                Activities = new ObservableCollection<TravelActivity>(
                                   _applicationService.ActivityService.GetActivities(CurrentTravel.Id));
                 SaveButtonVisible = false;
             }
@@ -52,6 +52,7 @@ namespace Presentation.MAUI.ViewModel
         {
 
             await LoadData();
+            
         }
 
         [RelayCommand]
@@ -60,6 +61,27 @@ namespace Presentation.MAUI.ViewModel
             await DisplayAlert(MAUI.Models.MessageType.Success, "OK");
 
         }
+        [RelayCommand]
+        public async Task DeleteActivity(TravelActivity activity)
+        {
+            var attendeesQty = activity.Followers.Count();
+            var activityCost = activity.Cost.Count();
 
+            bool confirm = await Shell.Current.DisplayAlert(
+                             "Confirmation de suppression",
+                             $"Voulez-vous vraiment supprimer cette activité ?\n\n" +
+                             $"Cette activité contient :\n" +
+                             $"- {attendeesQty} participant(s)\n" +
+                             $"- {activityCost} facture(s)\n\n" +
+                             $" Tous ces éléments seront également supprimés de façon définitive.",
+                             "Oui, supprimer",
+                             "Annuler");
+
+            if (!confirm)
+                return;
+          
+            await DisplayAlert(await _applicationService.ActivityService.DeleteActivity(activity));
+            await LoadData();
+        }
     }
 }

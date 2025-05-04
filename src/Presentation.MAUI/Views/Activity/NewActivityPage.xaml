@@ -1,34 +1,48 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-              x:Class="Presentation.MAUI.Views.Activity.NewActivityPage"
+             x:Class="Presentation.MAUI.Views.Activity.NewActivityPage"
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel.Activity"
-             xmlns:em="clr-namespace:Infrastructure.EntityModels;assembly=Infrastructure"
+             xmlns:entities="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
+             xmlns:views="clr-namespace:Presentation.MAUI.Views"
+              xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
              x:DataType="vm:NewActivityVM"
-              xmlns:views="clr-namespace:Presentation.MAUI.Views"
              Title="Nouvelle activité">
-
-  
+    <!-- Converters -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:IntToStringConverter  x:Key="IntToStringConverter"></conv:IntToStringConverter>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <!-- Converters -->
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
             <views:NavigationLayout></views:NavigationLayout>
             <Label Text="Nom de l'activité" />
-            <Entry Text="{Binding TravelActivity.Name}" Placeholder="Nom" />
+            <Entry Text="{Binding CurrentTravelActivity.Name}" Placeholder="Nom" />
 
             <Label Text="Description" />
-            <Editor Text="{Binding TravelActivity.Description}" Placeholder="Description" AutoSize="TextChanges" />
+            <Editor Text="{Binding CurrentTravelActivity.Description}" Placeholder="Description" AutoSize="TextChanges" />
 
             <Label Text="Ordre (séquence)" />
-            <Entry Text="{Binding TravelActivity.Sequence}" Keyboard="Numeric" />
+            <Entry Text="{Binding CurrentTravelActivity.Sequence, Converter={StaticResource IntToStringConverter}}" 
+       Keyboard="Numeric" />
 
             <Label Text="Lien Google (facultatif)" />
-            <Entry Text="{Binding TravelActivity.GoogleLink}" Placeholder="https://..." />
+            <Entry Text="{Binding CurrentTravelActivity.GoogleLink}" Placeholder="https://..." />
 
             <Label Text="Coût prévu (€)" />
-            <Entry Text="{Binding TravelActivity.PlannedCost}" Keyboard="Numeric" Placeholder="0.00" />
+            <Entry Text="{Binding CurrentTravelActivity.PlannedCost}" Keyboard="Numeric" Placeholder="0.00" />
+
+            <!-- Activity Date -->
+            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                <Label Text="Date Activité:" FontSize="Small" />
+                <DatePicker Date="{Binding CurrentTravelActivity.ActivityDate, Mode=TwoWay}"></DatePicker>
+            </VerticalStackLayout>
             <Picker  ItemsSource="{Binding ActivityType}"
-                     SelectedItem="{Binding TravelActivity.ActivityType}"
-                     ItemDisplayBinding="{Binding Description}"/>
+                     SelectedItem="{Binding SelectedActivityType  }"
+                     
+                     ItemDisplayBinding="{Binding Name}" />
 
             <Button Text="{Binding ModeDisplay}"
                     BackgroundColor="Green"

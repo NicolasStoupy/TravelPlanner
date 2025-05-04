@@ -4,8 +4,8 @@ namespace BussinessLogic.Entities
 {
     public class TravelActivity
     {
-     
-
+        public int TravelID { get; set; }
+        public int ActivityID { get; set; }
         public string Name { get; set; } = null!;
 
         public string? Description { get; set; }
@@ -16,16 +16,18 @@ namespace BussinessLogic.Entities
 
         public decimal? PlannedCost { get; set; }
 
-        public ActivityType ActivityType { get; set; } = ActivityType.NotDefined;
+        public TypeOfActivity ActivityType { get; set; }
+
+        public string ActivityTypeName { get; set; }
 
 
-        public List<Follower>? Followers { get; set; }
+        public List<Follower> Followers { get; set; }= new();
 
-        public List<Note>? Notes { get; set;}
+        public List<Note> Notes { get; set;} = new();
 
-        public Cost? Cost { get; set; } 
+        public List<Cost> Cost { get; set; } = new();
 
-        public List<Ticket>? Tickets { get; set; }
-
+        public List<Ticket> Tickets { get; set; } = new();
+        public DateTime ActivityDate { get;  set; }
     }
 }

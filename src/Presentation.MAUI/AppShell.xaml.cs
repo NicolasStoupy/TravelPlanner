@@ -8,6 +8,7 @@ namespace Presentation.MAUI
         {
             InitializeComponent();
             AppRouting.RegisterRoutes();
+
            
         }
         public void SetShellBackground(byte[] imageBytes)

@@ -12,10 +12,11 @@ namespace BussinessLogic.Interfaces
 {
     public interface IActivityService
     {
-        List<Infrastructure.EntityModels.Activity> GetActivities(int travelID);
-        List<Infrastructure.EntityModels.ActivityType> GetActivitiesTypes();
-        Task<Result> SaveNewActivity(int travelID, Infrastructure.EntityModels.Activity newActivity);
+        Task<Result> DeleteActivity(TravelActivity activity);
+        List<TravelActivity> GetActivities(int travelID);
+        List<TypeOfActivity> GetActivitiesTypes();
+        Task<Result> SaveNewActivity(TravelActivity newActivity);
 
-        Task<Result> UpdateActivity(Infrastructure.EntityModels.Activity travelActivity);
+        Task<Result> UpdateActivity(TravelActivity travelActivity);
     }
 }

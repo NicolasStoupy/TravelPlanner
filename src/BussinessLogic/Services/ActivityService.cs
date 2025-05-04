@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-
+using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
 using Commons.Models;
-using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+
 
 namespace BussinessLogic.Services
 {
@@ -15,17 +14,18 @@ namespace BussinessLogic.Services
         private readonly IMapper _mapper = mapper;
 
 
-        public async Task<Result> SaveNewActivity(int travelID, Infrastructure.EntityModels.Activity newActivity)
+        public async Task<Result> SaveNewActivity(TravelActivity newActivity)
         {
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-                var trip = context.Trips.FirstOrDefault(t => t.TripId == travelID);
-                if (trip != null)
-                {
-                    trip.Activities.Add(newActivity);
-                    await context.SaveChangesAsync();
-                }
+
+                var newActivityDb = _mapper.Map<Activity>(newActivity);
+
+                newActivityDb.ActivityType = null;
+                context.Activities.Add(newActivityDb);
+                await context.SaveChangesAsync();
+
                 return Result.Success("Activité sauvegarder aevc success");
             }
             catch (Exception ex)
@@ -34,31 +34,58 @@ namespace BussinessLogic.Services
             }
         }
 
-        public Task<Result> UpdateActivity(Infrastructure.EntityModels.Activity travelActivity)
+        public Task<Result> UpdateActivity(TravelActivity travelActivity)
         {
             throw new NotImplementedException();
         }
 
-        public List<Infrastructure.EntityModels.ActivityType> GetActivitiesTypes()
+        public List<TypeOfActivity> GetActivitiesTypes()
         {
             using var context = _contextFactory.CreateDbContext();
-            var activityType = context.ActivityTypes;
-            if (activityType != null)
-            {
-                return activityType.ToList();
-            }
 
-            return new List<Infrastructure.EntityModels.ActivityType>();
+            var activityTypes = context.ActivityTypes;
+            if (activityTypes != null)
+            {
+                var typeofActivities = _mapper.Map<List<TypeOfActivity>>(activityTypes);
+                return typeofActivities;
+            }
+            return new List<TypeOfActivity>();
+
         }
 
-        public List<Activity> GetActivities(int travelID)
+        public List<TravelActivity> GetActivities(int travelID)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var activities = context.Activities.Where(a => a.TripId == travelID);
+                var TravelActivities = _mapper.Map<List<TravelActivity>>(activities);
+                return TravelActivities;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+        }
+
+        public async Task<Result> DeleteActivity(TravelActivity travelActivity)
         {
             using var context = _contextFactory.CreateDbContext();
-            var activities = context.Activities.Where(a=>a.TripId== travelID);
-            if (activities != null)
-                return activities.ToList();
-
-            return new List<Activity>();
+            var activity = context.Activities.FirstOrDefault(a => a.ActivityId == travelActivity.ActivityID);
+            if (activity != null)
+            {
+                context.Activities.Remove(activity);
+                await context.SaveChangesAsync();
+                return Result.Success("Activité supprimée");
+            }
+            else
+            {
+                return Result.Success("L'activité n'existe plus ");
+            }               
+          
+        
         }
     }
 }

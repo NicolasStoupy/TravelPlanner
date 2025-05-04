@@ -4,7 +4,7 @@ using Presentation.MAUI.Services;
 using BussinessLogic.Entities;
 using Commons.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Infrastructure.EntityModels;
+
 namespace Presentation.MAUI.ViewModel
 {
     public partial class TravelVM : BaseVM
@@ -23,7 +23,7 @@ namespace Presentation.MAUI.ViewModel
 
         [ObservableProperty]
 
-        private List<ActivityType> _activityType;
+        private List<TypeOfActivity> _activityType;
 
         [ObservableProperty]
         private List<string> _currencies;

@@ -21,7 +21,7 @@ public partial class FinderTravelPageVM : TravelVM
     public FinderTravelPageVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
     {
         Title = "Voyages";
-        Reset();
+       
         FilterItems();
     }
 

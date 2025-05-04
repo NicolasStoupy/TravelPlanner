@@ -11,13 +11,14 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"></conv:ByteArrayToImageConverter>
-
+            <conv:IntToStringConverter  x:Key="IntToStringConverter"></conv:IntToStringConverter>
         </ResourceDictionary>
     </ContentPage.Resources>
     <!-- Converters -->
+   
     <ScrollView>
         <VerticalStackLayout Padding="0" Spacing="20">
-
+ 
             <Border Stroke="Gray"
                     StrokeThickness="1"
                     StrokeShape="RoundRectangle 10"
@@ -67,7 +68,7 @@
                         <!-- Participants -->
                         <VerticalStackLayout Grid.Column="3" Spacing="4">
                             <Label Text="Participants" FontSize="Small" />
-                            <Entry x:Name="NumberPeople" Text="{Binding Travel.people}" Keyboard="Numeric" />
+                            <Entry x:Name="NumberPeople" Text="{Binding Travel.people,Converter={StaticResource IntToStringConverter}}" Keyboard="Numeric" />
                         </VerticalStackLayout>
                     </Grid>
 

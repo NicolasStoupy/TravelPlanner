@@ -13,8 +13,9 @@ namespace Infrastructure
 
         public static IServiceCollection AddInfrastructure(this IServiceCollection collection, IConfiguration configuration)
         {
-            collection.AddDbContextFactory<TravelPlannerContext>
-            (opt => opt.UseSqlServer(configuration.GetConnectionString("DbConnection")));// Scoped pour une instance par requête
+            collection.AddDbContextFactory<TravelPlannerContext>(options =>
+            //options.UseLazyLoadingProxies()
+            options.UseSqlServer(configuration.GetConnectionString("DbConnection")));// Scoped pour une instance par requête
 
             collection.AddScoped<DocumentProvider>();
 

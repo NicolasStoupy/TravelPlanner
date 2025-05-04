@@ -28,7 +28,7 @@
                     BackgroundColor="White">
                 <Grid ColumnDefinitions="*,Auto"
                       VerticalOptions="Center"
-                      HorizontalOptions="FillAndExpand">
+                     >
                     <Entry Grid.Column="0"
                            Placeholder="Ajouter une note"
                            Text="{Binding Note.NoteContent, Mode=TwoWay}"

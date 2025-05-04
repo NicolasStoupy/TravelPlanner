@@ -15,5 +15,6 @@ public partial class ActivitiesTravelPage : ContentPage
         base.OnAppearing();
         if (BindingContext is ActivitiesTravelVM vm)
             await vm.OnAppearingAsync();
+        return;
     }
 }

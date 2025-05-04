@@ -20,7 +20,7 @@
     <MenuItem>
 
     </MenuItem>
-    <!--VOYAGES -->
+    <!--VOYAGES --><!--
     <FlyoutItem Title="Voyages"  Icon="trip.png">
         <ShellContent Title="Mes Voyages"
                       Route="TravelFinder"
@@ -37,9 +37,40 @@
         <ShellContent Title="Activités liées"
                       Route="TravelActivities"
                       ContentTemplate="{DataTemplate travel:ActivitiesTravelPage}" />
-    </FlyoutItem>
+    </FlyoutItem>-->
 
-    <!-- Barre de navigation personnalisée -->
-   
+  
+    <TabBar>
+        <Tab Title="Mes Voyages" Icon="trip.png">
+            <ShellContent
+            Route="TravelFinder"
+            ContentTemplate="{DataTemplate travel:FinderTravelPage}" />
+        </Tab>
+
+        <Tab Title="Informations" Icon="info.png">
+            <ShellContent
+            Route="TravelInformations"
+            ContentTemplate="{DataTemplate travel:NewTravelPage}" />
+        </Tab>
+
+        <Tab Title="Notes" Icon="note.png">
+            <ShellContent
+            Route="Travel/Notes"
+            ContentTemplate="{DataTemplate travel:NoteTravelPage}" />
+        </Tab>
+
+        <Tab Title="Souvenirs" Icon="memory.png">
+            <ShellContent
+            Route="TravelMemories"
+            ContentTemplate="{DataTemplate travel:MemoriesTravelPage}" />
+        </Tab>
+
+        <Tab Title="Activités" Icon="activity.png"
+         x:Name="ActivitiesTab">
+            <ShellContent
+            Route="TravelActivities"
+            ContentTemplate="{DataTemplate travel:ActivitiesTravelPage}" />
+        </Tab>
+    </TabBar>
 
 </Shell>

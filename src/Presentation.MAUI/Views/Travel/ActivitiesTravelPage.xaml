@@ -1,7 +1,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
-             xmlns:entities="clr-namespace:Infrastructure.EntityModels;assembly=Infrastructure"
+             xmlns:entities="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
              x:Class="Presentation.MAUI.Views.Travel.ActivitiesTravelPage"
              x:DataType="vm:ActivitiesTravelVM"
              xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
@@ -41,7 +41,7 @@
             <CollectionView ItemsSource="{Binding Activities}"
                             Margin="0,10,0,0">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="entities:Activity">
+                    <DataTemplate x:DataType="entities:TravelActivity">
                         <Border Stroke="#D0D0D0"
                                 StrokeThickness="1"
                                 StrokeShape="RoundRectangle 12"
@@ -92,7 +92,7 @@
                                            TextColor="#222" />
 
                                     <!-- Type -->
-                                    <Label Text="{Binding ActivityType.Description}"
+                                    <Label Text="{Binding ActivityTypeName}"
                                            FontSize="13"
                                            FlexLayout.Basis="100"
                                            TextColor="#666" />
@@ -101,10 +101,10 @@
                                     <Label Text="{Binding Description}"
                                            FontSize="13"
                                            LineBreakMode="TailTruncation"
-                                           FlexLayout.Basis="180"
+                                           
                                            TextColor="#444" />
                                     <!-- Date -->
-                                    <Label Text="{Binding CreatedAt, StringFormat='{0:dd/MM/yyyy}'}"
+                                    <Label Text="{Binding ActivityDate, StringFormat='{0:dd/MM/yyyy}'}"
                                            FontSize="13"
                                            FlexLayout.Basis="100"
                                            TextColor="#999"
@@ -126,6 +126,16 @@
                                            HorizontalTextAlignment="End"
                                            FlexLayout.Basis="100" />
 
+                                    <Button Text="Delete"
+                                            FontSize="14"
+                                            FontAttributes="Bold"
+                                            HeightRequest="48"      
+                                            CornerRadius="8"
+                                            BackgroundColor="#2E7D32"
+                                            TextColor="White"
+                                            Command="{Binding BindingContext.DeleteActivityCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                            CommandParameter="{Binding .}"
+                                            />
 
                                 </FlexLayout>
                             </Grid>

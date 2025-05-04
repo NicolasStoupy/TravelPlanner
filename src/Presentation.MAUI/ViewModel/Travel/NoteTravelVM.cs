@@ -61,6 +61,7 @@ namespace Presentation.MAUI.ViewModel
             else
             {
                 await NoTravelSelected();
+                return;
             }
         }
 
