@@ -20,6 +20,7 @@ namespace BussinessLogic.Interfaces
         Task<Result> DeleteNote(Note note);
         Task<Result> EditNote(Note note);
 
+        Task<Result> AddMediaToTravel(List<byte[]> medias, int travelID, Commons.TypeMedia images);
         // Updating
     }
 }

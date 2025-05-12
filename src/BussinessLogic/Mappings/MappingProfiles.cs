@@ -43,7 +43,7 @@ namespace BussinessLogic.Mappings
             // Mapping TravelActivity ↔ Activity
             CreateMap<TravelActivity, Activity>()
                .ForMember(dest => dest.ActivityId, opt => opt.MapFrom(src => src.ActivityID))
-               .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ActivityType.ID))
+               .ForMember(dest=>dest.ActivityType,opt=>opt.MapFrom(src=>src.ActivityType))
                .ForMember(dest => dest.ActivityDate, opt => opt.MapFrom(src => src.ActivityDate))
                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
@@ -51,6 +51,7 @@ namespace BussinessLogic.Mappings
                .ForMember(dest => dest.GoogleLink, opt => opt.MapFrom(src => src.GoogleLink))
                .ForMember(dest => dest.PlannedCost, opt => opt.MapFrom(src => src.PlannedCost))
                .ForMember(dest => dest.TripId, opt => opt.MapFrom(src => src.TravelID))
+               .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ActivityType.ID))
            ;
 
             CreateMap<Activity, TravelActivity>()
@@ -80,7 +81,8 @@ namespace BussinessLogic.Mappings
                .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.ActivityTypeId))
                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Description));
             CreateMap<TypeOfActivity, Infrastructure.EntityModels.ActivityType>()
-               .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ID));
+               .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ID))
+                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Name));
         }
     }
 }

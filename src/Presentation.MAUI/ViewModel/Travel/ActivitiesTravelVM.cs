@@ -49,6 +49,8 @@ namespace Presentation.MAUI.ViewModel
 
         [RelayCommand]
         public async Task AddActivity() => await _navigationService.NavigateToNewActivity();
+        [RelayCommand]
+        public async Task EditActivity(TravelActivity travelActivity) => await _navigationService.NavigateToEditActivity(travelActivity);
 
         public async Task OnAppearingAsync()
         {
@@ -83,5 +85,6 @@ namespace Presentation.MAUI.ViewModel
             await DisplayAlert(await _applicationService.ActivityService.DeleteActivity(activity));
             await LoadData();
         }
+     
     }
 }

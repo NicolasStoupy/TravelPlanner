@@ -18,11 +18,12 @@ namespace BussinessLogic.Services
     /// and maps between infrastructure entities and domain models using <see cref="IMapper"/>.
     /// Media operations such as file storage and replacement are handled via the <see cref="DocumentProvider"/>.
     /// </remarks>
-    public class TravelService(IDbContextFactory<TravelPlannerContext> context, IMapper mapper, DocumentProvider document) : ITravelService
+    public class TravelService(IDbContextFactory<TravelPlannerContext> context, IMapper mapper, DocumentProvider document, IMediaService mediaService) : ITravelService
     {
         private readonly IDbContextFactory<TravelPlannerContext> _context = context;
         private readonly DocumentProvider _document = document;
         private readonly IMapper _mapper = mapper;
+        private readonly IMediaService _mediaService = mediaService;
 
         /// <summary>
         /// Retrieves a travel item by its ID and maps it from the Trip entity to a Travel domain model.
@@ -302,6 +303,40 @@ namespace BussinessLogic.Services
             catch (Exception ex)
             {
                 return Task.FromResult(Result.Failure(ex.Message));
+            }
+        }
+
+        public async Task<Result> AddMediaToTravel(List<byte[]> medias, int travelID, Commons.TypeMedia mediaType)
+        {
+            try
+            {
+                using var context = _context.CreateDbContext();
+                var trip = context.Trips.FirstOrDefault(t => t.TripId == travelID);
+                var savedFilesGuid = _mediaService.SaveMedias(medias, mediaType);
+                if (trip != null)
+                {
+                    foreach (var fileGuid in savedFilesGuid)
+                    {
+                        if (fileGuid == null) continue;
+
+                        trip.Media.Add(new Medium
+                        {
+                            FileGuid = fileGuid.Value,
+                            Description = string.Empty,
+                            MediaType = 1
+                        });
+                    }
+
+                    await context.SaveChangesAsync();
+
+
+                }
+                return Result.Success(); // Ou new Result(true)
+            }
+            catch (Exception ex)
+            {
+                // Log possible ici
+                return Result.Failure("Erreur lors de l'enregistrement des médias : " + ex.Message);
             }
         }
     }

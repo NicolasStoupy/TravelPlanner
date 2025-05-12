@@ -16,41 +16,59 @@
     </ContentPage.Resources>
     <!-- Converters -->
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
-            <views:NavigationLayout></views:NavigationLayout>
-            <Label Text="Nom de l'activité" />
-            <Entry Text="{Binding CurrentTravelActivity.Name}" Placeholder="Nom" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <VerticalStackLayout Grid.Column="0" Padding="20" Spacing="15">
+                <views:NavigationLayout></views:NavigationLayout>
+                <Label Text="Nom de l'activité" />
+                <Entry Text="{Binding ActivityName}" Placeholder="Nom" />
 
-            <Label Text="Description" />
-            <Editor Text="{Binding CurrentTravelActivity.Description}" Placeholder="Description" AutoSize="TextChanges" />
+                <Label Text="Description" />
+                <Editor Text="{Binding CurrentTravelActivity.Description}" Placeholder="Description" AutoSize="TextChanges" />
 
-            <Label Text="Ordre (séquence)" />
-            <Entry Text="{Binding CurrentTravelActivity.Sequence, Converter={StaticResource IntToStringConverter}}" 
+                <Label Text="Ordre (séquence)" />
+                <Entry Text="{Binding CurrentTravelActivity.Sequence, Converter={StaticResource IntToStringConverter}}" 
        Keyboard="Numeric" />
 
-            <Label Text="Lien Google (facultatif)" />
-            <Entry Text="{Binding CurrentTravelActivity.GoogleLink}" Placeholder="https://..." />
+                <Label Text="Lien Google (facultatif)" />
+                <Entry Text="{Binding CurrentUrl}" Placeholder="https://..." />
 
-            <Label Text="Coût prévu (€)" />
-            <Entry Text="{Binding CurrentTravelActivity.PlannedCost}" Keyboard="Numeric" Placeholder="0.00" />
+                <Label Text="Coût prévu (€)" />
+                <Entry Text="{Binding CurrentTravelActivity.PlannedCost}" Keyboard="Numeric" Placeholder="0.00" />
 
-            <!-- Activity Date -->
-            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                <Label Text="Date Activité:" FontSize="Small" />
-                <DatePicker Date="{Binding CurrentTravelActivity.ActivityDate, Mode=TwoWay}"></DatePicker>
-            </VerticalStackLayout>
-            <Picker  ItemsSource="{Binding ActivityType}"
+                <!-- Activity Date -->
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="Date Activité:" FontSize="Small" />
+                    <DatePicker Date="{Binding CurrentTravelActivity.ActivityDate, Mode=TwoWay}"></DatePicker>
+                </VerticalStackLayout>
+                <Picker  ItemsSource="{Binding ActivityType}"
                      SelectedItem="{Binding SelectedActivityType  }"
                      
                      ItemDisplayBinding="{Binding Name}" />
 
-            <Button Text="{Binding ModeDisplay}"
+                <Button Text="{Binding ModeDisplay}"
                     BackgroundColor="Green"
                     TextColor="White"
                     FontAttributes="Bold"
                     HeightRequest="50"
                     Margin="0,20"
-                    Command="{Binding SaveCommand }" />
-        </VerticalStackLayout>
+                    Command="{Binding SaveCommand }"  />
+
+
+
+            </VerticalStackLayout>
+            <WebView Grid.Column="1" Navigated="WebView_Navigated" Navigating="WebView_Navigating">
+                <WebView.Source>
+                    <UrlWebViewSource Url="{Binding CurrentUrl}" />
+                </WebView.Source>
+            </WebView>
+        </Grid>
+
+       
     </ScrollView>
+
+
 </ContentPage>

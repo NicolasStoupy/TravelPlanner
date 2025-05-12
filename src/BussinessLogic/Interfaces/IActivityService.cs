@@ -39,6 +39,8 @@ namespace BussinessLogic.Interfaces
         /// </summary>
         /// <param name="travelActivity">The activity object with updated values.</param>
         /// <returns>A <see cref="Result"/> indicating whether the update operation was successful or failed.</returns>
-        Task<Result> UpdateActivity(TravelActivity travelActivity);
+        Task<Result> UpdateActivity(TravelActivity travelActivity,int travelID);
+
+        Task<TravelActivity> GetActivity(int travelActivityID);
     }
 }

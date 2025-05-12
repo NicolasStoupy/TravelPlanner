@@ -2,11 +2,52 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Presentation.MAUI.Views.Travel.MemoriesTravelPage"
+             xmlns:vm ="clr-namespace:Presentation.MAUI.ViewModel"
+             xmlns:view="clr-namespace:Presentation.MAUI.Views"
+             xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
+             x:DataType="vm:MemoriesTravelVM"
              Title="MemoriesPage">
+
+    <!-- Converters -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"></conv:ByteArrayToImageConverter>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <!-- Converters -->
     <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+        <Grid RowDefinitions="Auto,*" Margin="10">
+
+            <!-- Zone File Picker -->
+            <Border Grid.Row="0" StrokeThickness="1"
+                StrokeShape="RoundRectangle 10"
+                Margin="8" Padding="10">
+                <view:FilePickerView SendFilesCommand="{Binding SendFilesCommand}" />
+            </Border>
+
+            <!-- Scrollable Zone -->
+            <ScrollView Grid.Row="1">
+                <Border StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    Margin="8" Padding="10">
+                    <FlexLayout Wrap="Wrap"
+                            JustifyContent="Start"
+                            AlignItems="Start"
+                            BindableLayout.ItemsSource="{Binding MemoriesFiles}">
+
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate  >
+                                <Grid RowDefinitions="*" WidthRequest="150" HeightRequest="150" Margin="4">
+                                    <Image Grid.Row="0" Source="{Binding Data, Converter={StaticResource ByteArrayToImageConverter}}" Aspect="AspectFill" />
+                                   
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </Border>
+            </ScrollView>
+        </Grid>
     </VerticalStackLayout>
+
 </ContentPage>

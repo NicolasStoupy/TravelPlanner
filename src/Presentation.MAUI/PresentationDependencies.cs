@@ -22,6 +22,7 @@ namespace Presentation.MAUI
             collection.AddScoped<NoteTravelVM>();
             collection.AddScoped<ActivitiesTravelVM>();
             collection.AddScoped<NewActivityVM>();
+            collection.AddScoped<MemoriesTravelVM>();
             return collection;
         }
     }

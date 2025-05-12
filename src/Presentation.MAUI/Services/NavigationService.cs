@@ -9,13 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Presentation.MAUI.Services
 {
     public class NavigationService : INavigationService
-    {
-        private readonly IServiceProvider _serviceProvider;
-        public NavigationService(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
+    {  
        
 
         public async Task NavigateToNewTravelPageAsync()
@@ -42,6 +36,11 @@ namespace Presentation.MAUI.Services
         public async Task GoBack()
         {
             await Shell.Current.GoToAsync("..");
+        }
+
+        public async Task NavigateToEditActivity(TravelActivity travelActivity)
+        {
+            await Shell.Current.GoToAsync($"ActivityNew?ActivityID={travelActivity.ActivityID}");
         }
     }
 }

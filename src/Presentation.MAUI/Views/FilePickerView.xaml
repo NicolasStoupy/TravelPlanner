@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Presentation.MAUI.Views"
+              xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
+             x:Class="Presentation.MAUI.Views.FilePickerView"
+             >
+    <!-- Converters -->
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <conv:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"></conv:ByteArrayToImageConverter>
+
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <!-- Converters -->
+
+    <VerticalStackLayout>
+        <!-- Titre principal -->
+        <Label Text="Ajoutez vos souvenirs."
+           FontSize="20"
+           FontAttributes="Bold"
+           TextColor="Black"
+           HorizontalOptions="Start" />
+
+        <!-- Commentaire explicatif -->
+        <Label Text="Vous pouvez sélectionner un ou plusieurs fichiers. Ils s'afficheront ci-dessous une fois choisis. Lorsque vous cliquez sur « Envoyer les fichiers », ils seront ajoutés au voyage en cours."
+       FontSize="14"
+       TextColor="Gray"
+       LineBreakMode="WordWrap"
+       HorizontalOptions="Start"
+       Margin="0,0,0,10" />
+
+        <!-- Section des boutons -->
+        <Grid RowDefinitions="*" Margin="4"  ColumnDefinitions="*">
+            <FlexLayout Grid.Row="0" Grid.Column="0"
+                                        Direction="Row"
+                                        AlignItems="Center"
+                                        JustifyContent="Start"
+                                        Wrap="NoWrap"
+                                        Margin="10">
+                <Button Text="Choisir un fichier"  
+                    Clicked="OnPickFileClicked"
+                    BackgroundColor="DarkBlue"
+                        Margin="0,0,10,0"
+                    TextColor="White"
+                    
+                    HorizontalOptions="Start" />
+                <Button Text="Envoyer les fichiers"
+                    BackgroundColor="DarkBlue"
+                    TextColor="White"
+                  
+                    Clicked="OnSendClicked"
+                    HorizontalOptions="Center" />
+            </FlexLayout>
+        </Grid>
+        <BoxView HeightRequest="1"
+         BackgroundColor="LightGray"
+         HorizontalOptions="Fill"
+         Margin="0,10" />
+        <!-- Section des fichiers -->
+        <Grid RowDefinitions="*" ColumnDefinitions="*">
+            <ScrollView Grid.Row="0" Grid.Column="1">
+                <FlexLayout Wrap="Wrap"
+                        JustifyContent="Start"
+                        AlignItems="Start"
+                        BindableLayout.ItemsSource="{Binding Files, Source={RelativeSource AncestorType={x:Type local:FilePickerView}}}">
+
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Grid WidthRequest="100" HeightRequest="100" Margin="4">
+                                <Image Source="{Binding ., Converter={StaticResource ByteArrayToImageConverter}}"
+                                   Aspect="AspectFill" />
+                                <Button Text="✕"
+                                    BackgroundColor="Transparent"
+                                    TextColor="White"
+                                    FontSize="15"
+                                    Padding="0"
+                                    HeightRequest="0"
+                                    WidthRequest="0"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Start"
+                                    Clicked="OnDeleteImageClicked"
+                                    CommandParameter="{Binding .}" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </ScrollView>
+        </Grid>
+
+    </VerticalStackLayout>
+
+
+
+
+</ContentView>

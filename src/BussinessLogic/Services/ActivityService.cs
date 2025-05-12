@@ -34,9 +34,15 @@ namespace BussinessLogic.Services
             }
         }
 
-        public Task<Result> UpdateActivity(TravelActivity travelActivity)
+        public async Task<Result> UpdateActivity(TravelActivity travelActivity,int travelID)
         {
-            throw new NotImplementedException();
+            using var context = _contextFactory.CreateDbContext();
+
+            var activity = _mapper.Map<Activity>(travelActivity);
+            activity.TripId= travelID;
+            context.Activities.Update(activity);
+            await context.SaveChangesAsync();
+            return Result.Success("Success");
         }
 
         public List<TypeOfActivity> GetActivitiesTypes()
@@ -87,6 +93,15 @@ namespace BussinessLogic.Services
           
         
         }
+
+        public async Task<TravelActivity?> GetActivity(int travelActivityID)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var activity = await context.Activities.FirstOrDefaultAsync(a => a.ActivityId == travelActivityID);
+            var travelActivity = _mapper.Map<TravelActivity>(activity);
+            return travelActivity;
+        }
+
     }
 }
 

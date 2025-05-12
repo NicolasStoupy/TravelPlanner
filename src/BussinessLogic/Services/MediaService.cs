@@ -3,6 +3,8 @@ using Commons;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using System.Collections.ObjectModel;
 
 namespace BussinessLogic.Services
 {
@@ -33,9 +35,23 @@ namespace BussinessLogic.Services
         /// <param name="trip">The trip to retrieve media files for.</param>
         /// <param name="mediaTypes">A list of media types to filter the results (e.g., images, videos).</param>
         /// <returns>A list of byte arrays representing the media files.</returns>
-        public List<byte[]> GetMediasFromTrip(Trip trip, List<MediaType> mediaTypes)
+        public List<byte[]> GetMediasFromTrip(Trip trip, TypeMedia typeMedia)
         {
             var result = new List<byte[]>();
+            using var context = _context.CreateDbContext();
+            var medias = trip.Media.ToList();
+
+            foreach (var media in medias)
+            {
+
+                var file = _document.GetFile(media.FileGuid, typeMedia);
+                if (file != null)
+                {
+
+                    result.Add(file);
+                }
+
+            }
 
             return result;
         }
@@ -56,6 +72,41 @@ namespace BussinessLogic.Services
             if (fileBytes == null) return null;
             _document.SetMediaType(typeMedia);
             return _document.SaveFile(fileBytes);
+        }
+
+        public List<byte[]> GetMediasFromTrip(int tripID, TypeMedia mediaTypes)
+        {
+            using var context = _context.CreateDbContext();
+            var trip = context.Trips.Include(t=>t.Media).FirstOrDefault(t => t.TripId == tripID);
+
+            if (trip != null)
+            {
+                return GetMediasFromTrip(trip, mediaTypes);
+            }
+            return new List<byte[]>();
+        }
+
+        public List<byte[]> GetMediasFromTrip(Trip trip, List<MediaType> mediaTypes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<byte[]> GetMediasFromActivity(Activity activity, TypeMedia typeMedia)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Guid?> SaveMedias(List<byte[]> files, TypeMedia images)
+        {
+            var result = new List<Guid?>();
+            foreach (var file in files)
+            {
+                var savedMediaGuid = SaveMedia(file, images);
+                if (savedMediaGuid != null)
+                    result.Add(savedMediaGuid);
+
+            }
+            return result;
         }
     }
 }
