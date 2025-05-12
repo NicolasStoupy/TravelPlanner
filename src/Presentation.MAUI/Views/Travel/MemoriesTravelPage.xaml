@@ -37,7 +37,7 @@
                             BindableLayout.ItemsSource="{Binding MemoriesFiles}">
 
                         <BindableLayout.ItemTemplate>
-                            <DataTemplate  >
+                            <DataTemplate x:DataType="x:Byte"  >
                                 <Grid RowDefinitions="*" WidthRequest="150" HeightRequest="150" Margin="4">
                                     <Image Grid.Row="0" Source="{Binding ., Converter={StaticResource ByteArrayToImageConverter}}" Aspect="AspectFill" />
                                    
