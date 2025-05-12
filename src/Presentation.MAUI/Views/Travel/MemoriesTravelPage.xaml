@@ -39,7 +39,7 @@
                         <BindableLayout.ItemTemplate>
                             <DataTemplate  >
                                 <Grid RowDefinitions="*" WidthRequest="150" HeightRequest="150" Margin="4">
-                                    <Image Grid.Row="0" Source="{Binding Data, Converter={StaticResource ByteArrayToImageConverter}}" Aspect="AspectFill" />
+                                    <Image Grid.Row="0" Source="{Binding ., Converter={StaticResource ByteArrayToImageConverter}}" Aspect="AspectFill" />
                                    
                                 </Grid>
                             </DataTemplate>

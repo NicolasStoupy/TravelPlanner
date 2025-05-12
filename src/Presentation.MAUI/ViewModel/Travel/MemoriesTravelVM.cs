@@ -15,7 +15,7 @@ namespace Presentation.MAUI.ViewModel
     public partial class MemoriesTravelVM : TravelVM
     {
         [ObservableProperty]
-        private MemoryFile? _memoriesFiles ;
+        private ObservableCollection<byte[]>? _memoriesFiles ;
 
         [ObservableProperty]
         private ObservableCollection<byte[]>? _newFiles;
@@ -50,8 +50,8 @@ namespace Presentation.MAUI.ViewModel
         {
             if (CurrentTravel?.Id != null)
             {
-                MemoriesFiles = new MemoryFile();
-               MemoriesFiles.Data= new ObservableCollection<byte[]>( _applicationService.MediaService.GetMediasFromTrip(CurrentTravel.Id, Commons.TypeMedia.Images));
+             
+               MemoriesFiles= new ObservableCollection<byte[]>( _applicationService.MediaService.GetMediasFromTrip(CurrentTravel.Id, Commons.TypeMedia.Images));
             }
             else {
 
