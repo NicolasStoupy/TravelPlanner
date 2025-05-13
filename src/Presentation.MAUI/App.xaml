@@ -10,8 +10,11 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
                 <ResourceDictionary Source="/Resources/Styles/StyleListView.xaml"/>
+             
             </ResourceDictionary.MergedDictionaries>
-
+            <x:String x:Key="DownloadIcon">download.png</x:String>
+            <x:String x:Key="ZipIcon">zip.png</x:String>
+            <x:String x:Key="RemoveIcon">remove.png</x:String>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -1,6 +1,7 @@
 ﻿using BussinessLogic.Entities;
+using Commons;
 using Commons.Models;
-
+using System.Collections.ObjectModel;
 
 namespace BussinessLogic.Interfaces
 {
@@ -21,6 +22,8 @@ namespace BussinessLogic.Interfaces
         Task<Result> EditNote(Note note);
 
         Task<Result> AddMediaToTravel(List<byte[]> medias, int travelID, Commons.TypeMedia images);
+        List<MemoryFile> GetMemories(int id, TypeMedia mediaType);
+        Task<Result> RemoveMemories(IEnumerable<MemoryFile>? selectedMemories, int id);
         // Updating
     }
 }

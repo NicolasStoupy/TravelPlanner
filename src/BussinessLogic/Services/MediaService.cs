@@ -1,10 +1,12 @@
-﻿using BussinessLogic.Interfaces;
+﻿using BussinessLogic.Entities;
+using BussinessLogic.Interfaces;
 using Commons;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace BussinessLogic.Services
 {
@@ -43,14 +45,11 @@ namespace BussinessLogic.Services
 
             foreach (var media in medias)
             {
-
                 var file = _document.GetFile(media.FileGuid, typeMedia);
                 if (file != null)
                 {
-
                     result.Add(file);
                 }
-
             }
 
             return result;
@@ -77,7 +76,7 @@ namespace BussinessLogic.Services
         public List<byte[]> GetMediasFromTrip(int tripID, TypeMedia mediaTypes)
         {
             using var context = _context.CreateDbContext();
-            var trip = context.Trips.Include(t=>t.Media).FirstOrDefault(t => t.TripId == tripID);
+            var trip = context.Trips.Include(t => t.Media).FirstOrDefault(t => t.TripId == tripID);
 
             if (trip != null)
             {
@@ -104,9 +103,21 @@ namespace BussinessLogic.Services
                 var savedMediaGuid = SaveMedia(file, images);
                 if (savedMediaGuid != null)
                     result.Add(savedMediaGuid);
-
             }
             return result;
         }
+
+        public async Task<string> ExportMemoriesToZip(IEnumerable<MemoryFile> memoryFiles, TypeMedia mediaType, string zipPath, string fileName)
+        {
+            var result = string.Empty;
+            var guidList = memoryFiles.Select(mf => mf.FileGuid);
+            if (guidList.Any())
+            {
+                result = await _document.ExportToZipAsync(guidList, mediaType, zipPath, fileName);
+            }
+
+            return result.ToString();
+        }
+       
     }
 }

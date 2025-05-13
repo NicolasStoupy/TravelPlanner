@@ -1,10 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace Presentation.MAUI.Views;
 
 public partial class FilePickerView : ContentView
 {
+
     public static readonly BindableProperty FilesProperty =
         BindableProperty.Create(
             nameof(Files),
@@ -30,38 +32,54 @@ public partial class FilePickerView : ContentView
     {
         get => (ICommand?)GetValue(SendFilesCommandProperty);
         set => SetValue(SendFilesCommandProperty, value);
+
     }
     public FilePickerView() => InitializeComponent();
 
     private async void OnPickFileClicked(object sender, EventArgs e)
     {
-       
-            var results = await FilePicker.PickMultipleAsync(new PickOptions
+
+        var results = await FilePicker.PickMultipleAsync(new PickOptions
+        {
+            PickerTitle = "Choisir des images",
+            FileTypes = FilePickerFileType.Images
+        });
+
+        if (results != null)
+        {
+            Files ??= new ObservableCollection<byte[]>();
+
+            foreach (var file in results)
             {
-                PickerTitle = "Choisir des images",
-                FileTypes = FilePickerFileType.Images
-            });
+                using var stream = await file.OpenReadAsync();
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
 
-            if (results != null)
-            {
-                Files ??= new ObservableCollection<byte[]>();
-
-                foreach (var file in results)
-                {
-                    using var stream = await file.OpenReadAsync();
-                    using var ms = new MemoryStream();
-                    await stream.CopyToAsync(ms);
-
-                    Files.Add(ms.ToArray());
-                }
+                Files.Add(ms.ToArray());
             }
-   
+        }
+        SetBtnValidationVisibility();
+
+
     }
     private void OnDeleteImageClicked(object sender, EventArgs e)
     {
         if (sender is Button button && button.CommandParameter is byte[] imageToRemove)
         {
             Files?.Remove(imageToRemove);
+        }
+        SetBtnValidationVisibility();
+    }
+
+    private void SetBtnValidationVisibility()
+    {
+        if (Files.Count > 0)
+        {
+            BtnValidation.IsVisible = true;
+        }
+        else
+        {
+            BtnValidation.IsVisible = false;
         }
     }
 
@@ -73,6 +91,7 @@ public partial class FilePickerView : ContentView
             Files.Clear();
 
         }
+        SetBtnValidationVisibility();
     }
 
     // Exemple bouton lié à cette méthode

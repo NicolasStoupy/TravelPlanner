@@ -4,8 +4,11 @@
              x:Class="Presentation.MAUI.Views.Travel.MemoriesTravelPage"
              xmlns:vm ="clr-namespace:Presentation.MAUI.ViewModel"
              xmlns:view="clr-namespace:Presentation.MAUI.Views"
+             xmlns:entities="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
              xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
+             xmlns:icons="clr-namespace:Presentation.MAUI"
              x:DataType="vm:MemoriesTravelVM"
+             x:Name="MemoriesPage"
              Title="MemoriesPage">
 
     <!-- Converters -->
@@ -17,37 +20,73 @@
     </ContentPage.Resources>
     <!-- Converters -->
     <VerticalStackLayout>
-        <Grid RowDefinitions="Auto,*" Margin="10">
 
+        <Grid RowDefinitions="Auto,Auto" Margin="10">
             <!-- Zone File Picker -->
             <Border Grid.Row="0" StrokeThickness="1"
                 StrokeShape="RoundRectangle 10"
                 Margin="8" Padding="10">
                 <view:FilePickerView SendFilesCommand="{Binding SendFilesCommand}" />
             </Border>
-
             <!-- Scrollable Zone -->
-            <ScrollView Grid.Row="1">
-                <Border StrokeThickness="1"
-                    StrokeShape="RoundRectangle 10"
-                    Margin="8" Padding="10">
-                    <FlexLayout Wrap="Wrap"
-                            JustifyContent="Start"
-                            AlignItems="Start"
-                            BindableLayout.ItemsSource="{Binding MemoriesFiles}">
+            <ScrollView Grid.Row="1" >
+                <Grid RowDefinitions="Auto,Auto">
+                    <Border Grid.Row="0" StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"  
+                            Margin="1" Padding="10">
+                        <Grid IsVisible="{Binding ExtraAction}"
+                              ColumnDefinitions="Auto,*,Auto"
+                              Margin="10"
+                              VerticalOptions="Center">
 
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="x:Byte"  >
-                                <Grid RowDefinitions="*" WidthRequest="150" HeightRequest="150" Margin="4">
-                                    <Image Grid.Row="0" Source="{Binding ., Converter={StaticResource ByteArrayToImageConverter}}" Aspect="AspectFill" />
-                                   
-                                </Grid>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </FlexLayout>
-                </Border>
+                            <!-- Colonne 0 :  -->
+                            <HorizontalStackLayout Grid.Column="0" Spacing="10">
+                                <Button Text="Supprimer"
+                                        BackgroundColor="IndianRed"
+                                        TextColor="White"
+                                        Command="{Binding DeleteSelectedCommand}" />
+
+                                <Button Text="Télécharger en zip"
+                                        BackgroundColor="Gray"
+                                        TextColor="White"
+                                        Command="{Binding ExportSelectedAsZipCommand}" />
+                            </HorizontalStackLayout>
+
+                            <!-- Colonne 2 :  -->
+                            <Button Grid.Column="2"
+                                    Text="Sélectionner tout"
+                                    BackgroundColor="Gray"
+                                    TextColor="White"
+                                    Command="{Binding SelectAllCommand}" />
+                        </Grid>
+                    </Border>
+                    <Border Grid.Row="1" StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    Margin="1" Padding="10">
+                        <FlexLayout Wrap="Wrap"
+                            JustifyContent="Start"
+                            AlignItems="Center"
+                            BindableLayout.ItemsSource="{Binding MemoriesFiles}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="entities:MemoryFile">
+                                    <Grid RowDefinitions="*" WidthRequest="150" HeightRequest="150" Margin="3">
+                                        <CheckBox ZIndex="4"
+                                              Grid.Row="0"
+                                              Color="Green"
+                                              Opacity="100"                                             
+                                              VerticalOptions="Start"
+                                              HorizontalOptions="End"
+                                              IsChecked="{Binding Checked}"
+                                              CheckedChanged="CheckBox_CheckedChanged"
+                                              ></CheckBox>
+                                        <Image ZIndex="-3" Grid.Row="0" Source="{Binding Files, Converter={StaticResource ByteArrayToImageConverter}}" Aspect="AspectFill" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </Border>
+                </Grid>
             </ScrollView>
         </Grid>
     </VerticalStackLayout>
-
 </ContentPage>

@@ -1,5 +1,6 @@
 ﻿
 using BussinessLogic;
+using CommunityToolkit.Maui;
 using Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,7 @@ public static class MauiProgram
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-
+        builder.UseMauiCommunityToolkit();
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddBussiness();
         builder.Services.AddPresentation();

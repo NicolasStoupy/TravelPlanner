@@ -86,6 +86,7 @@ namespace Presentation.MAUI.Models
 
                 await Shell.Current.DisplayAlert(messageType.ToString(), result.Message, "OK");
             }
+            
         }
 
         /// <summary>

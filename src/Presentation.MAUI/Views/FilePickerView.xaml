@@ -16,14 +16,14 @@
 
     <VerticalStackLayout>
         <!-- Titre principal -->
-        <Label Text="Ajoutez vos souvenirs."
+        <Label Text="Importez vos souvenirs."
            FontSize="20"
            FontAttributes="Bold"
            TextColor="Black"
            HorizontalOptions="Start" />
 
         <!-- Commentaire explicatif -->
-        <Label Text="Vous pouvez sélectionner un ou plusieurs fichiers. Ils s'afficheront ci-dessous une fois choisis. Lorsque vous cliquez sur « Envoyer les fichiers », ils seront ajoutés au voyage en cours."
+        <Label Text="Vous pouvez sélectionner un ou plusieurs fichiers. Ils s'afficheront ci-dessous une fois choisis. Lorsque vous cliquez sur « Valider », ils seront ajoutés au voyage en cours."
        FontSize="14"
        TextColor="Gray"
        LineBreakMode="WordWrap"
@@ -38,14 +38,14 @@
                                         JustifyContent="Start"
                                         Wrap="NoWrap"
                                         Margin="10">
-                <Button Text="Choisir un fichier"  
+                <Button Text="Importer des images"  
                     Clicked="OnPickFileClicked"
                     BackgroundColor="DarkBlue"
                         Margin="0,0,10,0"
                     TextColor="White"
                     
                     HorizontalOptions="Start" />
-                <Button Text="Envoyer les fichiers"
+                <Button Text="Valider" IsVisible="False" x:Name="BtnValidation"
                     BackgroundColor="DarkBlue"
                     TextColor="White"
                   

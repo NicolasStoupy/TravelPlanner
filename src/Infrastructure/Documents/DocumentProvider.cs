@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO.Compression;
 using Commons;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -196,4 +197,37 @@ public class DocumentProvider
             return false;
         }
     }
+
+    private IEnumerable<byte[]> GetFiles(IEnumerable<Guid> filesGuids, TypeMedia typeMedia)
+    {
+        var result = new List<byte[]>();
+        foreach (var fileGuid in filesGuids)
+        {
+            var file = GetFile(fileGuid, typeMedia) ?? Array.Empty<byte>();
+            result.Add(file);
+        }
+
+        return result;
+    }
+
+    public async Task<string> ExportToZipAsync(IEnumerable<Guid> filesGuids, TypeMedia typeMedia, string folderPath, string fileName)
+    {
+        var files = GetFiles(filesGuids, typeMedia);
+        var zipPath = Path.Combine(folderPath, fileName);
+        using (var zipStream = new FileStream(zipPath, FileMode.Create))
+        using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create))
+        {
+            int i = 1;
+            foreach (var file in files)
+            {
+                var entry = archive.CreateEntry($"image_{i:D3}.jpg", CompressionLevel.Optimal);
+                using var entryStream = entry.Open();
+                await entryStream.WriteAsync(file, 0, file.Length);
+                i++;
+            }
+        }
+        return zipPath;
+
+    }
+    
 }

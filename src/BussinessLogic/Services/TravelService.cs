@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
+using Commons;
 using Commons.Models;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 
 namespace BussinessLogic.Services
 {
@@ -338,6 +340,49 @@ namespace BussinessLogic.Services
                 // Log possible ici
                 return Result.Failure("Erreur lors de l'enregistrement des médias : " + ex.Message);
             }
+        }
+
+        public List<MemoryFile> GetMemories(int id, TypeMedia mediaType)
+        {
+            var result = new List<MemoryFile>();
+            using var context = _context.CreateDbContext();
+            var medias = context.Media.Where(m => m.TripId == id);
+            foreach (var media in medias)
+            {
+                result.Add(new MemoryFile()
+                {
+                    Files = _document.GetFile(media.FileGuid, mediaType),
+                    Description = media.Description,
+                    FileID = media.MediaId,
+                    FileGuid= media.FileGuid
+
+                });
+            }
+
+            return result;
+        }
+
+        public async Task<Result> RemoveMemories(IEnumerable<MemoryFile>? selectedMemories, int travelID)
+        {
+            using var context = _context.CreateDbContext();
+            var trip = context.Trips.FirstOrDefault(t => t.TripId == travelID);
+            if (trip != null && selectedMemories !=null)
+            {
+                foreach (var memory in selectedMemories)
+                {
+                    var media = context.Media.FirstOrDefault(m => m.MediaId == memory.FileID);
+                    if (media != null)
+                    {
+                        if (_document.RemoveFile(media.FileGuid, TypeMedia.Images))
+                            context.Media.Remove(media);
+                    }
+
+                }
+            }
+           await context.SaveChangesAsync();
+
+            return Result.Success("Success");
+
         }
     }
 }
