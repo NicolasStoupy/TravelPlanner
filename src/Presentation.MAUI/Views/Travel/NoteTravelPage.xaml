@@ -5,107 +5,69 @@
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
              xmlns:bu="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
              x:DataType="vm:NoteTravelVM"
-             Title="Notes de l'activité">
+             Title="📝 Notes">
 
-    <!-- Content -->
-    <Border StrokeThickness="1"
-            StrokeShape="RoundRectangle 10"
-            Margin="8">
-        <VerticalStackLayout Padding="10" Spacing="15">
+    <Grid RowDefinitions="Auto,*,Auto" Padding="15" RowSpacing="10">
 
-            <!-- Titre principal -->
-            <Label Text="📝 Mes notes"
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   TextColor="Black"
-                   Margin="5,0" />
+        <!-- Saisie -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="8">
+            <Entry Placeholder="Nouvelle note"
+                   Text="{Binding Note.NoteContent}"
+                   FontSize="13"
+                   HorizontalOptions="FillAndExpand" />
 
-            <!-- Saisie de note -->
-            <Border StrokeThickness="1"
-                    StrokeShape="RoundRectangle 10"
-                    Margin="0"
-                    Padding="10"
-                    BackgroundColor="White">
-                <Grid ColumnDefinitions="*,Auto"
-                      VerticalOptions="Center"
-                     >
-                    <Entry Grid.Column="0"
-                           Placeholder="Ajouter une note"
-                           Text="{Binding Note.NoteContent, Mode=TwoWay}"
-                           FontSize="14"
-                           TextColor="Black"
-                           PlaceholderColor="Gray"
-                           BackgroundColor="Transparent"
-                           HeightRequest="40" />
+            <Button  ImageSource="{StaticResource PlusIcon}"
+                    FontSize="14"
+                    Padding="6"
+                    WidthRequest="40"
+                    Command="{Binding AddNoteCommand}" />
+        </HorizontalStackLayout>
 
-                    <Button Grid.Column="1"
-                            Text="Ajouter"
-                            BackgroundColor="DarkBlue"
-                            TextColor="White"
-                            CornerRadius="6"
-                            HeightRequest="40"
-                            Margin="10,0,0,0"
-                            Command="{Binding AddNoteCommand}" />
-                </Grid>
-            </Border>
+        <!-- Scrollable list -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="6"
+                                 BindableLayout.ItemsSource="{Binding Travels.TravelNotes}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="bu:Note">
+                        <Grid ColumnDefinitions="*,Auto,Auto"
+                              Padding="8"
+                              BackgroundColor="#F9F9F9"
+                           >
 
-            <!-- Liste des notes -->
-            <ScrollView>
-                <VerticalStackLayout Spacing="10"
-                                     Margin="0,10,0,0"
-                                     BindableLayout.ItemsSource="{Binding Travels.TravelNotes}">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="bu:Note">
-                            <Border Stroke="LightGray"
-                                    StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 10"
-                                    BackgroundColor="White"
-                                    Padding="10"
-                                    Margin="0,5">
-                                <Grid ColumnDefinitions="*,Auto,Auto"
-                                      VerticalOptions="Center">
-                                    <Entry Grid.Column="0"
-                                           Text="{Binding NoteContent}"
-                                           FontSize="14"
-                                           TextColor="Black"
-                                           VerticalOptions="Center"
-                                            />
+                            <Entry Grid.Column="0"
+                                   Text="{Binding NoteContent}"
+                                   FontSize="13"
+                                   BackgroundColor="Transparent"
+                                   TextColor="Black" />
 
-                                    <Button Grid.Column="1"
-                                            Text="Modifier"
-                                            BackgroundColor="Green"
-                                            TextColor="White"
-                                            CornerRadius="6"
-                                            Margin="10,0,5,0"
-                                            HeightRequest="36"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NoteTravelVM}}, Path=EditNoteCommand}"
-                                            CommandParameter="{Binding .}" />
+                            <Button Grid.Column="1"
+                                    ImageSource="{StaticResource EditIcon}"
+                                    FontSize="13"
+                                    WidthRequest="40"
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NoteTravelVM}}, Path=EditNoteCommand}"
+                                    CommandParameter="{Binding .}" />
 
-                                    <Button Grid.Column="2"
-                                            Text="Supprimer"
-                                            BackgroundColor="Red"
-                                            TextColor="White"
-                                            CornerRadius="6"
-                                            HeightRequest="36"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NoteTravelVM}}, Path=DeleteNoteCommand}"
-                                            CommandParameter="{Binding .}" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
-            </ScrollView>
+                            <Button Grid.Column="2"
+                                     ImageSource="{StaticResource RemoveIcon}"
+                                    FontSize="13"
+                                    WidthRequest="40"
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NoteTravelVM}}, Path=DeleteNoteCommand}"
+                                    CommandParameter="{Binding .}" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </ScrollView>
 
-            <!-- Spinner -->
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}"
-                               Color="DeepPink"
-                               WidthRequest="100"
-                               HeightRequest="150"
-                               HorizontalOptions="Center" />
-
-        </VerticalStackLayout>
-    </Border>
-    <!-- Content -->
+        <!-- Spinner -->
+        <ActivityIndicator Grid.Row="2"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="DarkBlue"
+                           HorizontalOptions="Center"
+                           HeightRequest="30" />
+    </Grid>
 
 </ContentPage>

@@ -1,4 +1,5 @@
 
+using CommunityToolkit.Mvvm.Input;
 using Presentation.MAUI.ViewModel;
 
 namespace Presentation.MAUI.Views.Travel;
@@ -36,4 +37,6 @@ public partial class MemoriesTravelPage : ContentPage
         }
 
     }
+
+   
 }

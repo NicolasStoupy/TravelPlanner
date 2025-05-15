@@ -63,7 +63,7 @@
                             BackgroundColor="White"
                             Margin="8"
                             Padding="10">
-                                <Grid RowDefinitions="Auto,*">
+                                <Grid RowDefinitions="Auto,30,30">
                                     <VerticalStackLayout Grid.Row="0" Spacing="5">
                                         <Image Source="{Binding image, Converter={StaticResource ByteArrayToImageConverter}}"
                                        HeightRequest="150"
@@ -90,36 +90,42 @@
                                         </Label>
                                     </VerticalStackLayout>
 
-                                    <Grid Grid.Row="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <Button Grid.Column="0"
-                                                Text="Voir"
-                                                BackgroundColor="Green"
-                                                TextColor="White"
-                                                CornerRadius="6"
-                                                VerticalOptions="End"
-                                                HorizontalOptions="Fill"
-                                                HeightRequest="40"
-                                                Margin="0,10,5,0"
+                                    <FlexLayout Grid.Row="1"
+                                                Direction="Row"
+                                                Wrap="Wrap"                                                
+                                                JustifyContent="SpaceEvenly"
+                                                AlignItems="Start"
+                                                Padding="0"                                                
+                                                Margin="0">
+                                        <Button ImageSource="{StaticResource InfoIcon}"
+                                                MaximumWidthRequest="40"
+                                                BackgroundColor="Transparent"
                                                 Command="{Binding BindingContext.TravelDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                CommandParameter="{Binding .}" />
-                                        <Button Grid.Column="1"
-                                               
-                                                Text="Supprimer"
-                                                BackgroundColor="Red"
-                                                TextColor="White"
-                                                CornerRadius="6"
-                                                VerticalOptions="End"
-                                                HorizontalOptions="Fill"
-                                                HeightRequest="40"
-                                                Margin="5,10,0,0"
+                                                CommandParameter="{Binding .}" >
+                                        </Button>
+                                        <Button ImageSource="{StaticResource RemoveIcon}"
+                                                MaximumWidthRequest="40"
+                                                BackgroundColor="Transparent"
                                                 Command="{Binding BindingContext.DeleteTravelCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                CommandParameter="{Binding Id}" />
-                                    </Grid>
+                                                CommandParameter="{Binding Id}">
+                                        </Button>
+                                        <Button ImageSource="{StaticResource PDFIcon}"
+                                                MaximumWidthRequest="40"
+                                                BackgroundColor="Transparent"  
+                                                Command="{Binding BindingContext.ExtractTravelToPdfCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}"
+                                                AutomationProperties.HelpText="Exporter le voyage en PDF"
+                                                >
+                                        </Button>
+                                        <Button ImageSource="{StaticResource CloneIcon}"
+                                                MaximumWidthRequest="40"
+                                                BackgroundColor="Transparent"  
+                                                Command="{Binding BindingContext.CloneTravelCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}">
+                                        </Button>
+                                    </FlexLayout>
+                                 
+
                                 </Grid>
                             </Border>
                         </DataTemplate>

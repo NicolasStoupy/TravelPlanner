@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Presentation.MAUI.Views.FullScreenImagePage"
+             xmlns:views="clr-namespace:Presentation.MAUI.Views"
+             Title="FullScreenImagePage">
+    <ScrollView>
+        <Grid RowDefinitions="150,*">
+            <views:NavigationLayout 
+                Grid.Row="0">                
+            </views:NavigationLayout>
+
+            <Image x:Name="ImageView"
+       Grid.Row="1"
+       Aspect="AspectFit"
+                   MaximumHeightRequest="600"
+       HorizontalOptions="Center"
+       VerticalOptions="Start" />
+        </Grid>
+
+    </ScrollView>
+</ContentPage>

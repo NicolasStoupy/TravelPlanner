@@ -15,6 +15,7 @@ namespace BussinessLogic.Mappings
             CreateMap<DateTime, DateOnly>().ConvertUsing<DateTimeToDateOnlyConverter>();
             // Mapping Trip ↔ Travel
             CreateMap<Trip, Travel>()
+                .ForMember(dest => dest.MemoryFiles, opt => opt.MapFrom<TravelMemoriesResolver>())
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TripId))
                 .ForMember(dest => dest.description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.people, opt => opt.MapFrom(src => src.NumberPeople))
@@ -83,6 +84,22 @@ namespace BussinessLogic.Mappings
             CreateMap<TypeOfActivity, Infrastructure.EntityModels.ActivityType>()
                .ForMember(dest => dest.ActivityTypeId, opt => opt.MapFrom(src => src.ID))
                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Name));
+
+
+            CreateMap<Medium, MemoryFile>()
+                .ForMember(dest=>dest.FileID,opt=>opt.MapFrom(src=>src.MediaId))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.FileGuid, opt => opt.MapFrom(src => src.FileGuid))
+                .ForMember(dest => dest.Files, opt => opt.MapFrom<ImageResolver>());
+
+            CreateMap<MemoryFile, Medium>()
+                .ForMember(dest => dest.MediaId, opt => opt.MapFrom(src => src.FileID))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.FileGuid, opt => opt.MapFrom(src => src.FileGuid));
+               
+                                                
         }
+
+       
     }
 }

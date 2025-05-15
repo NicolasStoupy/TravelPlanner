@@ -38,6 +38,32 @@ namespace BussinessLogic.Mappings.Resolvers
                 : null;
         }
     }
+    public class ImageResolver : IValueResolver<Medium, MemoryFile, byte[]?>
+    {
+        private readonly DocumentProvider _documentProvider;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TravelImageResolver"/> class with the specified document provider.
+        /// </summary>
+        /// <param name="documentProvider">The service used to retrieve image files from storage.</param>
+        public ImageResolver(DocumentProvider documentProvider)
+        {
+            _documentProvider = documentProvider;
+        }
+
+        /// <summary>
+        /// Resolves the image associated with a trip based on its background GUID.
+        /// </summary>
+        /// <param name="source">The source <see cref="Trip"/> object.</param>
+        /// <param name="destination">The destination <see cref="Travel"/> object (not used here).</param>
+        /// <param name="destMember">The current value of the destination member (not used).</param>
+        /// <param name="context">The AutoMapper resolution context.</param>
+        /// <returns>The byte array representing the image, or null if no image is available.</returns>
+        public byte[]? Resolve(Medium source, MemoryFile destination, byte[]? destMember, ResolutionContext context)
+        {
+            return _documentProvider.GetFile(source.FileGuid, Commons.TypeMedia.Images);
+        }
+    }
 
     /// <summary>
     /// AutoMapper resolver that maps <see cref="Trip"/> logbook entries to a list of <see cref="Note"/> for a <see cref="Travel"/> object.
@@ -61,7 +87,33 @@ namespace BussinessLogic.Mappings.Resolvers
             return _mapper.Map<List<Note>>(logBooks);
         }
     }
+    public class TravelMemoriesResolver : IValueResolver<Trip, Travel, List<MemoryFile>>
 
+    {
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
+        private readonly IMapper _mapper;
+
+        public TravelMemoriesResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public List<MemoryFile> Resolve(Trip source, Travel destination, List<MemoryFile> destMember, ResolutionContext context)
+        {
+            var dbcontext = _context.CreateDbContext();
+            var trip = dbcontext.Trips
+                .Include(t => t.Media)
+                .FirstOrDefault(t => t.TripId == source.TripId);
+
+            var memoryFiles = trip != null
+                ? _mapper.Map<List<MemoryFile>>(trip.Media)
+                : new List<MemoryFile>();
+
+
+            return _mapper.Map<List<MemoryFile>>(memoryFiles);
+        }
+    }
     /// <summary>
     /// AutoMapper resolver that retrieves and maps all <see cref="Activity"/> entities linked to a <see cref="Trip"/>
     /// into a list of <see cref="TravelActivity"/> for the destination <see cref="Travel"/>.

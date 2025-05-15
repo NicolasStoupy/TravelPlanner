@@ -6,7 +6,7 @@ using Commons.Models;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.ObjectModel;
+
 
 namespace BussinessLogic.Services
 {
@@ -354,7 +354,7 @@ namespace BussinessLogic.Services
                     Files = _document.GetFile(media.FileGuid, mediaType),
                     Description = media.Description,
                     FileID = media.MediaId,
-                    FileGuid= media.FileGuid
+                    FileGuid = media.FileGuid
 
                 });
             }
@@ -366,7 +366,7 @@ namespace BussinessLogic.Services
         {
             using var context = _context.CreateDbContext();
             var trip = context.Trips.FirstOrDefault(t => t.TripId == travelID);
-            if (trip != null && selectedMemories !=null)
+            if (trip != null && selectedMemories != null)
             {
                 foreach (var memory in selectedMemories)
                 {
@@ -379,10 +379,33 @@ namespace BussinessLogic.Services
 
                 }
             }
-           await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return Result.Success("Success");
 
+        }
+
+        public Result CloneTravel(Travel travel)
+        {
+            using var context = _context.CreateDbContext();
+            var tripCloned = _mapper.Map<Trip>(travel);
+            tripCloned.TripId = 0;
+            context.Trips.Add(tripCloned);
+            context.SaveChanges();
+            return Result.Success("Cloné");
+        }
+
+        public Result UpdateMemory(MemoryFile memory)
+        {
+            using var context = _context.CreateDbContext();
+
+            var media = context.Media.FirstOrDefault(m => m.MediaId == memory.FileID);
+            if (media != null)
+            {
+                media.Description = memory.Description??string.Empty;
+                context.SaveChanges();
+            }
+           return Result.Success();
         }
     }
 }

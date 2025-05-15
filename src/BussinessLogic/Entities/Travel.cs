@@ -32,8 +32,19 @@ namespace BussinessLogic.Entities
 
         public List<Cost> TravelCosts { get; set; } = new();
 
-        public List<Follower>? Followers { get; set; }
+        public List<Follower> Followers { get; set; } = new();
 
-        public List<Ticket>? TravelTickets { get; set; } = new();
+        public List<Ticket> TravelTickets { get; set; } = new();
+
+        public List<MemoryFile> MemoryFiles { get; set; } = new();
+
+        public int CountNote => TravelNotes.Count();
+
+        public double TotalCost => TravelCosts.Sum(c=>c.Price);
+
+        public int CountFollowers => Followers.Count();
+
+        public int CountTickets => TravelTickets.Count();
+        public int CountActivities => TravelActivities.Count();
     }
 }

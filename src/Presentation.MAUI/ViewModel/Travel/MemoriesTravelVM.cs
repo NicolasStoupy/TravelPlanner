@@ -6,6 +6,7 @@ using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Presentation.MAUI.Services;
+using Presentation.MAUI.Views;
 using System.Collections.ObjectModel;
 using System.Threading;
 
@@ -177,6 +178,22 @@ namespace Presentation.MAUI.ViewModel
    
         }
 
+        [RelayCommand]
+        private Task OnEditorUnfocused(MemoryFile memory)
+        {
+            _applicationService.TravelService.UpdateMemory(memory);
+            // Tu peux persister, valider, etc.
+            return Task.CompletedTask;
+        }
+        [RelayCommand]
+        public async Task ShowImage(byte[] imageBytes)
+        {
+            if (imageBytes == null || imageBytes.Length == 0)
+                return;
+
+            // Afficher une popup, un overlay, ou naviguer vers une page avec l’image
+            await Shell.Current.Navigation.PushAsync(new FullScreenImagePage(imageBytes));
+        }
 
     }
 }

@@ -8,6 +8,7 @@
              xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
              xmlns:icons="clr-namespace:Presentation.MAUI"
              x:DataType="vm:MemoriesTravelVM"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Name="MemoriesPage"
              Title="MemoriesPage">
 
@@ -60,16 +61,18 @@
                                     Command="{Binding SelectAllCommand}" />
                         </Grid>
                     </Border>
-                    <Border Grid.Row="1" StrokeThickness="1"
-                    StrokeShape="RoundRectangle 10"
-                    Margin="1" Padding="10">
+                    <Border Grid.Row="1" 
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"
+                            Margin="1"
+                            Padding="10">
                         <FlexLayout Wrap="Wrap"
                             JustifyContent="Start"
                             AlignItems="Center"
                             BindableLayout.ItemsSource="{Binding MemoriesFiles}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="entities:MemoryFile">
-                                    <Grid RowDefinitions="*" WidthRequest="150" HeightRequest="150" Margin="3">
+                                    <Grid RowDefinitions="*,*" WidthRequest="150" HeightRequest="150" Margin="3">
                                         <CheckBox ZIndex="4"
                                               Grid.Row="0"
                                               Color="Green"
@@ -79,7 +82,24 @@
                                               IsChecked="{Binding Checked}"
                                               CheckedChanged="CheckBox_CheckedChanged"
                                               ></CheckBox>
-                                        <Image ZIndex="-3" Grid.Row="0" Source="{Binding Files, Converter={StaticResource ByteArrayToImageConverter}}" Aspect="AspectFill" />
+                                        <Image ZIndex="-3" 
+                                               Grid.Row="0"
+                                               Source="{Binding Files, Converter={StaticResource ByteArrayToImageConverter}}"
+                                               Aspect="AspectFill">
+                                            <Image.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding BindingContext.ShowImageCommand, Source={x:Reference MemoriesPage}}"
+                                                    CommandParameter="{Binding Files}" />
+                                            </Image.GestureRecognizers>
+                                        </Image>
+                                        <Editor Grid.Row="3" x:Name="MemoryEditor" Text="{Binding Description}">
+                                            <Editor.Behaviors>
+                                                <toolkit:EventToCommandBehavior
+                                                    EventName="Unfocused"
+                                                    Command="{Binding BindingContext.EditorUnfocusedCommand, Source={x:Reference MemoriesPage}}"
+                                                    CommandParameter="{Binding .}" />
+                                            </Editor.Behaviors>
+                                        </Editor>
                                     </Grid>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>

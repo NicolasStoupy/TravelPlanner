@@ -15,6 +15,11 @@
             <x:String x:Key="DownloadIcon">download.png</x:String>
             <x:String x:Key="ZipIcon">zip.png</x:String>
             <x:String x:Key="RemoveIcon">remove.png</x:String>
+            <x:String x:Key="PDFIcon">pdf.png</x:String>
+            <x:String x:Key="InfoIcon">info.png</x:String>
+            <x:String x:Key="CloneIcon">clone.png</x:String>
+            <x:String x:Key="PlusIcon">plus.png</x:String>
+            <x:String x:Key="EditIcon">edit.png</x:String>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

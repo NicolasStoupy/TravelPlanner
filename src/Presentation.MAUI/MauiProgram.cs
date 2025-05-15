@@ -4,6 +4,7 @@ using CommunityToolkit.Maui;
 using Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using QuestPDF.Infrastructure;
 
 
 namespace Presentation.MAUI;
@@ -22,7 +23,7 @@ public static class MauiProgram
         builder.Services.AddBussiness();
         builder.Services.AddPresentation();
 
-
+        QuestPDF.Settings.License = LicenseType.Community;
 
         builder
             .UseMauiApp<App>()

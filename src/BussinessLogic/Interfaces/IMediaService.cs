@@ -7,6 +7,7 @@ namespace BussinessLogic.Interfaces
 {
     public interface IMediaService
     {
+        byte[] GeneratePdfSummary(Travel travelID);
         List<byte[]> GetMediasFromTrip(int tripID, TypeMedia typeMedia);
        
         List<byte[]> GetMediasFromTrip(Trip trip, List<MediaType> mediaTypes);

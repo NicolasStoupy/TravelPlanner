@@ -1,12 +1,12 @@
 ﻿using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
+using BussinessLogic.Models;
 using Commons;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+using QuestPDF.Fluent;
+
 
 namespace BussinessLogic.Services
 {
@@ -118,6 +118,11 @@ namespace BussinessLogic.Services
 
             return result.ToString();
         }
-       
+
+        public byte[] GeneratePdfSummary(Travel travel)
+        {
+            var document = new TravelDocumentPDF(travel);
+            return document.GeneratePdf();
+        }
     }
 }

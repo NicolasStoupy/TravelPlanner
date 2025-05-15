@@ -24,6 +24,8 @@ namespace BussinessLogic.Interfaces
         Task<Result> AddMediaToTravel(List<byte[]> medias, int travelID, Commons.TypeMedia images);
         List<MemoryFile> GetMemories(int id, TypeMedia mediaType);
         Task<Result> RemoveMemories(IEnumerable<MemoryFile>? selectedMemories, int id);
+        Result CloneTravel(Travel travel);
+        Result UpdateMemory(MemoryFile memory);
         // Updating
     }
 }

@@ -2,9 +2,9 @@
 using BussinessLogic.Entities;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Presentation.MAUI.Models;
 using Presentation.MAUI.Services;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Storage;
 
 namespace Presentation.MAUI.ViewModel;
 
@@ -17,11 +17,12 @@ public partial class FinderTravelPageVM : TravelVM
 
     [ObservableProperty]
     private ObservableCollection<Travel> _travelItems = [];
-
+ 
+    
     public FinderTravelPageVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
     {
         Title = "Voyages";
-       
+
         FilterItems();
     }
 
@@ -106,6 +107,16 @@ public partial class FinderTravelPageVM : TravelVM
     private async Task DeleteTravel(int tripId)
     {
         IsBusy = true;
+        bool confirm = await Shell.Current.DisplayAlert(
+                                       "Confirmation",
+                                       $"Voulez-vous vraiment supprimer le voyage?",
+                                       "Oui",
+                                       "Non");
+        if (!confirm)
+        {
+            IsBusy = false;
+            return;
+        }
 
         await DisplayAlert(await _applicationService.TravelService.DeleteTravel(tripId));
         Reset();
@@ -122,7 +133,25 @@ public partial class FinderTravelPageVM : TravelVM
         _allTravelItems.Clear();
         TravelItems.Clear();
         _allTravelItems = _applicationService.TravelService.GetTravels();
+     
         TravelItems = [.. _allTravelItems];
         IsBusy = false;
+    }
+
+    [RelayCommand]
+    public async Task ExtractTravelToPdf(Travel travel, CancellationToken cancellationToken)
+    {
+        var pdfFile = _applicationService.MediaService.GeneratePdfSummary(travel);
+        using var pdfFileStream = new MemoryStream(pdfFile);
+        var fileSaverResult = await FileSaver.Default
+            .SaveAsync($"Travel-{travel.name}.pdf", pdfFileStream, cancellationToken);
+
+    }
+
+    [RelayCommand]
+    public async Task CloneTravel(Travel travel)
+    {
+        await DisplayAlert(_applicationService.TravelService.CloneTravel(travel));
+        Reset();
     }
 }

@@ -135,6 +135,9 @@
 	  <MauiXaml Update="Views\FilePickerView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\FullScreenImagePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\NavigationLayout.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
