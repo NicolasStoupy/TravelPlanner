@@ -21,7 +21,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <VerticalStackLayout Grid.Column="0" Padding="20" Spacing="15">
+            <VerticalStackLayout Grid.Column="0" Padding="20" Spacing="15" >
                 <views:NavigationLayout></views:NavigationLayout>
                 <Label Text="Nom de l'activité" />
                 <Entry Text="{Binding ActivityName}" Placeholder="Nom" />

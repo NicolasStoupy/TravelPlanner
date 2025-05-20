@@ -36,6 +36,7 @@ namespace Presentation.MAUI.ViewModel
             {
                 Note.NoteContent = newValue.NoteContent;
             }
+            return ;
         }
 
         /// <summary>
@@ -63,6 +64,7 @@ namespace Presentation.MAUI.ViewModel
                 await NoTravelSelected();
                 return;
             }
+            return;
         }
 
         /// <summary>
@@ -84,6 +86,7 @@ namespace Presentation.MAUI.ViewModel
             {
                 await NoTravelSelected();
             }
+
         }
 
         /// <summary>

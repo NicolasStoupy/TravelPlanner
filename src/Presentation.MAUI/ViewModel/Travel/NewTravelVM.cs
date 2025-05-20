@@ -150,6 +150,7 @@ namespace Presentation.MAUI.ViewModel
             Travel = new Travel();
             ImageSelected = null;
             CurrencySelected = null;
+            return;
         }
     }
 }

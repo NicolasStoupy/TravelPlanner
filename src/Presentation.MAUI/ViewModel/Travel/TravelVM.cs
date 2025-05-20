@@ -15,6 +15,7 @@ namespace Presentation.MAUI.ViewModel
         partial void OnModeChanged(Mode value)
         {
             OnPropertyChanged(nameof(ModeDisplay));
+            return ;
         }
 
         [ObservableProperty]
@@ -40,7 +41,7 @@ namespace Presentation.MAUI.ViewModel
         }
         public override void Reset()
         {
-            throw new NotImplementedException();
+            return;
         }
     }
 }

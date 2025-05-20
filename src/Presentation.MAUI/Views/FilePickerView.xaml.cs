@@ -28,12 +28,15 @@ public partial class FilePickerView : ContentView
             typeof(FilePickerView),
             null);
 
+
     public ICommand? SendFilesCommand
     {
         get => (ICommand?)GetValue(SendFilesCommandProperty);
         set => SetValue(SendFilesCommandProperty, value);
 
     }
+
+   
     public FilePickerView() => InitializeComponent();
 
     private async void OnPickFileClicked(object sender, EventArgs e)
@@ -41,7 +44,7 @@ public partial class FilePickerView : ContentView
 
         var results = await FilePicker.PickMultipleAsync(new PickOptions
         {
-            PickerTitle = "Choisir des images",
+            PickerTitle = "Choisir des éléments",
             FileTypes = FilePickerFileType.Images
         });
 
@@ -60,7 +63,7 @@ public partial class FilePickerView : ContentView
         }
         SetBtnValidationVisibility();
 
-
+        return;
     }
     private void OnDeleteImageClicked(object sender, EventArgs e)
     {
@@ -68,7 +71,7 @@ public partial class FilePickerView : ContentView
         {
             Files?.Remove(imageToRemove);
         }
-        SetBtnValidationVisibility();
+        SetBtnValidationVisibility(); return;
     }
 
     private void SetBtnValidationVisibility()
@@ -81,6 +84,7 @@ public partial class FilePickerView : ContentView
         {
             BtnValidation.IsVisible = false;
         }
+        return;
     }
 
     private void Send()
@@ -92,9 +96,10 @@ public partial class FilePickerView : ContentView
 
         }
         SetBtnValidationVisibility();
+        return;
     }
 
-    // Exemple bouton lié à cette méthode
+
     private void OnSendClicked(object sender, EventArgs e) => Send();
 
 }

@@ -4,8 +4,31 @@ using System.Globalization;
 
 namespace Presentation.MAUI.Converters
 {
+    /// <summary>
+    /// Converter that truncates a string to a specified maximum length and appends a suffix if truncated.
+    /// </summary>
+    /// <remarks>
+    /// The converter parameter can specify the maximum length and suffix in the format "maxLength|suffix".
+    /// For example: "100|..." will truncate to 100 characters and append "..." if the original string exceeds that length.
+    /// Defaults to a max length of 50 and suffix "..." if no parameter is provided or parsing fails.
+    /// </remarks>
     public class StringLimitConverter : IValueConverter
     {
+        /// <summary>
+        /// Truncates the input string if it exceeds the specified maximum length.
+        /// </summary>
+        /// <param name="value">The value produced by the binding source, expected to be a <see cref="string"/>.</param>
+        /// <param name="targetType">The type of the binding target property (should be <see cref="string"/>).</param>
+        /// <param name="parameter">
+        /// Optional converter parameter in the format "maxLength|suffix".
+        /// maxLength: integer for maximum allowed characters.
+        /// suffix: string to append when truncation occurs.
+        /// </param>
+        /// <param name="culture">The culture to use (not used in this converter).</param>
+        /// <returns>
+        /// The original string if its length is within the limit; otherwise, a truncated string with the suffix appended.
+        /// If the input is null or not a string, returns the original value.
+        /// </returns>
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is not string str || string.IsNullOrEmpty(str))

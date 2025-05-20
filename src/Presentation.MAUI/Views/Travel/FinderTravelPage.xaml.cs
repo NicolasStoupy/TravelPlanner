@@ -34,6 +34,6 @@ public partial class FinderTravelPage : ContentPage
 
             Console.WriteLine(ex.Message);
         }
-
+        return;
     }
 }

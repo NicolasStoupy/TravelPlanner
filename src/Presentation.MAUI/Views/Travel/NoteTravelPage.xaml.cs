@@ -17,5 +17,6 @@ public partial class NoteTravelPage : ContentPage
         {
             vm.Reset();
         }
+        return;
     }
 }

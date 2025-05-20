@@ -1,5 +1,6 @@
 ﻿using BussinessLogic.Entities;
 using Commons.Models;
+using System.Collections.ObjectModel;
 
 namespace BussinessLogic.Interfaces
 {
@@ -42,5 +43,6 @@ namespace BussinessLogic.Interfaces
         Task<Result> UpdateActivity(TravelActivity travelActivity,int travelID);
 
         Task<TravelActivity> GetActivity(int travelActivityID);
+        Task<bool> UpdateSequence(ObservableCollection<TravelActivity>? activities);
     }
 }

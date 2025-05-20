@@ -35,7 +35,7 @@ public partial class MemoriesTravelPage : ContentPage
         {
             vm.ExtraAction = vm.ExtraActionIsEnabled();
         }
-
+        return;
     }
 
    

@@ -27,7 +27,7 @@
             <Border Grid.Row="0" StrokeThickness="1"
                 StrokeShape="RoundRectangle 10"
                 Margin="8" Padding="10">
-                <view:FilePickerView SendFilesCommand="{Binding SendFilesCommand}" />
+                <view:FilePickerView SendFilesCommand="{Binding SendFilesCommand}"  />
             </Border>
             <!-- Scrollable Zone -->
             <ScrollView Grid.Row="1" >

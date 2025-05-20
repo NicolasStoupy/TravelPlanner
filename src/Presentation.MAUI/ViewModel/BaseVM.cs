@@ -18,7 +18,7 @@ namespace Presentation.MAUI.Models
     /// <param name="applicationService">The application service providing access to business logic.</param>
     public abstract partial class BaseVM(INavigationService navigationService, IApplicationService applicationService) : ObservableValidator
     {
-        protected virtual IValidator? GetValidator() => null;       
+        protected virtual IValidator? GetValidator() => null;
 
         /// <summary>
         /// Indicates whether the ViewModel is performing a background operation.
@@ -86,7 +86,6 @@ namespace Presentation.MAUI.Models
 
                 await Shell.Current.DisplayAlert(messageType.ToString(), result.Message, "OK");
             }
-            
         }
 
         /// <summary>
@@ -126,7 +125,7 @@ namespace Presentation.MAUI.Models
             // Récupérer le validateur FluentValidation associé
             var validator = GetValidator() ?? throw new InvalidOperationException("Aucun validateur FluentValidation n'a été fourni.");
 
-            // Validate the model 
+            // Validate the model
             var result = await validator.ValidateAsync(new ValidationContext<object>(this));
 
             //// Nettoyer les erreurs précédentes (si tu utilises un système d’erreurs custom)

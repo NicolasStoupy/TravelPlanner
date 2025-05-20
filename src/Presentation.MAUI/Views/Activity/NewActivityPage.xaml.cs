@@ -18,7 +18,7 @@ public partial class NewActivityPage : ContentPage
 
         var text = await  webview.EvaluateJavaScriptAsync("document.body.innerText");
       
-        var description = MapPlaceInfo.ExtractDescriptionFromRawText(text);
+        
         return;
     }
 
@@ -45,6 +45,7 @@ public partial class NewActivityPage : ContentPage
 
             Console.WriteLine(ex.Message);
         }
+        return;
 
     }
 }

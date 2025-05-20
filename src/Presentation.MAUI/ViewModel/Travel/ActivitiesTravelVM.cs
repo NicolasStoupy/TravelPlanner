@@ -16,10 +16,26 @@ namespace Presentation.MAUI.ViewModel
 
         [ObservableProperty]
         private bool _saveButtonVisible;
+        [ObservableProperty]
+        private bool _modificationNotSaved;
+        partial void OnModificationNotSavedChanged(bool value)
+        {
+            if (value)
+            {
+                SaveButtonVisible = true;
+            }
+            else
+            {
+                SaveButtonVisible = false;
+            }
+
+        }
 
         public decimal TotalPlannedCost => 0;
         public decimal TotalRealCost => 0;
+        [ObservableProperty]
 
+        private UrlWebViewSource url = new UrlWebViewSource { Url = "https://www.google.com/search?q=Paris&hl=fr&udm=2" };
         public ActivitiesTravelVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
         {
         }
@@ -48,9 +64,35 @@ namespace Presentation.MAUI.ViewModel
         }
 
         [RelayCommand]
-        public async Task AddActivity() => await _navigationService.NavigateToNewActivity();
+        public async Task AddActivity()
+        {
+            await PendingChange();
+            await _navigationService.NavigateToNewActivity();
+
+        }
+
+        async Task PendingChange()
+        {
+            if (ModificationNotSaved)
+            {
+                bool confirm = await Shell.Current.DisplayAlert("Modifications en attente",
+                    "Vous avez des changements non enregistrés. Voulez-vous les enregistrer avant de quitter ?",
+                    "Enregistrer", "Quitter sans enregistrer");
+                if (confirm)
+                {
+                    await SaveSequence();
+
+                }
+
+
+            }
+        }
         [RelayCommand]
-        public async Task EditActivity(TravelActivity travelActivity) => await _navigationService.NavigateToEditActivity(travelActivity);
+        public async Task EditActivity(TravelActivity travelActivity)
+        {
+            await PendingChange();
+            await _navigationService.NavigateToEditActivity(travelActivity);
+        }
 
         public async Task OnAppearingAsync()
         {
@@ -60,7 +102,7 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         public async Task SaveActivity()
         {
-            await DisplayAlert(MAUI.Models.MessageType.Success, "OK");
+            await SaveSequence();
         }
 
         [RelayCommand]
@@ -85,6 +127,31 @@ namespace Presentation.MAUI.ViewModel
             await DisplayAlert(await _applicationService.ActivityService.DeleteActivity(activity));
             await LoadData();
         }
-     
+
+        [RelayCommand]
+        public async Task OpenGoogleLink(string link)
+        {
+            if (string.IsNullOrWhiteSpace(link))
+                return;
+
+            // Vérifie que c'est bien une URI valide
+            if (Uri.TryCreate(link, UriKind.Absolute, out var uri))
+            {
+                await Launcher.OpenAsync(uri);
+            }
+        }
+
+
+        public async Task SaveSequence()
+        {
+            await _applicationService.ActivityService.UpdateSequence(Activities);
+            ModificationNotSaved = false;
+            await LoadData();
+            return;
+        }
+
+
+
+
     }
 }

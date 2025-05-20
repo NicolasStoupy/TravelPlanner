@@ -20,6 +20,11 @@
             <x:String x:Key="CloneIcon">clone.png</x:String>
             <x:String x:Key="PlusIcon">plus.png</x:String>
             <x:String x:Key="EditIcon">edit.png</x:String>
+            <x:String x:Key="WwwIcon">worldwide.png</x:String>
+            <x:String x:Key="DestinationIcon">destination.png</x:String>
+            <x:String x:Key="InvoiceIcon">invoice.png</x:String>
+            <x:String x:Key="SaveIcon">save.png</x:String>
+            <x:String x:Key="NoteIcon">notepad.png</x:String>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

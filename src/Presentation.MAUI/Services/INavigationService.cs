@@ -7,11 +7,14 @@ using BussinessLogic.Entities;
 
 namespace Presentation.MAUI.Services
 {
+    /// <summary>
+    /// Defines navigation operations between pages and views within the application.
+    /// </summary>
     public interface INavigationService
     {
+
         Task NavigateToNewTravelPageAsync();
         Task NavigateToNewTravel(string travelID);
-
         Task NavigateToTravelFinder();
         Task NavigateToNewActivity();
         Task NavigateToEditActivity(TravelActivity travelActivity);

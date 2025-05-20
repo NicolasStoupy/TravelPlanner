@@ -9,8 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Presentation.MAUI.Services
 {
     public class NavigationService : INavigationService
-    {  
-       
+    {        
 
         public async Task NavigateToNewTravelPageAsync()
         {

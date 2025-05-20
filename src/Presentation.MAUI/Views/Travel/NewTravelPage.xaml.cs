@@ -15,6 +15,6 @@ public partial class NewTravelPage : ContentPage
     {
         base.OnAppearing();
 
-      
+        return;
     }
 }

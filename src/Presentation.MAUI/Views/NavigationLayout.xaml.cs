@@ -17,6 +17,6 @@ public partial class NavigationLayout : ContentView
             await Shell.Current.GoToAsync("..");
 
         }
-
+        return;
     }
 }

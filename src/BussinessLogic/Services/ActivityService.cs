@@ -4,6 +4,7 @@ using BussinessLogic.Interfaces;
 using Commons.Models;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 
 
 namespace BussinessLogic.Services
@@ -66,7 +67,7 @@ namespace BussinessLogic.Services
                 using var context = _contextFactory.CreateDbContext();
                 var activities = context.Activities.Where(a => a.TripId == travelID);
                 var TravelActivities = _mapper.Map<List<TravelActivity>>(activities);
-                return TravelActivities;
+                return TravelActivities.OrderBy(t=>t.Sequence).ToList();
             }
             catch (Exception ex)
             {
@@ -102,6 +103,50 @@ namespace BussinessLogic.Services
             return travelActivity;
         }
 
+        public async Task<bool> UpdateSequence(ObservableCollection<TravelActivity>? activities)
+        {
+            if (activities == null || activities.Count == 0)
+                return false;
+
+            using var context = _contextFactory.CreateDbContext();
+
+            // Démarre une transaction 
+            await using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                // 1) Passe 1 : valeurs temporaires uniques (-(i+1))
+                for (int i = 0; i < activities.Count; i++)
+                {
+                    var id = activities[i].ActivityID;
+                    var dbAct = await context.Activities
+                                             .FirstOrDefaultAsync(a => a.ActivityId == id);
+                    if (dbAct != null)
+                        dbAct.Sequence = -(i + 1);
+                }
+                await context.SaveChangesAsync();
+
+                // 2) Passe 2 : séquences “réelles” 1,2,3…
+                for (int i = 0; i < activities.Count; i++)
+                {
+                    var id = activities[i].ActivityID;
+                    var dbAct = await context.Activities
+                                             .FirstOrDefaultAsync(a => a.ActivityId == id);
+                    if (dbAct != null)
+                        dbAct.Sequence = i + 1;
+                }
+                await context.SaveChangesAsync();
+
+                // Valide la transaction
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch
+            {
+                // Annule tout si erreur
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
     }
 }
 
