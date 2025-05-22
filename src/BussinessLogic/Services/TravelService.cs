@@ -346,7 +346,7 @@ namespace BussinessLogic.Services
         {
             var result = new List<MemoryFile>();
             using var context = _context.CreateDbContext();
-            var medias = context.Media.Where(m => m.TripId == id);
+            var medias = context.Media.Where(m => m.TripId == id && m.ActivityCostId == null);
             foreach (var media in medias)
             {
                 result.Add(new MemoryFile()

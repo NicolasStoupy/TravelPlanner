@@ -44,7 +44,7 @@ namespace BussinessLogic.Mappings
             // Mapping TravelActivity ↔ Activity
             CreateMap<TravelActivity, Activity>()
                .ForMember(dest => dest.ActivityId, opt => opt.MapFrom(src => src.ActivityID))
-               .ForMember(dest=>dest.ActivityType,opt=>opt.MapFrom(src=>src.ActivityType))
+               .ForMember(dest => dest.ActivityType, opt => opt.MapFrom(src => src.ActivityType))
                .ForMember(dest => dest.ActivityDate, opt => opt.MapFrom(src => src.ActivityDate))
                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
@@ -87,7 +87,7 @@ namespace BussinessLogic.Mappings
 
 
             CreateMap<Medium, MemoryFile>()
-                .ForMember(dest=>dest.FileID,opt=>opt.MapFrom(src=>src.MediaId))
+                .ForMember(dest => dest.FileID, opt => opt.MapFrom(src => src.MediaId))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.FileGuid, opt => opt.MapFrom(src => src.FileGuid))
                 .ForMember(dest => dest.Files, opt => opt.MapFrom<ImageResolver>());
@@ -96,10 +96,22 @@ namespace BussinessLogic.Mappings
                 .ForMember(dest => dest.MediaId, opt => opt.MapFrom(src => src.FileID))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.FileGuid, opt => opt.MapFrom(src => src.FileGuid));
-               
-                                                
+
+            CreateMap<ActivityCost, Cost>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.CurrencyCode))                
+                .ForMember(dest => dest.TicketsList, opt => opt.MapFrom<CostTicketResolver>())
+                .ForMember(dest => dest.CostID, opt => opt.MapFrom(src => src.ActivityCostId));
+
+            CreateMap<Cost, ActivityCost>()
+               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+               .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+               .ForMember(dest => dest.CurrencyCode, opt => opt.MapFrom(src => src.Currency))
+               .ForMember(dest => dest.ActivityCostId, opt => opt.MapFrom(src => src.CostID));
+
         }
 
-       
+
     }
 }

@@ -29,5 +29,6 @@ namespace BussinessLogic.Entities
 
         public List<Ticket> Tickets { get; set; } = new();
         public DateTime ActivityDate { get;  set; }
+        public double Total { get; internal set; }
     }
 }

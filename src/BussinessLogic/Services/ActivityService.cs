@@ -35,12 +35,12 @@ namespace BussinessLogic.Services
             }
         }
 
-        public async Task<Result> UpdateActivity(TravelActivity travelActivity,int travelID)
+        public async Task<Result> UpdateActivity(TravelActivity travelActivity, int travelID)
         {
             using var context = _contextFactory.CreateDbContext();
 
             var activity = _mapper.Map<Activity>(travelActivity);
-            activity.TripId= travelID;
+            activity.TripId = travelID;
             context.Activities.Update(activity);
             await context.SaveChangesAsync();
             return Result.Success("Success");
@@ -67,7 +67,11 @@ namespace BussinessLogic.Services
                 using var context = _contextFactory.CreateDbContext();
                 var activities = context.Activities.Where(a => a.TripId == travelID);
                 var TravelActivities = _mapper.Map<List<TravelActivity>>(activities);
-                return TravelActivities.OrderBy(t=>t.Sequence).ToList();
+                foreach (var item in TravelActivities)
+                {
+                    item.Total = item.Cost.Sum(c => c.Price);
+                }
+                return TravelActivities.OrderBy(t => t.Sequence).ToList();
             }
             catch (Exception ex)
             {
@@ -90,15 +94,15 @@ namespace BussinessLogic.Services
             else
             {
                 return Result.Success("L'activité n'existe plus ");
-            }               
-          
-        
+            }
+
+
         }
 
-        public async Task<TravelActivity?> GetActivity(int travelActivityID)
+        public TravelActivity? GetActivity(int travelActivityID)
         {
             using var context = _contextFactory.CreateDbContext();
-            var activity = await context.Activities.FirstOrDefaultAsync(a => a.ActivityId == travelActivityID);
+            var activity =  context.Activities.FirstOrDefault(a => a.ActivityId == travelActivityID);
             var travelActivity = _mapper.Map<TravelActivity>(activity);
             return travelActivity;
         }
@@ -146,6 +150,17 @@ namespace BussinessLogic.Services
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        TravelActivity IActivityService.GetActivity(int activityID)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var Activity=  context.Activities.Single(a => a.ActivityId == activityID);
+
+            var travelActivity=  _mapper.Map<TravelActivity>(Activity);
+            travelActivity.Total = travelActivity.Cost.Sum(c=>c.Price);
+            return travelActivity;
+
         }
     }
 }

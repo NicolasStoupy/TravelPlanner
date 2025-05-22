@@ -28,6 +28,9 @@ namespace BussinessLogic.Interfaces
         /// <returns>A list of <see cref="TypeOfActivity"/> defined in the system.</returns>
         List<TypeOfActivity> GetActivitiesTypes();
 
+
+     
+
         /// <summary>
         /// Saves a new activity for a travel.
         /// </summary>
@@ -42,7 +45,7 @@ namespace BussinessLogic.Interfaces
         /// <returns>A <see cref="Result"/> indicating whether the update operation was successful or failed.</returns>
         Task<Result> UpdateActivity(TravelActivity travelActivity,int travelID);
 
-        Task<TravelActivity> GetActivity(int travelActivityID);
+        TravelActivity GetActivity(int travelActivityID);
         Task<bool> UpdateSequence(ObservableCollection<TravelActivity>? activities);
     }
 }

@@ -65,23 +65,7 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         private async Task LoadImage()
         {
-            var result = await FilePicker.PickAsync(new PickOptions
-            {
-                PickerTitle = "Sélectionner une image",
-                FileTypes = FilePickerFileType.Images
-            });
-
-            if (result != null)
-            {
-                using var stream = await result.OpenReadAsync();
-
-                var imageLoaded = ImageSource.FromStream(() => stream);
-
-                using var memoryStream = new MemoryStream();
-                stream.Position = 0;
-                await stream.CopyToAsync(memoryStream);
-                ImageSelected = memoryStream.ToArray();
-            }
+            ImageSelected = await  LoadFile(FilePickerFileType.Images, "Sélectionner une image");
         }
 
         /// <summary>

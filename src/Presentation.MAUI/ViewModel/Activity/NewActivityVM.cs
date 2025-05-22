@@ -124,7 +124,7 @@ namespace Presentation.MAUI.ViewModel.Activity
                     return;
 
                 case Mode.Edit:
-                    CurrentTravelActivity = await _applicationService.ActivityService.GetActivity(ActivityID);
+                    CurrentTravelActivity =  _applicationService.ActivityService.GetActivity(ActivityID);
 
                     return;
 

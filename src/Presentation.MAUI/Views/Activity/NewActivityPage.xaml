@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel.Activity"
              xmlns:entities="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
              xmlns:views="clr-namespace:Presentation.MAUI.Views"
-              xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
+             xmlns:conv="clr-namespace:Presentation.MAUI.Converters"
              x:DataType="vm:NewActivityVM"
              Title="Nouvelle activité">
     <!-- Converters -->
@@ -45,8 +45,7 @@
                     <DatePicker Date="{Binding CurrentTravelActivity.ActivityDate, Mode=TwoWay}"></DatePicker>
                 </VerticalStackLayout>
                 <Picker  ItemsSource="{Binding ActivityType}"
-                     SelectedItem="{Binding SelectedActivityType  }"
-                     
+                     SelectedItem="{Binding SelectedActivityType  }"                     
                      ItemDisplayBinding="{Binding Name}" />
 
                 <Button Text="{Binding ModeDisplay}"

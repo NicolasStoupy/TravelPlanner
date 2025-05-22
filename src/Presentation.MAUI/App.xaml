@@ -25,6 +25,7 @@
             <x:String x:Key="InvoiceIcon">invoice.png</x:String>
             <x:String x:Key="SaveIcon">save.png</x:String>
             <x:String x:Key="NoteIcon">notepad.png</x:String>
+            <x:String x:Key="BillIcon">bill.png</x:String>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -182,7 +182,7 @@ namespace Presentation.MAUI.ViewModel
         private Task OnEditorUnfocused(MemoryFile memory)
         {
             _applicationService.TravelService.UpdateMemory(memory);
-            // Tu peux persister, valider, etc.
+           
             return Task.CompletedTask;
         }
         [RelayCommand]
@@ -191,7 +191,7 @@ namespace Presentation.MAUI.ViewModel
             if (imageBytes == null || imageBytes.Length == 0)
                 return;
 
-            // Afficher une popup, un overlay, ou naviguer vers une page avec l’image
+         
             await Shell.Current.Navigation.PushAsync(new FullScreenImagePage(imageBytes));
         }
 

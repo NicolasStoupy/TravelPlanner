@@ -2,6 +2,7 @@
 using BussinessLogic.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FluentValidation;
+using Infrastructure.EntityModels;
 using Presentation.MAUI.Services;
 using System.Threading.Tasks;
 
@@ -143,6 +144,52 @@ namespace Presentation.MAUI.Models
             }
 
             return true;
+        }
+
+
+        protected async Task ShowFile(byte[]? fileToShow)
+        {            
+            if (fileToShow != null)
+            {
+                var fileGuid = new Guid();
+                string fileName = $"{fileGuid}.jpg";
+                string cachePath = Path.Combine(FileSystem.CacheDirectory, fileName);
+
+                // Écrire le fichier
+                File.WriteAllBytes(cachePath, fileToShow);
+
+                //Ouvrir avec l’app native
+                var file = new ReadOnlyFile(cachePath);
+                var request = new OpenFileRequest { File = file };
+                await Launcher.OpenAsync(request);
+            }
+            else
+            {
+                await DisplayAlert(Models.MessageType.Warning, "Impossible de charger le fichier");
+            }
+        }
+
+
+        protected async Task<byte[]?> LoadFile(FilePickerFileType mediaType, string pickerTitle)
+        {
+            var result = await FilePicker.PickAsync(new PickOptions
+            {
+                PickerTitle = pickerTitle,
+                FileTypes = mediaType
+            });
+
+            if (result != null)
+            {
+                using var stream = await result.OpenReadAsync();
+
+                var imageLoaded = ImageSource.FromStream(() => stream);
+
+                using var memoryStream = new MemoryStream();
+                stream.Position = 0;
+                await stream.CopyToAsync(memoryStream);
+                return memoryStream.ToArray();
+            }
+            return null;
         }
     }
 }

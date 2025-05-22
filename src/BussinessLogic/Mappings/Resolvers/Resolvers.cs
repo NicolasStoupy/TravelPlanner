@@ -107,7 +107,7 @@ namespace BussinessLogic.Mappings.Resolvers
                 .FirstOrDefault(t => t.TripId == source.TripId);
 
             var memoryFiles = trip != null
-                ? _mapper.Map<List<MemoryFile>>(trip.Media)
+                ? _mapper.Map<List<MemoryFile>>(trip.Media.Where(m=>m.ActivityCostId is null))
                 : new List<MemoryFile>();
 
 
@@ -180,9 +180,9 @@ namespace BussinessLogic.Mappings.Resolvers
         public List<Cost> Resolve(Activity source, TravelActivity destination, List<Cost> destMember, ResolutionContext context)
         {
             var dbcontext = _context.CreateDbContext();
-            var attendees = dbcontext.ActivityCosts.Where(c => c.ActivityId == source.ActivityId && c.TripId == source.TripId);
+            var costs = dbcontext.ActivityCosts.Where(c => c.ActivityId == source.ActivityId && c.TripId == source.TripId);
 
-            return _mapper.Map<List<Cost>>(attendees);
+            return _mapper.Map<List<Cost>>(costs);
         }
     }
 
@@ -207,6 +207,33 @@ namespace BussinessLogic.Mappings.Resolvers
             var attendees = dbcontext.LogBooks.Where(c => c.ActivityId == source.ActivityId && c.TripId == source.TripId);
 
             return _mapper.Map<List<Note>>(attendees);
+        }
+    }
+
+    public class CostTicketResolver : IValueResolver<ActivityCost, Cost, List<Guid>>
+    {
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
+        private readonly IMapper _mapper;
+        private readonly DocumentProvider _documentProvider;
+        public CostTicketResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper,DocumentProvider documentProvider)
+        {
+            _context = context;
+            _mapper = mapper;
+            _documentProvider = documentProvider;
+        }
+
+        public List<Guid> Resolve(ActivityCost source, Cost destination, List<Guid> destMember, ResolutionContext context)
+        {
+            var dbcontext = _context.CreateDbContext();
+            var Ticket = dbcontext.Media.Where(m => m.ActivityCostId == source.ActivityCostId);
+            if (Ticket.Any()) {
+                var guiList= Ticket.Select(t=>t.FileGuid);
+                if (guiList.Any()) {
+                    return guiList.ToList();               
+                
+                }           
+            }
+            return new List<Guid>();
         }
     }
 }

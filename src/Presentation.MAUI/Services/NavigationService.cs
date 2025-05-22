@@ -1,45 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BussinessLogic.Entities;
-using Microsoft.Extensions.DependencyInjection;
+﻿using BussinessLogic.Entities;
 
 namespace Presentation.MAUI.Services
 {
     public class NavigationService : INavigationService
     {        
-
+        private async Task Navigate(string query)
+        {
+            await Shell.Current.GoToAsync(query);
+        }
         public async Task NavigateToNewTravelPageAsync()
         {
-            await Shell.Current.GoToAsync($"//TravelInformations");
+            await Navigate($"//TravelInformations");
         }
 
         public async Task NavigateToNewTravel(string travelID)
         {
             
-            await Shell.Current.GoToAsync($"//TravelInformations?travelID={travelID}");
+            await Navigate($"//TravelInformations?travelID={travelID}");
         }
 
         public async Task NavigateToTravelFinder()
         {
-            await Shell.Current.GoToAsync("//TravelFinder");
+            await Navigate("//TravelFinder");
         }
 
         public async Task NavigateToNewActivity()
         {
-            await Shell.Current.GoToAsync("ActivityNew");
+            await Navigate("ActivityNew");
         }
 
         public async Task GoBack()
         {
-            await Shell.Current.GoToAsync("..");
+            await Navigate("..");
         }
 
         public async Task NavigateToEditActivity(TravelActivity travelActivity)
         {
-            await Shell.Current.GoToAsync($"ActivityNew?ActivityID={travelActivity.ActivityID}");
+            await Navigate($"ActivityNew?ActivityID={travelActivity.ActivityID}");
+        }
+
+        public async Task NavigateToActivityCost(int activityID)
+        {
+            await Navigate($"ActivityCost?ActivityID={activityID}");
         }
     }
 }

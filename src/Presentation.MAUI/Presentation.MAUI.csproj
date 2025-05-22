@@ -132,6 +132,9 @@
 	  <MauiXaml Update="Views\Activity\NewActivityPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\Activity\NewCostActivityPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\FilePickerView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

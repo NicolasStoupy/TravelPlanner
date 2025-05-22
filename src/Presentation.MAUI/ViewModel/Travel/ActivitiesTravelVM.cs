@@ -150,7 +150,11 @@ namespace Presentation.MAUI.ViewModel
             return;
         }
 
+        [RelayCommand]
+        public Task CostLinkClicked(int activityID) => _navigationService.NavigateToActivityCost(activityID);
+        
 
+       
 
 
     }

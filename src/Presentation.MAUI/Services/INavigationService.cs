@@ -19,5 +19,6 @@ namespace Presentation.MAUI.Services
         Task NavigateToNewActivity();
         Task NavigateToEditActivity(TravelActivity travelActivity);
         Task GoBack();
+        Task NavigateToActivityCost(int activityID);
     }
 }
