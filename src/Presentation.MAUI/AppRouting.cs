@@ -9,6 +9,7 @@ namespace Presentation.MAUI
         {
             Routing.RegisterRoute("ActivityNew", typeof(NewActivityPage));
             Routing.RegisterRoute("ActivityCost",typeof(NewCostActivityPage));
+            Routing.RegisterRoute("ActivityFollower", typeof(ActivityFollowerPage));
         }
     }
 }

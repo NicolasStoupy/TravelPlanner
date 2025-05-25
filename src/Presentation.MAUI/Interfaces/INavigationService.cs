@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BussinessLogic.Entities;
 
-namespace Presentation.MAUI.Services
+namespace Presentation.MAUI.Interfaces
 {
     /// <summary>
     /// Defines navigation operations between pages and views within the application.
@@ -20,5 +20,8 @@ namespace Presentation.MAUI.Services
         Task NavigateToEditActivity(TravelActivity travelActivity);
         Task GoBack();
         Task NavigateToActivityCost(int activityID);
+        Task NavigateToActivityFollower(int activityID);
+
+        Task NavigateToTravelActivities();
     }
 }

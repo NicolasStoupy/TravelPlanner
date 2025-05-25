@@ -2,27 +2,26 @@
 using BussinessLogic.Entities;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Presentation.MAUI.Services;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Storage;
+using Presentation.MAUI.Resources.Localization;
+using Presentation.MAUI.Interfaces;
 
 namespace Presentation.MAUI.ViewModel;
 
 public partial class FinderTravelPageVM : TravelVM
 {
-    private List<Travel> _allTravelItems = [];
 
-    [ObservableProperty]
-    private string _searchText = string.Empty;
+    List<Travel> _allTravelItems = [];
 
-    [ObservableProperty]
-    private ObservableCollection<Travel> _travelItems = [];
- 
-    
-    public FinderTravelPageVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
+    [ObservableProperty] string _searchText = string.Empty;
+
+    [ObservableProperty] ObservableCollection<Travel> _travelItems = [];
+
+
+    public FinderTravelPageVM(IViewModelServices viewModelServices) : base(viewModelServices)
     {
-        Title = "Voyages";
-
+        Title = PageTitle.FinderTravelPage;
         FilterItems();
     }
 
@@ -82,21 +81,15 @@ public partial class FinderTravelPageVM : TravelVM
         if (travelItem is null)
             return;
 
-        await _navigationService.NavigateToNewTravel(travelItem.Id.ToString());
+        await _services.Navigation.NavigateToNewTravel(travelItem.Id.ToString());
     }
 
     /// <summary>
-    /// Navigates to the page for creating a new travel entry.
-    /// Sets the busy state during the navigation process.
+    /// Navigates to the page for creating a new travel entry.  
     /// </summary>
     [RelayCommand]
-    private async Task NewTravel()
-    {
-        IsBusy = true;
+    private async Task NewTravel() => await _services.Navigation.NavigateToNewTravelPageAsync();
 
-        await _navigationService.NavigateToNewTravelPageAsync();
-        IsBusy = false;
-    }
 
     /// <summary>
     /// Deletes the travel entry with the specified ID, displays a confirmation alert,
@@ -107,18 +100,19 @@ public partial class FinderTravelPageVM : TravelVM
     private async Task DeleteTravel(int tripId)
     {
         IsBusy = true;
-        bool confirm = await Shell.Current.DisplayAlert(
-                                       "Confirmation",
-                                       $"Voulez-vous vraiment supprimer le voyage?",
-                                       "Oui",
-                                       "Non");
+        bool confirm = await _services.Alert.ConfirmAsync(
+            DialogsStrings.DeleteTravel_Title,
+            DialogsStrings.DeleteTravel_Confirmation,
+            DialogsStrings.DeleteTravel_Yes,
+            DialogsStrings.DeleteTravel_No);
+
         if (!confirm)
         {
             IsBusy = false;
             return;
         }
 
-        await DisplayAlert(await _applicationService.TravelService.DeleteTravel(tripId));
+        await _services.Alert.ShowAsync(await _services.Application.TravelService.DeleteTravel(tripId));
         Reset();
         IsBusy = false;
     }
@@ -132,8 +126,8 @@ public partial class FinderTravelPageVM : TravelVM
         IsBusy = true;
         _allTravelItems.Clear();
         TravelItems.Clear();
-        _allTravelItems = _applicationService.TravelService.GetTravels();
-     
+        _allTravelItems = _services.Application.TravelService.GetTravels();
+
         TravelItems = [.. _allTravelItems];
         IsBusy = false;
     }
@@ -141,17 +135,19 @@ public partial class FinderTravelPageVM : TravelVM
     [RelayCommand]
     public async Task ExtractTravelToPdf(Travel travel, CancellationToken cancellationToken)
     {
-        var pdfFile = _applicationService.MediaService.GeneratePdfSummary(travel);
-        using var pdfFileStream = new MemoryStream(pdfFile);
+        var PDFFile = _services.Application.MediaService.GeneratePdfSummary(travel);
+        var fileName = _services.OutputFileNameProvider.GetFileName(Constants.PDF_TRAVEL_CONFIG, travel.name);
+
+        using var pdfFileStream = new MemoryStream(PDFFile);
         var fileSaverResult = await FileSaver.Default
-            .SaveAsync($"Travel-{travel.name}.pdf", pdfFileStream, cancellationToken);
+            .SaveAsync(fileName, pdfFileStream, cancellationToken);
 
     }
 
     [RelayCommand]
     public async Task CloneTravel(Travel travel)
     {
-        await DisplayAlert(_applicationService.TravelService.CloneTravel(travel));
+        await _services.Alert.ShowAsync(_services.Application.TravelService.CloneTravel(travel));
         Reset();
     }
 }

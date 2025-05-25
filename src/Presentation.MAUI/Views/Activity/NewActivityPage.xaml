@@ -30,8 +30,8 @@
                 <Editor Text="{Binding CurrentTravelActivity.Description}" Placeholder="Description" AutoSize="TextChanges" />
 
                 <Label Text="Ordre (séquence)" />
-                <Entry Text="{Binding CurrentTravelActivity.Sequence, Converter={StaticResource IntToStringConverter}}" 
-       Keyboard="Numeric" />
+                <Label Text="{Binding CurrentTravelActivity.Sequence, Converter={StaticResource IntToStringConverter}}"
+       />
 
                 <Label Text="Lien Google (facultatif)" />
                 <Entry Text="{Binding CurrentUrl}" Placeholder="https://..." />
@@ -44,9 +44,11 @@
                     <Label Text="Date Activité:" FontSize="Small" />
                     <DatePicker Date="{Binding CurrentTravelActivity.ActivityDate, Mode=TwoWay}"></DatePicker>
                 </VerticalStackLayout>
-                <Picker  ItemsSource="{Binding ActivityType}"
-                     SelectedItem="{Binding SelectedActivityType  }"                     
-                     ItemDisplayBinding="{Binding Name}" />
+                <Picker    Title="Type d’activité"
+                           ItemsSource="{Binding DataStore.ActivityType}"
+                           SelectedItem="{Binding SelectedActivityType, Mode=TwoWay}"
+                           ItemDisplayBinding="{Binding Name}" />
+
 
                 <Button Text="{Binding ModeDisplay}"
                     BackgroundColor="Green"
@@ -59,7 +61,7 @@
 
 
             </VerticalStackLayout>
-            <WebView Grid.Column="1" Navigated="WebView_Navigated" Navigating="WebView_Navigating">
+            <WebView Grid.Column="1">
                 <WebView.Source>
                     <UrlWebViewSource Url="{Binding CurrentUrl}" />
                 </WebView.Source>

@@ -3,15 +3,15 @@ using BussinessLogic.Interfaces;
 using Commons.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-
-using Presentation.MAUI.Services;
+using Presentation.MAUI.Interfaces;
+using Presentation.MAUI.Resources.Localization;
 using System.Collections.ObjectModel;
 
 
 namespace Presentation.MAUI.ViewModel.Activity
 {
     [QueryProperty(nameof(ActivityID), "ActivityID")]
-    public partial class NewCostActivityVM(INavigationService navigationService, IApplicationService applicationService) : TravelVM(navigationService, applicationService)
+    public partial class NewCostActivityVM(IViewModelServices viewModelServices) : TravelVM(viewModelServices)
     {
         [ObservableProperty]
         private int _activityID;
@@ -26,7 +26,7 @@ namespace Presentation.MAUI.ViewModel.Activity
         private string? _newCostName;
         [ObservableProperty]
         private double? _newCostAmount;
-         [ObservableProperty]
+        [ObservableProperty]
         private string? _newCurrency;
 
         partial void OnActivityIDChanged(int oldValue, int newValue)
@@ -37,15 +37,20 @@ namespace Presentation.MAUI.ViewModel.Activity
         [RelayCommand]
         public async Task AddCost()
         {
-            var cost = new Cost()
+            if (!await _services.Validation.ValidateAndNotifyAsync(this))            
+                return;            
+            else
             {
-                Currency = NewCurrency,
-                Name = NewCostName,
-                Price = NewCostAmount ?? 0
-            };
+                var cost = new Cost()
+                {
+                    Currency = NewCurrency,
+                    Name = NewCostName,
+                    Price = NewCostAmount ?? 0
+                };
 
-           await DisplayAlert(_applicationService.ExpenseService.CreateCost(TravelActivity.ActivityID, cost));
-            LoadData();
+                await _services.Alert.ShowAsync(_services.Application.ExpenseService.CreateCost(TravelActivity.ActivityID, cost));
+                LoadData();
+            }
         }
         [RelayCommand]
         public async Task AddTicket(int costID)
@@ -55,32 +60,45 @@ namespace Presentation.MAUI.ViewModel.Activity
                 await NoTravelSelected();
                 return;
             }
-            var file = await LoadFile(FilePickerFileType.Images, "Telecharger votre ticket");
+            var file = await _services.DialogFile.LoadFileAsync(FilePickerFileType.Images, "Telecharger votre ticket");
             if (file != null)
-                await DisplayAlert(_applicationService.ExpenseService.SaveNewCost(CurrentTravel.Id, costID, file));
+                await _services.Alert.ShowAsync(_services.Application.ExpenseService.SaveNewCost(CurrentTravel.Id, costID, file));
             LoadData();
         }
 
         [RelayCommand]
         public async Task RemoveTicket(Guid ticketId)
         {
-            await DisplayAlert(_applicationService.ExpenseService.RemoveTicket(ticketId));
+            await _services.Alert.ShowAsync(_services.Application.ExpenseService.RemoveTicket(ticketId));
             LoadData();
         }
         [RelayCommand]
         public async Task RemoveCost(int costID)
         {
-            await DisplayAlert(_applicationService.ExpenseService.RemoveCost(costID));
-            LoadData();
+            var countTicketList = Costs?.FirstOrDefault(c => c.CostID == costID)?.TicketsList.Count;
+            if (countTicketList != null)
+            {
+                bool confirm = await _services.Alert
+                    .ConfirmAsync(DialogsStrings.DeleteExpense_Title,
+                    DialogsStrings.DeleteExpense_Confirmation,
+                    DialogsStrings.DeleteExpense_OK,
+                    DialogsStrings.DeleteExpense_NOK,
+                    countTicketList);
+                if (confirm)
+                {
+                    await _services.Alert.ShowAsync(_services.Application.ExpenseService.RemoveCost(costID));
+                    LoadData();
+                }
+            }
         }
 
         [RelayCommand]
         public async Task OpenTicketAsync(Guid ticketId)
         {
-            byte[]? content = _applicationService
+            byte[]? content = _services.Application
                 .MediaService
                 .GetMedia(ticketId, Commons.TypeMedia.Images);
-            await ShowFile(content);
+            await _services.DialogFile.ShowFileAsync(content);
 
         }
 
@@ -89,7 +107,7 @@ namespace Presentation.MAUI.ViewModel.Activity
             NewCostAmount = 0;
             NewCostName = string.Empty;
             NewCurrency = string.Empty;
-            TravelActivity = _applicationService.ActivityService.GetActivity(ActivityID);
+            TravelActivity = _services.Application.ActivityService.GetActivity(ActivityID);
             Costs = TravelActivity.Cost.ToObservableCollection();
         }
     }

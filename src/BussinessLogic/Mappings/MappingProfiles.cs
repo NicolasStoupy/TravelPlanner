@@ -57,7 +57,7 @@ namespace BussinessLogic.Mappings
 
             CreateMap<Activity, TravelActivity>()
                .ForMember(dest => dest.ActivityID, opt => opt.MapFrom(src => src.ActivityId))
-               .ForMember(dest => dest.ActivityType, opt => opt.MapFrom(src => src.ActivityType))
+               .ForMember(dest => dest.ActivityType, opt => opt.MapFrom<TravelActivityTypeOfActivityResolver>())
                .ForMember(dest => dest.ActivityTypeName, opt => opt.MapFrom(src => src.ActivityType.Description))
                .ForMember(dest => dest.ActivityDate, opt => opt.MapFrom(src => src.ActivityDate))
                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
@@ -110,6 +110,14 @@ namespace BussinessLogic.Mappings
                .ForMember(dest => dest.CurrencyCode, opt => opt.MapFrom(src => src.Currency))
                .ForMember(dest => dest.ActivityCostId, opt => opt.MapFrom(src => src.CostID));
 
+            CreateMap<Follower, Attendee>()
+                .ForMember(dest=>dest.AttendeeId,opt=>opt.MapFrom(src=>src.FollowerID))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName));
+            CreateMap<Attendee, Follower>()
+                 .ForMember(dest => dest.FollowerID, opt => opt.MapFrom(src => src.AttendeeId))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName));
         }
 
 

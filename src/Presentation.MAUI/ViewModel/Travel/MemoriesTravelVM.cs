@@ -1,14 +1,13 @@
 ﻿using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
 using Commons;
 using Commons.Extensions;
 using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Presentation.MAUI.Services;
+using Presentation.MAUI.Interfaces;
+using Presentation.MAUI.Resources.Localization;
 using Presentation.MAUI.Views;
 using System.Collections.ObjectModel;
-using System.Threading;
 
 namespace Presentation.MAUI.ViewModel
 {
@@ -39,7 +38,7 @@ namespace Presentation.MAUI.ViewModel
         /// <summary>
         /// Constructor that initializes the ViewModel with dependencies and loads data.
         /// </summary>
-        public MemoriesTravelVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
+        public MemoriesTravelVM(IViewModelServices viewModelServices) : base(viewModelServices)
         {
             LoadData();
         }
@@ -56,16 +55,15 @@ namespace Presentation.MAUI.ViewModel
 
                 if (selectedMemories != null)
                 {
-                    bool confirm = await Shell.Current.DisplayAlert(
-                                       "Confirmation",
-                                       $"Voulez-vous vraiment supprimer {selectedMemories.Count()} souvenir(s) ?",
-                                       "Oui",
-                                       "Non");
+                    bool confirm = await _services.Alert.ConfirmAsync(
+                        DialogsStrings.DeleteMemories_Title,
+                        DialogsStrings.DeleteMemories_Confirmation,
+                        DialogsStrings.CommonsYes, DialogsStrings.CommonsYes, selectedMemories.Count());
                     if (!confirm)
                         return;
                 }
-                var result = await _applicationService.TravelService.RemoveMemories(selectedMemories, CurrentTravel.Id);
-                await DisplayAlert(result);
+                var result = await _services.Application.TravelService.RemoveMemories(selectedMemories, CurrentTravel.Id);
+                await _services.Alert.ShowAsync(result);
 
                 LoadData();
             }
@@ -79,11 +77,12 @@ namespace Presentation.MAUI.ViewModel
         public async Task ExportSelectedAsZip(CancellationToken cancellationToken)
         {
             var selectedMemories = GetSelectedMemories();
+            var fileName = _services.OutputFileNameProvider.GetFileName(Constants.ZIP_MEMORIES_CONFIG, CurrentTravel?.name);
             if (selectedMemories != null && selectedMemories.Any())
             {
                 var zipBytes = ZipHelper.CreateZip(selectedMemories.Select(m => m.Files));
                 using var stream = new MemoryStream(zipBytes);
-                var fileSaverResult = await FileSaver.Default.SaveAsync("souvenirs.zip", stream, cancellationToken);
+                var fileSaverResult = await FileSaver.Default.SaveAsync(fileName, stream, cancellationToken);
             }
         }
 
@@ -126,7 +125,7 @@ namespace Presentation.MAUI.ViewModel
             ExtraAction = false;
             if (CurrentTravel?.Id != null)
             {
-                MemoriesFiles = new ObservableCollection<MemoryFile>(_applicationService.TravelService.GetMemories(CurrentTravel.Id, Commons.TypeMedia.Images));
+                MemoriesFiles = new ObservableCollection<MemoryFile>(_services.Application.TravelService.GetMemories(CurrentTravel.Id, Commons.TypeMedia.Images));
             }
             else
             {
@@ -158,7 +157,7 @@ namespace Presentation.MAUI.ViewModel
         {
             if (CurrentTravel?.Id != null)
             {
-                await _applicationService.TravelService.AddMediaToTravel(files.ToList(), CurrentTravel.Id, TypeMedia.Images);
+                await _services.Application.TravelService.AddMediaToTravel(files.ToList(), CurrentTravel.Id, TypeMedia.Images);
                 Reset();
             }
             else
@@ -175,14 +174,14 @@ namespace Presentation.MAUI.ViewModel
                 item.Checked = true;
             }
             MemoriesFiles = new ObservableCollection<MemoryFile>(MemoriesFiles);
-   
+
         }
 
         [RelayCommand]
         private Task OnEditorUnfocused(MemoryFile memory)
         {
-            _applicationService.TravelService.UpdateMemory(memory);
-           
+            _services.Application.TravelService.UpdateMemory(memory);
+
             return Task.CompletedTask;
         }
         [RelayCommand]
@@ -191,7 +190,7 @@ namespace Presentation.MAUI.ViewModel
             if (imageBytes == null || imageBytes.Length == 0)
                 return;
 
-         
+
             await Shell.Current.Navigation.PushAsync(new FullScreenImagePage(imageBytes));
         }
 

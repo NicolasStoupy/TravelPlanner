@@ -10,24 +10,7 @@ public partial class NewActivityPage : ContentPage
     {
         InitializeComponent();
         BindingContext = vM;
-    }
-
-    private async void  WebView_Navigated(object sender, WebNavigatedEventArgs e)
-    {       
-        var webview = (WebView)sender;
-
-        var text = await  webview.EvaluateJavaScriptAsync("document.body.innerText");
-      
-        
-        return;
-    }
-
-    private void WebView_Navigating(object sender, WebNavigatingEventArgs e)
-    {
-        var webview = (WebView)sender;
-        var text = webview.EvaluateJavaScriptAsync("document.body.innerText");
-        return;
-    }
+    }   
 
     protected override void OnAppearing()
     {
@@ -37,6 +20,7 @@ public partial class NewActivityPage : ContentPage
 
             if (BindingContext is NewActivityVM vm)
             {
+               
                 vm.Reset();
             }
         }
@@ -48,4 +32,14 @@ public partial class NewActivityPage : ContentPage
         return;
 
     }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        if (BindingContext is NewActivityVM vm)
+        {
+            vm.ActivityID = 0;
+            vm.Reset();
+        }
+    }
+
 }

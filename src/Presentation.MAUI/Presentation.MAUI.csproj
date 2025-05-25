@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+    <NeutralLanguage>fr-FR</NeutralLanguage>
 		<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
@@ -100,6 +101,8 @@
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="FluentValidation" Version="11.11.0" />
+		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.5" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
 	</ItemGroup>
@@ -111,6 +114,24 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Resources\Localization\DialogsStrings.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>DialogsStrings.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\Localization\ExceptionMessage.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ExceptionMessage.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\Localization\PageTitle.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>PageTitle.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Activity\ActivityFollowerPage.xaml.cs">
+	    <DependentUpon>ActivityFollowerPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Travel\ActivitiesTravelPage.xaml.cs">
 	    <DependentUpon>ActivitiesTravelPage.xaml</DependentUpon>
 	  </Compile>
@@ -127,6 +148,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Resources\Styles\StyleListView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Activity\ActivityFollowerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Activity\NewActivityPage.xaml">
@@ -167,6 +191,21 @@
 	<ItemGroup>
 	  <Folder Include="Controls\" />
 	  <Folder Include="ViewModel\Models\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Localization\DialogsStrings.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>DialogsStrings.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\ExceptionMessage.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ExceptionMessage.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\PageTitle.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>PageTitle.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 </Project>

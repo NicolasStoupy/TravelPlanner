@@ -1,108 +1,118 @@
 ﻿using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FluentValidation;
-using Presentation.MAUI.Services;
-using System.ComponentModel;
+using Presentation.MAUI.Interfaces;
 
 
 namespace Presentation.MAUI.ViewModel.Activity
 {
     [QueryProperty(nameof(ActivityID), "ActivityID")]
-    public partial class NewActivityVM : TravelVM
+
+    public partial class NewActivityVM : ActivityVM
     {
+        private readonly IUrlBuilder _urlBuilder;
+
+
         [ObservableProperty]
         private int _activityID;
         partial void OnActivityIDChanged(int value)
         {
-            Mode = Mode.Edit;
+            Mode = value != 0 ? Mode.Edit : Mode.New;
         }
 
-        const string BASE_URL = "https://www.google.com/maps/search/";
 
         [ObservableProperty]
-        private string _currentUrl;
+        private string? _currentUrl;
 
-        partial void OnCurrentUrlChanged(string value)
+        partial void OnCurrentUrlChanged(string? value)
         {
-            if (CurrentTravelActivity != null)
+            if (CurrentTravelActivity != null && value != null)
                 CurrentTravelActivity.GoogleLink = value;
         }
 
         [ObservableProperty]
-        private string _activityName;
+        private string? _activityName;
 
-        partial void OnActivityNameChanged(string value)
+        partial void OnActivityNameChanged(string? value)
         {
+            if (value is null || CurrentTravelActivity is null) return;
+
             CurrentTravelActivity.Name = value;
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                CurrentUrl = BASE_URL + string.Join("+", value.Split(' '));
-            }
+            CurrentUrl = _urlBuilder.BuildSearchUrl(value);
         }
+
+
+
 
         [ObservableProperty]
-        private TravelActivity _currentTravelActivity;
+        private TravelActivity? _currentTravelActivity;
 
-        partial void OnCurrentTravelActivityChanged(TravelActivity value)
+        partial void OnCurrentTravelActivityChanged(TravelActivity? value)
         {
-            if (value is not null)
-            {
-                ActivityName = value.Name;
+            if (value is null)
+                return;
 
-                if (value is INotifyPropertyChanged npc)
-                {
-                    npc.PropertyChanged += (s, e) =>
-                    {
-                        if (e.PropertyName == nameof(TravelActivity.Name))
-                        {
-                            ActivityName = value.Name;
-                        }
-                    };
-                }
+            // 1) Initialiser le champ de texte
+            ActivityName = value.Name;
+
+            // 2) Initialiser l’URL
+            CurrentUrl = !string.IsNullOrWhiteSpace(value.GoogleLink)
+                ? value.GoogleLink
+                : _urlBuilder.Url.BaseUrl;
+
+            if (DataStore.ActivityType != null && value.ActivityType != null)
+            {
+                SelectedActivityType = DataStore.ActivityType
+                    .FirstOrDefault(x => x.ID == value.ActivityType.ID);
+            }
+            else
+            {
+                SelectedActivityType = null;
             }
         }
+
 
         [ObservableProperty]
         private TypeOfActivity? _selectedActivityType;
-
         partial void OnSelectedActivityTypeChanged(TypeOfActivity? value)
         {
             if (value != null && CurrentTravelActivity != null)
                 CurrentTravelActivity.ActivityType = value;
         }
 
-        protected override IValidator? GetValidator() => new NewActivityVMValidator();
 
-        public NewActivityVM(INavigationService navigationService,
-                             IApplicationService applicationService
-                            ) : base(navigationService, applicationService)
+        public NewActivityVM(IViewModelServices viewModelServices, IUrlBuilder urlBuilder) : base(viewModelServices)
         {
+            _urlBuilder = urlBuilder;
             Reset();
         }
-
         [RelayCommand]
         public async Task Save()
         {
+            var resultValidation = await _services.Validation.ValidateAndNotifyAsync(this);
             if (CurrentTravel != null && CurrentTravelActivity != null)
             {
                 if (Mode == Mode.Edit)
                 {
-                    var result = _applicationService.ActivityService.UpdateActivity(CurrentTravelActivity,CurrentTravel.Id);
+                    var result = _services.Application.ActivityService.UpdateActivity(CurrentTravelActivity, CurrentTravel.Id);
 
-                    await DisplayAlert(await result);
+                    await _services.Alert.ShowAsync(await result);
+                    Mode = Mode.New;
+                    Reset();
+
+                    await _services.Navigation.GoBack();
+                    return;
 
                 }
                 if (Mode == Mode.New)
                 {
                     CurrentTravelActivity.TravelID = CurrentTravel.Id;
-                    var result = await _applicationService.ActivityService.SaveNewActivity(CurrentTravelActivity);
-                    await DisplayAlert(result);
+                    var result = await _services.Application.ActivityService.SaveNewActivity(CurrentTravelActivity);
+                    await _services.Alert.ShowAsync(result);
                     if (result.IsSuccess)
                     {
-                        CurrentTravelActivity = new();
-                        await Shell.Current.GoToAsync("..");
+                        Reset();
+                        await _services.Navigation.GoBack();
                     }
                 }
             }
@@ -113,19 +123,18 @@ namespace Presentation.MAUI.ViewModel.Activity
             }
         }
 
-        public override async void Reset()
+        public override void Reset()
         {
             switch (Mode)
             {
                 case Mode.New:
                     CurrentTravelActivity = new();
-                    CurrentUrl = BASE_URL;
+                    CurrentUrl = _urlBuilder.Url.BaseUrl;
 
                     return;
 
                 case Mode.Edit:
-                    CurrentTravelActivity =  _applicationService.ActivityService.GetActivity(ActivityID);
-
+                    CurrentTravelActivity = _services.Application.ActivityService.GetActivity(ActivityID);                    
                     return;
 
                 default:

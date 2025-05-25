@@ -47,5 +47,8 @@ namespace BussinessLogic.Interfaces
 
         TravelActivity GetActivity(int travelActivityID);
         Task<bool> UpdateSequence(ObservableCollection<TravelActivity>? activities);
+        Task<bool> AddFollower(int activityID,Follower follower);
+        List<Follower>? GetFollowers(int activityID);
+        Task<bool> RemoveFollower(Follower follower,int activityID);
     }
 }

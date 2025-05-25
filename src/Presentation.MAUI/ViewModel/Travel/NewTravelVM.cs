@@ -5,7 +5,8 @@ using Commons.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentValidation;
-using Presentation.MAUI.Services;
+using Presentation.MAUI.Interfaces;
+using Presentation.MAUI.Resources.Localization;
 using Presentation.MAUI.Validators;
 
 namespace Presentation.MAUI.ViewModel
@@ -36,7 +37,7 @@ namespace Presentation.MAUI.ViewModel
 
         partial void OnCurrencySelectedChanged(string? value) => Travel.currencie = value;
 
-        protected override IValidator? GetValidator() => new NewTravelVMValidator();
+   
 
         [ObservableProperty]
         private Mode _currentMode = Mode.New;
@@ -46,16 +47,12 @@ namespace Presentation.MAUI.ViewModel
         [ObservableProperty]
         private string _currentModeFriendly;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewTravelVM"/> class.
-        /// </summary>
-        /// <param name="navigationService">The injected navigation service.</param>
-        /// <param name="applicationService">The injected application/business service.</param>
-        public NewTravelVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
+       
+        public NewTravelVM(IViewModelServices viewModelServices) : base(viewModelServices)
         {
-            title = "Créer un nouveau voyage";
+            title = PageTitle.NewTravelPage;
 
-            CurrencyList = _applicationService.ExpenseService.GetCurrencies();
+            CurrencyList = _dataStore.Currencies.ToList();
         }
 
         /// <summary>
@@ -65,7 +62,7 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         private async Task LoadImage()
         {
-            ImageSelected = await  LoadFile(FilePickerFileType.Images, "Sélectionner une image");
+            ImageSelected = await _services.DialogFile.LoadFileAsync(FilePickerFileType.Images, "Sélectionner une image");
         }
 
         /// <summary>
@@ -75,27 +72,28 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         private async Task ValidateAndSave()
         {
-            if (!await ValidateAll())
+            if(!await _services.Validation.ValidateAndNotifyAsync(this))
+            {
                 return;
-
+            }
             Result result;
 
             switch (CurrentMode)
             {
                 case Mode.New:
-                    result = await _applicationService.TravelService.SaveTravel(Travel);
-                    await HandleResultAndReset(result, true);
+                    result = await _services.Application.TravelService.SaveTravel(Travel);
+                    await _services.Alert.HandleResultAndResetAsync(result,this, true);
                     break;
 
                 case Mode.Edit:
 
-                    result = await _applicationService.TravelService.UpdateTravel(Travel);
-                    await HandleResultAndReset(result, false);
+                    result = await _services.Application.TravelService.UpdateTravel(Travel);
+                    await _services.Alert.HandleResultAndResetAsync(result,this, false);
                     break;
 
                 default:
-                    result = Result.Failure("Mode de traitement inconnu.");
-                    await HandleResultAndReset(result, false);
+                    result = Result.Failure(ExceptionMessage.UknowMode);
+                    await _services.Alert.HandleResultAndResetAsync(result,this, false);
                     break;
             }
         }
@@ -112,17 +110,15 @@ namespace Presentation.MAUI.ViewModel
                 int travelId = int.Parse(value);
                 CurrentMode = Mode.Edit;
 
-                Travel = _applicationService.TravelService.GetTravel(travelId);
+                Travel = _services.Application.TravelService.GetTravel(travelId);
                 ImageSelected = Travel.image;
                 CurrencySelected = Travel.currencie;
                 CurrentTravel = Travel;
                 if (CurrentMode == Mode.Edit && CurrentTravel != null)
                 {
-                    Title = CurrentTravel.description;
+                    Title = CurrentTravel?.description??string.Empty;
                 }
 
-                var appShell = (AppShell)Shell.Current;
-                appShell.SetShellBackground(CurrentTravel.image);
             }
         }
 

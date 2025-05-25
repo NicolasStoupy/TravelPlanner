@@ -1,0 +1,77 @@
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Presentation.MAUI.Views"
+    xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel.Activity"
+    xmlns:entities="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
+    x:Class="Presentation.MAUI.Views.Activity.ActivityFollowerPage"
+    x:DataType="vm:ActivityFollowerVM"
+    Title="Gestion des followers"
+    >
+
+    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
+
+        <!-- 1) Barre de navigation -->
+        <views:NavigationLayout Grid.Row="0" />
+
+        <!-- 2) Formulaire d’ajout -->
+        <Frame Grid.Row="1"
+               HasShadow="True"
+               CornerRadius="8"
+               Padding="12"
+               BackgroundColor="White">
+            <VerticalStackLayout Spacing="8">
+                <Entry Placeholder="Nom" Text="{Binding Name}" />
+                <Entry Placeholder="Prénom" Text="{Binding Forname}" />
+                <Button Text="Ajouter"
+                        Command="{Binding AddFollowerCommand}"
+                        BackgroundColor="DarkBlue"
+                        TextColor="White"
+                        CornerRadius="6"
+                        HeightRequest="40" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- 3) Liste déroulante -->
+        <CollectionView
+            Grid.Row="2"
+            ItemsSource="{Binding FollowerList}"
+            SelectionMode="None"
+            VerticalOptions="FillAndExpand"
+            ItemsLayout="VerticalList">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="entities:Follower">
+                    <Frame
+                        HasShadow="False"
+                        BorderColor="#E0E0E0"
+                        CornerRadius="8"
+                        Margin="0,4"
+                        Padding="12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="{Binding LastName}" FontSize="14" TextColor="Gray" />
+                            </VerticalStackLayout>
+
+                            <Button
+                                Grid.Column="1"
+                                ImageSource="{StaticResource RemoveIcon}"
+                                Command="{Binding BindingContext.RemoveFollowerCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"                             
+                                CommandParameter="{Binding .}"
+                                BackgroundColor="Transparent"
+                                FontSize="18"
+                                WidthRequest="32"
+                                HeightRequest="32" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

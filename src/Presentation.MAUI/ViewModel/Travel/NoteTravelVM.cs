@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
-using Presentation.MAUI.Services;
 using CommunityToolkit.Mvvm.Input;
 using Presentation.MAUI.Validators;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Presentation.MAUI.Interfaces;
 
 namespace Presentation.MAUI.ViewModel
 {
@@ -18,7 +18,7 @@ namespace Presentation.MAUI.ViewModel
         /// <summary>
         /// Retrieves the validator used for this ViewModel.
         /// </summary>
-        protected override IValidator? GetValidator() => new NoteTravelVMValidator();
+   
 
         [ObservableProperty] private Travel? _travels;
 
@@ -43,9 +43,8 @@ namespace Presentation.MAUI.ViewModel
         /// Initializes a new instance of the <see cref="NoteTravelVM"/> class.
         /// Loads data for the current travel entry using the application service.
         /// </summary>
-        /// <param name="navigationService">Injected navigation service.</param>
-        /// <param name="applicationService">Injected application service for travel and note operations.</param>
-        public NoteTravelVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
+       
+        public NoteTravelVM(IViewModelServices viewModelServices):base(viewModelServices) 
         {
             loadData();
         }
@@ -57,7 +56,7 @@ namespace Presentation.MAUI.ViewModel
         {
             if (CurrentTravel != null && CurrentTravel.Id != 0)
             {
-                Travels = _applicationService.TravelService.GetTravel(CurrentTravel.Id);
+                Travels = _services.Application.TravelService.GetTravel(CurrentTravel.Id);
             }
             else
             {
@@ -74,11 +73,11 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         public async Task AddNote()
         {
-            if (!await ValidateAll())
+            if (!await _services.Validation.ValidateAndNotifyAsync(this))
                 return;
             if (Travels != null)
             {
-                var result = await _applicationService.TravelService.AddNote(Note, Travels.Id);
+                var result = await _services.Application.TravelService.AddNote(Note, Travels.Id);
                 loadData();
                 if (result.IsSuccess) Note = new Note();
             }
@@ -96,7 +95,7 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         public async Task DeleteNote(Note note)
         {
-            await _applicationService.TravelService.DeleteNote(note);
+            await _services.Application.TravelService.DeleteNote(note);
             loadData();
         }
 
@@ -107,7 +106,7 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         public async Task EditNote(Note note)
         {
-            await _applicationService.TravelService.EditNote(note);
+            await _services.Application.TravelService.EditNote(note);
             loadData();
         }
 

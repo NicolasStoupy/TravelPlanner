@@ -1,9 +1,11 @@
 ﻿using BussinessLogic.Entities;
+using Commons.Extensions;
+using Presentation.MAUI.Interfaces;
 
 namespace Presentation.MAUI.Services
 {
     public class NavigationService : INavigationService
-    {        
+    {
         private async Task Navigate(string query)
         {
             await Shell.Current.GoToAsync(query);
@@ -15,7 +17,7 @@ namespace Presentation.MAUI.Services
 
         public async Task NavigateToNewTravel(string travelID)
         {
-            
+
             await Navigate($"//TravelInformations?travelID={travelID}");
         }
 
@@ -36,12 +38,23 @@ namespace Presentation.MAUI.Services
 
         public async Task NavigateToEditActivity(TravelActivity travelActivity)
         {
+        
             await Navigate($"ActivityNew?ActivityID={travelActivity.ActivityID}");
         }
 
         public async Task NavigateToActivityCost(int activityID)
         {
             await Navigate($"ActivityCost?ActivityID={activityID}");
+        }
+
+        public async Task NavigateToActivityFollower(int activityID)
+        {
+            await Navigate($"ActivityFollower?ActivityID={activityID}");
+        }
+
+        public async Task NavigateToTravelActivities()
+        {
+            await Navigate($"TravelActivities");
         }
     }
 }

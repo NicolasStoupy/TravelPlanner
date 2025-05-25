@@ -41,7 +41,7 @@
                 Grid.Column="2"
                 Title="Devise"
                 WidthRequest="80"
-                ItemsSource="{Binding Currencies}"
+                ItemsSource="{Binding DataStore.Currencies}"
                 SelectedItem="{Binding NewCurrency,Mode=TwoWay}" />
 
             <Button

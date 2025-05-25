@@ -3,7 +3,9 @@ using BussinessLogic;
 using CommunityToolkit.Maui;
 using Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Presentation.MAUI.Models;
 using QuestPDF.Infrastructure;
 
 
@@ -14,15 +16,14 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         MauiAppBuilder builder = MauiApp.CreateBuilder();
-        builder.Configuration
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
+        builder.Configuration.LoadConfigurationsFile();     
         builder.UseMauiCommunityToolkit();
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddBussiness();
         builder.Services.AddPresentation();
-
+        builder.Services.AddConfigurations(builder);
+        
         QuestPDF.Settings.License = LicenseType.Community;
 
         builder
@@ -35,7 +36,7 @@ public static class MauiProgram
 
 
 #if DEBUG
-       
+
         builder.Logging.AddDebug();
 
 #endif

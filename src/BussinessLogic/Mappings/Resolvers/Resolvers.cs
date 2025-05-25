@@ -81,7 +81,7 @@ namespace BussinessLogic.Mappings.Resolvers
 
         public List<Note> Resolve(Trip source, Travel destination, List<Note> destMember, ResolutionContext context)
         {
-            var dbcontext = _context.CreateDbContext();
+            using var dbcontext = _context.CreateDbContext();
             var logBooks = dbcontext.LogBooks.Where(l => l.TripLogBook == source.TripId);
 
             return _mapper.Map<List<Note>>(logBooks);
@@ -101,13 +101,13 @@ namespace BussinessLogic.Mappings.Resolvers
 
         public List<MemoryFile> Resolve(Trip source, Travel destination, List<MemoryFile> destMember, ResolutionContext context)
         {
-            var dbcontext = _context.CreateDbContext();
+            using var dbcontext = _context.CreateDbContext();
             var trip = dbcontext.Trips
                 .Include(t => t.Media)
                 .FirstOrDefault(t => t.TripId == source.TripId);
 
             var memoryFiles = trip != null
-                ? _mapper.Map<List<MemoryFile>>(trip.Media.Where(m=>m.ActivityCostId is null))
+                ? _mapper.Map<List<MemoryFile>>(trip.Media.Where(m => m.ActivityCostId is null))
                 : new List<MemoryFile>();
 
 
@@ -131,7 +131,7 @@ namespace BussinessLogic.Mappings.Resolvers
 
         public List<TravelActivity> Resolve(Trip source, Travel destination, List<TravelActivity> destMember, ResolutionContext context)
         {
-            var dbcontext = _context.CreateDbContext();
+            using var dbcontext = _context.CreateDbContext();
             var activities = dbcontext.Activities.Where(a => a.TripId == source.TripId);
 
             return _mapper.Map<List<TravelActivity>>(activities);
@@ -155,7 +155,7 @@ namespace BussinessLogic.Mappings.Resolvers
 
         public List<Follower> Resolve(Activity source, TravelActivity destination, List<Follower> destMember, ResolutionContext context)
         {
-            var dbcontext = _context.CreateDbContext();
+            using var dbcontext = _context.CreateDbContext();
             var attendees = dbcontext.Attendees.Where(a => a.ActivityId == source.ActivityId && a.TripId == source.TripId);
 
             return _mapper.Map<List<Follower>>(attendees);
@@ -179,7 +179,7 @@ namespace BussinessLogic.Mappings.Resolvers
 
         public List<Cost> Resolve(Activity source, TravelActivity destination, List<Cost> destMember, ResolutionContext context)
         {
-            var dbcontext = _context.CreateDbContext();
+            using var dbcontext = _context.CreateDbContext();
             var costs = dbcontext.ActivityCosts.Where(c => c.ActivityId == source.ActivityId && c.TripId == source.TripId);
 
             return _mapper.Map<List<Cost>>(costs);
@@ -203,7 +203,7 @@ namespace BussinessLogic.Mappings.Resolvers
 
         public List<Note> Resolve(Activity source, TravelActivity destination, List<Note> destMember, ResolutionContext context)
         {
-            var dbcontext = _context.CreateDbContext();
+            using var dbcontext = _context.CreateDbContext();
             var attendees = dbcontext.LogBooks.Where(c => c.ActivityId == source.ActivityId && c.TripId == source.TripId);
 
             return _mapper.Map<List<Note>>(attendees);
@@ -215,7 +215,7 @@ namespace BussinessLogic.Mappings.Resolvers
         private readonly IDbContextFactory<TravelPlannerContext> _context;
         private readonly IMapper _mapper;
         private readonly DocumentProvider _documentProvider;
-        public CostTicketResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper,DocumentProvider documentProvider)
+        public CostTicketResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper, DocumentProvider documentProvider)
         {
             _context = context;
             _mapper = mapper;
@@ -224,16 +224,43 @@ namespace BussinessLogic.Mappings.Resolvers
 
         public List<Guid> Resolve(ActivityCost source, Cost destination, List<Guid> destMember, ResolutionContext context)
         {
-            var dbcontext = _context.CreateDbContext();
+            using var dbcontext = _context.CreateDbContext();
             var Ticket = dbcontext.Media.Where(m => m.ActivityCostId == source.ActivityCostId);
-            if (Ticket.Any()) {
-                var guiList= Ticket.Select(t=>t.FileGuid);
-                if (guiList.Any()) {
-                    return guiList.ToList();               
-                
-                }           
+            if (Ticket.Any())
+            {
+                var guiList = Ticket.Select(t => t.FileGuid);
+                if (guiList.Any())
+                {
+                    return guiList.ToList();
+
+                }
             }
             return new List<Guid>();
+        }
+    }
+
+    public class TravelActivityTypeOfActivityResolver : IValueResolver<Activity, TravelActivity, TypeOfActivity>
+    {
+        private readonly IDbContextFactory<TravelPlannerContext> _context;
+        private readonly IMapper _mapper;
+        private readonly DocumentProvider _documentProvider;
+        public TravelActivityTypeOfActivityResolver(IDbContextFactory<TravelPlannerContext> context, IMapper mapper, DocumentProvider documentProvider)
+        {
+            _context = context;
+            _mapper = mapper;
+            _documentProvider = documentProvider;
+        }
+
+        public TypeOfActivity Resolve(Activity source, TravelActivity destination, TypeOfActivity destMember, ResolutionContext context)
+        {
+            using var dbcontext = _context.CreateDbContext();
+            var ActivityType = dbcontext.ActivityTypes.FirstOrDefault(a=>a.ActivityTypeId == source.ActivityTypeId);
+            return new TypeOfActivity()
+            {
+                ID = ActivityType.ActivityTypeId,
+                Name = ActivityType.Description,
+            };
+
         }
     }
 }

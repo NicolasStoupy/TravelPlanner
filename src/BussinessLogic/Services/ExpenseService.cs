@@ -59,7 +59,7 @@ namespace BussinessLogic.Services
         public Result RemoveCost(int costID)
         {
             using var context = _context.CreateDbContext();
-            var ActivitiCost = context.ActivityCosts.SingleOrDefault(c => c.ActivityCostId == costID);
+            var ActivitiCost = context.ActivityCosts.Include(i=>i.Media).SingleOrDefault(c => c.ActivityCostId == costID);
             if(ActivitiCost != null)
             {
                 var medias = ActivitiCost.Media;

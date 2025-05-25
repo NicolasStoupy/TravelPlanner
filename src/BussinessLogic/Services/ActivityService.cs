@@ -20,9 +20,9 @@ namespace BussinessLogic.Services
             try
             {
                 using var context = _contextFactory.CreateDbContext();
-
                 var newActivityDb = _mapper.Map<Activity>(newActivity);
-
+                var newSequenceForActivity = GetSequenceForActivity(newActivity.TravelID);
+                newActivityDb.Sequence = newSequenceForActivity;
                 newActivityDb.ActivityType = null;
                 context.Activities.Add(newActivityDb);
                 await context.SaveChangesAsync();
@@ -33,6 +33,17 @@ namespace BussinessLogic.Services
             {
                 return Result.Failure("Erreur lors de l'enregistrement : " + ex.Message);
             }
+        }
+
+        private int GetSequenceForActivity(int travelID)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var query = context.Activities.Where(a => a.TripId == travelID);
+            int maxSequence = query.Any()
+                ? query.Max(a => a.Sequence)
+                : 0;
+
+            return maxSequence + 1;
         }
 
         public async Task<Result> UpdateActivity(TravelActivity travelActivity, int travelID)
@@ -84,9 +95,17 @@ namespace BussinessLogic.Services
         public async Task<Result> DeleteActivity(TravelActivity travelActivity)
         {
             using var context = _contextFactory.CreateDbContext();
-            var activity = context.Activities.FirstOrDefault(a => a.ActivityId == travelActivity.ActivityID);
+            var activity = context.Activities
+                .Include(i => i.ActivityCosts).ThenInclude(m => m.Media)
+                .Include(f => f.Attendees)
+                .FirstOrDefault(a => a.ActivityId == travelActivity.ActivityID);
             if (activity != null)
             {
+                var medias = activity.ActivityCosts.SelectMany(f => f.Media);
+                var attendees = activity.Attendees;
+                context.Attendees.RemoveRange(attendees);
+                context.Media.RemoveRange(medias);
+                context.ActivityCosts.RemoveRange(activity.ActivityCosts);
                 context.Activities.Remove(activity);
                 await context.SaveChangesAsync();
                 return Result.Success("Activité supprimée");
@@ -97,12 +116,13 @@ namespace BussinessLogic.Services
             }
 
 
+
         }
 
         public TravelActivity? GetActivity(int travelActivityID)
         {
             using var context = _contextFactory.CreateDbContext();
-            var activity =  context.Activities.FirstOrDefault(a => a.ActivityId == travelActivityID);
+            var activity = context.Activities.FirstOrDefault(a => a.ActivityId == travelActivityID);
             var travelActivity = _mapper.Map<TravelActivity>(activity);
             return travelActivity;
         }
@@ -155,12 +175,54 @@ namespace BussinessLogic.Services
         TravelActivity IActivityService.GetActivity(int activityID)
         {
             using var context = _contextFactory.CreateDbContext();
-            var Activity=  context.Activities.Single(a => a.ActivityId == activityID);
+            var Activity = context.Activities.Single(a => a.ActivityId == activityID);
 
-            var travelActivity=  _mapper.Map<TravelActivity>(Activity);
-            travelActivity.Total = travelActivity.Cost.Sum(c=>c.Price);
+            var travelActivity = _mapper.Map<TravelActivity>(Activity);
+            travelActivity.Total = travelActivity.Cost.Sum(c => c.Price);
             return travelActivity;
 
+        }
+
+        public Task<bool> AddFollower(int activityID, Follower follower)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var activity = context.Activities.FirstOrDefault(a => a.ActivityId == activityID);
+            if (activity != null)
+            {
+
+                var attendee = _mapper.Map<Attendee>(follower);
+
+                activity.Attendees.Add(attendee);
+
+                context.SaveChanges();
+            }
+            return Task.FromResult(true);
+        }
+
+        public List<Follower>? GetFollowers(int activityID)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            context.Activities.Include(a => a.Attendees)
+                .Where(a => a.ActivityId == activityID).ToList();
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> RemoveFollower(Follower follower, int activityID)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var activity = context.Activities.Include(i=>i.Attendees).FirstOrDefault(a => a.ActivityId == activityID);
+            if (activity != null)
+            {
+                var attendee = activity.Attendees.FirstOrDefault(a => a.AttendeeId == follower.FollowerID);
+
+                if (attendee != null)
+                {
+                    context.Attendees.Remove(attendee);
+                    context.SaveChanges();
+                }
+            }
+            return Task.FromResult(true);
         }
     }
 }

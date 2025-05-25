@@ -3,13 +3,14 @@ using BussinessLogic.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Infrastructure.EntityModels;
-using Presentation.MAUI.Services;
+using Presentation.MAUI.Interfaces;
+using Presentation.MAUI.Resources.Localization;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace Presentation.MAUI.ViewModel
 {
-    public partial class ActivitiesTravelVM : TravelVM
+    public partial class ActivitiesTravelVM : ActivityVM
     {
         [ObservableProperty]
         private ObservableCollection<TravelActivity>? _activities;
@@ -33,10 +34,10 @@ namespace Presentation.MAUI.ViewModel
 
         public decimal TotalPlannedCost => 0;
         public decimal TotalRealCost => 0;
-        [ObservableProperty]
+        //[ObservableProperty]
 
-        private UrlWebViewSource url = new UrlWebViewSource { Url = "https://www.google.com/search?q=Paris&hl=fr&udm=2" };
-        public ActivitiesTravelVM(INavigationService navigationService, IApplicationService applicationService) : base(navigationService, applicationService)
+        //private UrlWebViewSource url = new UrlWebViewSource { Url = "https://www.google.com/search?q=Paris&hl=fr&udm=2" };
+        public ActivitiesTravelVM(IViewModelServices viewModelServices) : base(viewModelServices)
         {
         }
 
@@ -58,7 +59,7 @@ namespace Presentation.MAUI.ViewModel
             else
             {
                 Activities = new ObservableCollection<TravelActivity>(
-                                  _applicationService.ActivityService.GetActivities(CurrentTravel.Id));
+                                  _services.Application.ActivityService.GetActivities(CurrentTravel.Id));
                 SaveButtonVisible = false;
             }
         }
@@ -67,31 +68,30 @@ namespace Presentation.MAUI.ViewModel
         public async Task AddActivity()
         {
             await PendingChange();
-            await _navigationService.NavigateToNewActivity();
-
+            await _services.Navigation.NavigateToNewActivity();
         }
 
         async Task PendingChange()
         {
             if (ModificationNotSaved)
             {
-                bool confirm = await Shell.Current.DisplayAlert("Modifications en attente",
-                    "Vous avez des changements non enregistrés. Voulez-vous les enregistrer avant de quitter ?",
-                    "Enregistrer", "Quitter sans enregistrer");
+                bool confirm = await _services.Alert.ConfirmAsync(
+                    DialogsStrings.WIP_Title,
+                    DialogsStrings.WIP_Confirmation,
+                    DialogsStrings.WIP_OK,
+                    DialogsStrings.WIP_NOK);
+               
                 if (confirm)
                 {
                     await SaveSequence();
-
                 }
-
-
             }
         }
         [RelayCommand]
         public async Task EditActivity(TravelActivity travelActivity)
         {
             await PendingChange();
-            await _navigationService.NavigateToEditActivity(travelActivity);
+            await _services.Navigation.NavigateToEditActivity(travelActivity);
         }
 
         public async Task OnAppearingAsync()
@@ -111,20 +111,14 @@ namespace Presentation.MAUI.ViewModel
             var attendeesQty = activity.Followers.Count();
             var activityCost = activity.Cost.Count();
 
-            bool confirm = await Shell.Current.DisplayAlert(
-                             "Confirmation de suppression",
-                             $"Voulez-vous vraiment supprimer cette activité ?\n\n" +
-                             $"Cette activité contient :\n" +
-                             $"- {attendeesQty} participant(s)\n" +
-                             $"- {activityCost} facture(s)\n\n" +
-                             $" Tous ces éléments seront également supprimés de façon définitive.",
-                             "Oui, supprimer",
-                             "Annuler");
-
+            bool confirm = await _services.Alert
+                .ConfirmAsync(DialogsStrings.DeleteActivity_Title,
+                DialogsStrings.DeleteActivity_Confirmation,
+                DialogsStrings.DeleteActivity_OK,
+                DialogsStrings.DeleteActivity_NOK, attendeesQty,activityCost );           
             if (!confirm)
                 return;
-
-            await DisplayAlert(await _applicationService.ActivityService.DeleteActivity(activity));
+            await _services.Alert.ShowAsync(await _services.Application.ActivityService.DeleteActivity(activity));
             await LoadData();
         }
 
@@ -141,17 +135,21 @@ namespace Presentation.MAUI.ViewModel
             }
         }
 
-
+        [RelayCommand]
+        public async Task Follower(int activityID)
+        {
+            await _services.Navigation.NavigateToActivityFollower(activityID);
+        }
         public async Task SaveSequence()
         {
-            await _applicationService.ActivityService.UpdateSequence(Activities);
+            await _services.Application.ActivityService.UpdateSequence(Activities);
             ModificationNotSaved = false;
             await LoadData();
             return;
         }
 
         [RelayCommand]
-        public Task CostLinkClicked(int activityID) => _navigationService.NavigateToActivityCost(activityID);
+        public Task CostLinkClicked(int activityID) => _services.Navigation.NavigateToActivityCost(activityID);
         
 
        

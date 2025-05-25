@@ -1,52 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Presentation.MAUI.Models.BaseVM">
-    <Position X="7" Y="1" Width="1.5" />
+    <Position X="7" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAACAAQCAABAYAIEAAAAAAEAAAAAQAAAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\BaseVM.cs</FileName>
+      <HashCode>AAAAAAAAQAAABAAQAkAAQAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>ViewModel\BaseVM\BaseVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Presentation.MAUI.ViewModel.FinderTravelPageVM">
-    <Position X="2.5" Y="8.75" Width="1.5" />
+    <Position X="2.5" Y="8.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAEgAIAAAABAAAAAAAgAAAAAGAAAAAACAAAAIAAAA=</HashCode>
+      <HashCode>AAAAEgAIAAACBAAAAAAAgAAAAAGAAAAAACAAABIAAAA=</HashCode>
       <FileName>ViewModel\Travel\FinderTravelPageVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Presentation.MAUI.ViewModel.TravelVM">
-    <Position X="7" Y="5" Width="1.5" />
+    <Position X="7" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAQAAABAAAgwAAQAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\Travel\TravelVM.cs</FileName>
+      <HashCode>AAAAAAAAAAAABAAAgQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\BaseVM\TravelVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Presentation.MAUI.ViewModel.ActivitiesTravelVM">
-    <Position X="11.5" Y="8.75" Width="1.5" />
+    <Position X="11.25" Y="10.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAEAAAAAAACQAQEAAAAgAAAAAAQAAAAAQBBAAAAAAAA=</HashCode>
+      <HashCode>AEEAAAAAAACQAQEAAAAgAACAAAQAAAAAQBBAAAEAAAQ=</HashCode>
       <FileName>ViewModel\Travel\ActivitiesTravelVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Presentation.MAUI.ViewModel.MemoriesTravelVM">
-    <Position X="4.75" Y="8.75" Width="1.5" />
+    <Position X="4.75" Y="8.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAQJAAIBACgAAAAEgAAQAAAAAAIEAAAAAA=</HashCode>
       <FileName>ViewModel\Travel\MemoriesTravelVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Presentation.MAUI.ViewModel.NewTravelVM">
-    <Position X="7" Y="8.75" Width="1.5" />
+    <Position X="7" Y="8.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAAABCAIAAAABAAAABAAAAAAAAAAAABAAQAgAAAAEAA=</HashCode>
+      <HashCode>CAAABAAIAAAABAAAABAAAAAAAAAAAABAAQAgAAAAEAA=</HashCode>
       <FileName>ViewModel\Travel\NewTravelVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Presentation.MAUI.ViewModel.NoteTravelVM">
-    <Position X="9.25" Y="8.75" Width="1.5" />
+    <Position X="9.25" Y="8.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAQADAAAAAABAAAAAAAAAAEAAAAAAQIAAAAAAAIAAA=</HashCode>
+      <HashCode>AAAQABAAAAAABAAAAAAAAAAEAAAAAAQIAAAAAAAIAAA=</HashCode>
       <FileName>ViewModel\Travel\NoteTravelVM.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Presentation.MAUI.ViewModel.ActivityVM">
+    <Position X="13" Y="8.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>ViewModel\BaseVM\ActivityVM.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Presentation.MAUI.ViewModel.ActivityAttendeeVM">
+    <Position X="13.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\Activity\ActivityAttendeeVM.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Presentation.MAUI.ViewModel.Activity.NewActivityVM">
+    <Position X="15" Y="10.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AgAAAIAAAAAABAAAAAAAAgAAAAAAAAAAAAABABAAQAA=</HashCode>
+      <FileName>ViewModel\Activity\NewActivityVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
