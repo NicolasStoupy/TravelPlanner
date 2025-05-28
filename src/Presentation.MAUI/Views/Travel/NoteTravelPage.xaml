@@ -26,7 +26,7 @@
         <!-- Scrollable list -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="6"
-                                 BindableLayout.ItemsSource="{Binding Travels.TravelNotes}">
+                                 BindableLayout.ItemsSource="{Binding CurrentTravel.TravelNotes}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="bu:Note">
                         <Grid ColumnDefinitions="*,Auto,Auto"

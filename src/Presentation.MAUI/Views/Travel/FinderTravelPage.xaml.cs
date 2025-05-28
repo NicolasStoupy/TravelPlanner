@@ -18,6 +18,7 @@ public partial class FinderTravelPage : ContentPage
         }
 
     }
+   
     protected override void OnAppearing()
     {
         try

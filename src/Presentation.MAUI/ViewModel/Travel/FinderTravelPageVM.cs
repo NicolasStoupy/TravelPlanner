@@ -1,5 +1,4 @@
-﻿using BussinessLogic.Interfaces;
-using BussinessLogic.Entities;
+﻿using BussinessLogic.Entities;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -112,7 +111,8 @@ public partial class FinderTravelPageVM : TravelVM
             return;
         }
 
-        await _services.Alert.ShowAsync(await _services.Application.TravelService.DeleteTravel(tripId));
+        var result = await _services.Application.TravelService.DeleteTravel(tripId);
+        await _services.Alert.ShowAsync(result.Status, true);
         Reset();
         IsBusy = false;
     }
@@ -121,15 +121,24 @@ public partial class FinderTravelPageVM : TravelVM
     /// Resets the travel item lists by clearing and reloading them
     /// from the travel service. Sets the busy state during the operation.
     /// </summary>
-    public override void Reset()
+    public override async void Reset()
     {
         IsBusy = true;
         _allTravelItems.Clear();
         TravelItems.Clear();
-        _allTravelItems = _services.Application.TravelService.GetTravels();
+        var result = await _services.Application.TravelService.GetTravels();
+        if (result.Status.IsSuccess)
+        {
+            _allTravelItems = result.Value;
+            TravelItems = [.. _allTravelItems];
+            IsBusy = false;
+        }
+        else
+        {
 
-        TravelItems = [.. _allTravelItems];
-        IsBusy = false;
+            await _services.Alert.ShowAsync(result.Status);
+        }
+        return;
     }
 
     [RelayCommand]
@@ -147,7 +156,9 @@ public partial class FinderTravelPageVM : TravelVM
     [RelayCommand]
     public async Task CloneTravel(Travel travel)
     {
-        await _services.Alert.ShowAsync(_services.Application.TravelService.CloneTravel(travel));
+        var result = await _services.Application.TravelService.CloneTravel(travel);
+        if (!result.IsSuccess)
+            await _services.Alert.ShowAsync(result.Status);
         Reset();
     }
 }

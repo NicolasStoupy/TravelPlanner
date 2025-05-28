@@ -1,13 +1,17 @@
 ﻿using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
+using Commons;
+using Commons.ErrorsHandlings;
 using Commons.Extensions;
 using Commons.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentValidation;
+
 using Presentation.MAUI.Interfaces;
 using Presentation.MAUI.Resources.Localization;
 using Presentation.MAUI.Validators;
+using System.Threading.Tasks;
 
 namespace Presentation.MAUI.ViewModel
 {
@@ -21,7 +25,7 @@ namespace Presentation.MAUI.ViewModel
     {
         [ObservableProperty] private string _travelID;
 
-        partial  void OnTravelIDChanged(string value) => NavigationDetails(value);
+        partial void OnTravelIDChanged(string value) => NavigationDetails(value);
 
         [ObservableProperty] private Travel _travel = new();
 
@@ -37,7 +41,7 @@ namespace Presentation.MAUI.ViewModel
 
         partial void OnCurrencySelectedChanged(string? value) => Travel.currencie = value;
 
-   
+
 
         [ObservableProperty]
         private Mode _currentMode = Mode.New;
@@ -47,7 +51,7 @@ namespace Presentation.MAUI.ViewModel
         [ObservableProperty]
         private string _currentModeFriendly;
 
-       
+
         public NewTravelVM(IViewModelServices viewModelServices) : base(viewModelServices)
         {
             title = PageTitle.NewTravelPage;
@@ -72,53 +76,60 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         private async Task ValidateAndSave()
         {
-            if(!await _services.Validation.ValidateAndNotifyAsync(this))
+            if (!await _services.Validation.ValidateAndNotifyAsync(this))
             {
                 return;
             }
-            Result result;
+
 
             switch (CurrentMode)
             {
                 case Mode.New:
-                    result = await _services.Application.TravelService.SaveTravel(Travel);
-                    await _services.Alert.HandleResultAndResetAsync(result,this, true);
+                    var result = await _services.Application.TravelService.SaveTravel(Travel);
+                    await _services.Alert.HandleResultAndResetAsync(result.Status, this, true);
                     break;
 
                 case Mode.Edit:
 
-                    result = await _services.Application.TravelService.UpdateTravel(Travel);
-                    await _services.Alert.HandleResultAndResetAsync(result,this, false);
+                    var resultUpdate = await _services.Application.TravelService.UpdateTravel(Travel);
+                    await _services.Alert.HandleResultAndResetAsync(resultUpdate.Status, this, false);
                     break;
 
                 default:
-                    result = Result.Failure(ExceptionMessage.UknowMode);
-                    await _services.Alert.HandleResultAndResetAsync(result,this, false);
                     break;
             }
         }
 
-        private void NavigationDetails(string value)
+        private async void NavigationDetails(string value)
         {
             if (value == null)
             {
-                Reset();
+
                 CurrentMode = Mode.New;
             }
             else
             {
                 int travelId = int.Parse(value);
                 CurrentMode = Mode.Edit;
+                var result = _services.Application.TravelService.GetTravel(travelId);
 
-                Travel = _services.Application.TravelService.GetTravel(travelId);
-                ImageSelected = Travel.image;
-                CurrencySelected = Travel.currencie;
-                CurrentTravel = Travel;
-                if (CurrentMode == Mode.Edit && CurrentTravel != null)
+                if (result.Status.IsSuccess)
                 {
-                    Title = CurrentTravel?.description??string.Empty;
+                    Travel = result.Value;
+                    ImageSelected = Travel.image;
+                    CurrencySelected = Travel.currencie;
+                    CurrentTravel = Travel;
+                    if (CurrentMode == Mode.Edit && CurrentTravel != null)
+                    {
+                        Title = CurrentTravel?.description ?? string.Empty;
+                    }
                 }
-
+                else
+                {
+                    await _services.Alert.ShowAsync(result.Status);
+                    Reset();
+                    await _services.Navigation.GoHome();
+                }
             }
         }
 
@@ -130,6 +141,9 @@ namespace Presentation.MAUI.ViewModel
             Travel = new Travel();
             ImageSelected = null;
             CurrencySelected = null;
+            OnPropertyChanged(nameof(Travel));
+            OnPropertyChanged(nameof(ImageSelected));
+            OnPropertyChanged(nameof(CurrencySelected));
             return;
         }
     }

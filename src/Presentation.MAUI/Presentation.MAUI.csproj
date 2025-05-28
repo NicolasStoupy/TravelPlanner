@@ -119,6 +119,11 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>DialogsStrings.resx</DependentUpon>
 	  </Compile>
+	  <Compile Update="Resources\Localization\ErrorHandling.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ErrorHandling.resx</DependentUpon>
+	  </Compile>
 	  <Compile Update="Resources\Localization\ExceptionMessage.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
@@ -190,6 +195,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Controls\" />
+	  <Folder Include="Extensions\" />
 	  <Folder Include="ViewModel\Models\" />
 	</ItemGroup>
 
@@ -197,6 +203,10 @@
 	  <EmbeddedResource Update="Resources\Localization\DialogsStrings.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>DialogsStrings.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\ErrorHandling.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ErrorHandling.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	  <EmbeddedResource Update="Resources\Localization\ExceptionMessage.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>

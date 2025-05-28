@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using BussinessLogic.Entities;
+using BussinessLogic.Extensions;
 using BussinessLogic.Interfaces;
+using BussinessLogic.Services.ServicesStatus;
 using Commons;
+using Commons.ErrorsHandlings;
 using Commons.Models;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace BussinessLogic.Services
 {
@@ -20,77 +24,211 @@ namespace BussinessLogic.Services
     /// and maps between infrastructure entities and domain models using <see cref="IMapper"/>.
     /// Media operations such as file storage and replacement are handled via the <see cref="DocumentProvider"/>.
     /// </remarks>
-    public class TravelService(IDbContextFactory<TravelPlannerContext> context, IMapper mapper, DocumentProvider document, IMediaService mediaService) : ITravelService
+    public class TravelService(
+        IDbContextFactory<TravelPlannerContext> context,
+        IMapper mapper,
+        DocumentProvider document,
+        IMediaService mediaService, ILogger<TravelService> logger) : ITravelService
     {
         private readonly IDbContextFactory<TravelPlannerContext> _context = context;
         private readonly DocumentProvider _document = document;
         private readonly IMapper _mapper = mapper;
         private readonly IMediaService _mediaService = mediaService;
+        private readonly ILogger<TravelService> _logger = logger;
 
-        /// <summary>
-        /// Retrieves a travel item by its ID and maps it from the Trip entity to a Travel domain model.
-        /// </summary>
-        /// <param name="travelID">The unique identifier of the travel item.</param>
-        /// <returns>
-        /// A <see cref="Travel"/> object mapped from the Trip entity if found;
-        /// otherwise, a new empty <see cref="Travel"/> instance.
-        /// </returns>
-        public Travel GetTravel(int travelID)
+        public ServiceResult<Travel, TravelServiceStatus> GetTravel(int travelID)
         {
-            using var context = _context.CreateDbContext();
-            var trip = context.Trips.Where(t => t.TripId == travelID).FirstOrDefault();
+            try
+            {
+                if (travelID <= 0)
+                    return new ErrorResult<Travel, TravelServiceStatus>
+                        (TravelServiceStatus.InvalidTravelId);
 
-            var Travel = _mapper.Map<Travel>(trip);
+                using var ctx = _context.CreateDbContext();
+                var entity = ctx.Trips.FirstOrDefault(t => t.TripId == travelID);
 
-            return Travel ?? new Travel();
+                if (entity == null)
+                    return new ErrorResult<Travel, TravelServiceStatus>
+                        (TravelServiceStatus.TravelNotFound);
+
+                var travel = _mapper.Map<Travel>(entity);
+                var mes = new SuccessResult<Travel, TravelServiceStatus>(travel);
+                return mes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving travel with ID {TravelID}", travelID);
+                return new ErrorResult<Travel, TravelServiceStatus>(TravelServiceStatus.UnknownError);
+            }
         }
 
-        /// <summary>
-        /// Retrieves all trips from the database, ordered by creation date,
-        /// and maps them to a list of <see cref="Travel"/> domain models.
-        /// </summary>
-        /// <returns>
-        /// A list of <see cref="Travel"/> items mapped from the database trips.
-        /// </returns>
-        public List<Travel> GetTravels(bool includeActivity = false, bool includeNotes = false, bool includeFollowers = false)
+        public async Task<ServiceResult<List<Travel>, TravelServiceStatus>> GetTravels(bool includeActivity = false, bool includeNotes = false, bool includeFollowers = false)
         {
             using var context = _context.CreateDbContext();
-            var trips = context.Trips.OrderBy(t => t.CreatedAt).ToList();
+            var trips = await context.Trips.OrderBy(t => t.CreatedAt).ToListAsync();
 
-            var travelItems = _mapper.Map<List<Travel>>(trips);
+            if (!_mapper.TryMap(trips, out List<Travel> travelItems, _logger))
+            {
+                return new ErrorResult<List<Travel>, TravelServiceStatus>(TravelServiceStatus.UnknownError);
+            }
 
-            return travelItems;
+            return new SuccessResult<List<Travel>, TravelServiceStatus>(travelItems);
         }
 
-        /// <summary>
-        /// Deletes a travel record and all its related entities, including media, activities,
-        /// logbooks, activity costs, and attendees.
-        /// Ensures that all dependent data is cleaned up to maintain database integrity.
-        /// </summary>
-        /// <param name="travelID">The unique identifier of the travel record to delete.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating whether the operation was successful.
-        /// Returns a failure result if the trip does not exist or if an error occurs during deletion.
-        /// </returns>
-        public async Task<Result> DeleteTravel(int travelID)
+        public async Task<ServiceResult<bool, TravelServiceStatus>> AddMediaToTravel(
+            List<byte[]> medias, int travelID, Commons.TypeMedia mediaType)
         {
+            try
+            {
+                if (travelID <= 0)
+                    return new ErrorResult<bool, TravelServiceStatus>
+                        (TravelServiceStatus.InvalidTravelId);
+                if (medias.Count == 0)
+                    return new ErrorResult<bool, TravelServiceStatus>
+                        (TravelServiceStatus.NoMedia);
+
+                using var context = _context.CreateDbContext();
+
+                var trip = context.Trips.FirstOrDefault(t => t.TripId == travelID);
+
+                if ((trip == null))
+                    return new ErrorResult<bool, TravelServiceStatus>
+                        (TravelServiceStatus.TravelNotFound);
+
+                var savedFilesGuid = _mediaService.SaveMedias(medias, mediaType);
+
+                //if some files failed to save (already saved files will be rolled back)
+                if (savedFilesGuid != null && savedFilesGuid.Count() != medias.Count)
+                {
+                    foreach (var item in savedFilesGuid)
+                    {
+                        _document.RemoveFile(item, mediaType);
+                    }
+                    return new ErrorResult<bool, TravelServiceStatus>
+                                            (TravelServiceStatus.ErrorWhenAddingFile);
+                }
+                if (savedFilesGuid != null)
+                {
+                    foreach (var fileGuid in savedFilesGuid)
+                    {
+                        trip.Media.Add(new Medium
+                        {
+                            FileGuid = fileGuid,
+                            Description = string.Empty,
+                            MediaType = 1
+                        });
+                    }
+                }
+
+                await context.SaveChangesAsync();
+
+                return new SuccessResult<bool, TravelServiceStatus>(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de l'ajout de medias au voyage {travelID}", travelID);
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.UnknownError);
+            }
+        }
+
+        public async Task<ServiceResult<bool, TravelServiceStatus>> SaveTravel(Travel travel)
+        {
+            if (travel == null)
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.InvalidTravelId);
+
+            using var context = _context.CreateDbContext();
+
+            if (!_mapper.TryMap(travel, out Trip trip, _logger))
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.UnknownError);
+
+            //trip.CurrencyCode = travel.currencie;
+
+            Guid? savedFileGuid = null;
+            using var transaction = await context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // 1. Save The trip without image
+                context.Trips.Add(trip);
+                await context.SaveChangesAsync();
+
+                // 2. Save Image
+                if (travel.image != null)
+                {
+                    _document.SetMediaType(Commons.TypeMedia.Images);
+                    var savedImageGuid = _document.SaveFile(travel.image);
+                    if (savedImageGuid == null)
+                    {
+                        transaction.Rollback();
+                        return new ErrorResult<bool, TravelServiceStatus>(
+                            TravelServiceStatus.ErrorWhenAddingFile);
+                    }
+
+                    // 3. Update the trip information
+                    trip.TripBackgroundGuid = savedImageGuid;
+                    context.Trips.Update(trip);
+                    await context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return new SuccessResult<bool, TravelServiceStatus>(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de l'ajout d'un voyage {travelID}", travel.Id);
+                await transaction.RollbackAsync();
+                //  remove orphan file
+                if (savedFileGuid.HasValue)
+                {
+                    _document.RemoveFile(savedFileGuid.Value, Commons.TypeMedia.Images);
+                }
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.UnknownError);
+            }
+        }
+
+        public async Task<ServiceResult<bool, TravelServiceStatus>> DeleteTravel(int travelID)
+        {
+            if (travelID < 0)
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.InvalidTravel);
+
             using var context = _context.CreateDbContext();
             try
             {
                 var trip = await context.Trips
                     .Include(t => t.LogBooks)
                     .Include(t => t.Media)
-                    .Include(t => t.Activities)
-                    .ThenInclude(a => a.LogBooks)
-                    .Include(t => t.Activities)
-                    .ThenInclude(a => a.ActivityCosts)
-                   .Include(t => t.Activities).ThenInclude(a => a.Attendees)
+                    .Include(t => t.Activities).ThenInclude(a => a.LogBooks)
+                    .Include(t => t.Activities).ThenInclude(a => a.ActivityCosts)
+                    .Include(t => t.Activities).ThenInclude(a => a.Attendees)
                     .FirstOrDefaultAsync(t => t.TripId == travelID);
 
                 if (trip == null)
-                {
-                    return Result.Failure("Trip not exist");
-                }
+                    return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.TravelNotFound);
+
+                var medias = trip.Media;
+                var mediaCount = medias.Count();
+                Dictionary<Guid, byte[]> memoryFiles = new Dictionary<Guid, byte[]>();
+                //foreach (var media in medias)
+                //{
+                //    var loadedFile = _document.GetFile(media.FileGuid, TypeMedia.Images);
+                //    if (loadedFile != null)
+                //    {
+                //        memoryFiles.Add(media.FileGuid, loadedFile);
+                //    }
+                //    if (_document.RemoveFile(media.FileGuid, TypeMedia.Images))
+                //    {
+                //        mediaCount -= 1;
+                //    }
+                //}
+                //if (mediaCount != 0)
+                //{
+                //    foreach (var memoryFile in memoryFiles)
+                //    {
+                //        _document.ReplaceFile(memoryFile.Key, memoryFile.Value);
+                //    }
+                //    return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.ErrorWhenRemovingFile);
+                //}
                 context.RemoveRange(trip.Media);
 
                 foreach (var activity in trip.Activities)
@@ -114,77 +252,25 @@ namespace BussinessLogic.Services
 
                 context.Remove(trip);
                 await context.SaveChangesAsync();
-                return Result.Success("Le Voyage a été supprimé avec success");
+                return new SuccessResult<bool, TravelServiceStatus>(true);
             }
             catch (Exception ex)
             {
-                return Result.Failure(ex.Message);
+                _logger.LogError(ex, "Error occurred when the system trying to delete a travel");
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.UnknownError);
             }
         }
 
-        /// <summary>
-        /// Saves a new travel record along with its optional background image.
-        /// Performs the operation within a database transaction to ensure consistency between
-        /// the database and the file system. If an error occurs, any saved image is removed to avoid orphan files.
-        /// </summary>
-        /// <param name="travel">The <see cref="Travel"/> domain object to be saved.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating the success or failure of the operation.
-        /// Returns a success message if the trip is saved correctly, or a failure message if an exception occurs.
-        /// </returns>
-        public async Task<Result> SaveTravel(Travel travel)
+        public async Task<ServiceResult<bool, TravelServiceStatus>> UpdateTravel(Travel travel)
         {
+            if (travel == null)
+                return new ErrorResult<bool, TravelServiceStatus>
+                    (TravelServiceStatus.InvalidTravel);
+
             using var context = _context.CreateDbContext();
-            var trip = _mapper.Map<Trip>(travel);
-            trip.CurrencyCode = travel.currencie;
-            Guid? savedFileGuid = null;
-            using var transaction = await context.Database.BeginTransactionAsync();
 
-            try
-            {
-                // 1. Save The trip without image
-                context.Trips.Add(trip);
-                await context.SaveChangesAsync();
-
-                // 2. Save Image
-                if (travel.image != null)
-                {
-                    _document.SetMediaType(Commons.TypeMedia.Images);
-                    var savedImageGuid = _document.SaveFile(travel.image);
-
-                    // 3. Update the trip information
-                    trip.TripBackgroundGuid = savedImageGuid;
-                    context.Trips.Update(trip);
-                    await context.SaveChangesAsync();
-                }
-
-                await transaction.CommitAsync();
-
-                return Result.Success($"Le voyage {travel.name} a bien été créé !");
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                //  remove orphan file
-                if (savedFileGuid.HasValue)
-                {
-                    _document.RemoveFile(savedFileGuid.Value, Commons.TypeMedia.Images);
-                }
-                return Result.Failure(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Updates an existing travel entry, including replacing its associated image if provided.
-        /// </summary>
-        /// <param name="travel">The updated travel data, including the optional new image.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating whether the update was successful or failed, with a message.
-        /// </returns>
-        public async Task<Result> UpdateTravel(Travel travel)
-        {
-            using var context = _context.CreateDbContext();
-            var trip = _mapper.Map<Trip>(travel);
+            if (!_mapper.TryMap(travel, out Trip trip, _logger))
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.UnknownError);
 
             Guid? savedFileGuid = null;
 
@@ -195,7 +281,8 @@ namespace BussinessLogic.Services
                 var existingTrip = await context.Trips.FindAsync(trip.TripId);
                 if (existingTrip == null)
                 {
-                    return Result.Failure($"Le voyage avec l'ID {trip.TripId} est introuvable.");
+                    return new ErrorResult<bool, TravelServiceStatus>
+                                      (TravelServiceStatus.TravelNotFound);
                 }
 
                 // 1. Update les propriétés (hors image pour le moment)
@@ -204,7 +291,7 @@ namespace BussinessLogic.Services
                 await context.SaveChangesAsync();
 
                 // 2. Save nouvelle image si nécessaire
-                if (travel.image != null)
+                if (travel?.image != null)
                 {
                     _document.SetMediaType(Commons.TypeMedia.Images);
                     savedFileGuid = _document.ReplaceFile(travel.imageID, travel.image);
@@ -217,7 +304,7 @@ namespace BussinessLogic.Services
 
                 await transaction.CommitAsync();
 
-                return Result.Success($"Le voyage {travel.name} a bien été mis à jour !");
+                return new SuccessResult<bool, TravelServiceStatus>(true);
             }
             catch (Exception ex)
             {
@@ -228,117 +315,40 @@ namespace BussinessLogic.Services
                 {
                     _document.RemoveFile(savedFileGuid.Value, Commons.TypeMedia.Images);
                 }
-
-                return Result.Failure($"Une erreur est survenue lors de la mise à jour : {ex.Message}");
+                _logger.LogError(ex, "Erreur lors de l'édition d'un voyage {travelID}", travel?.Id);
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.UnknownError);
             }
         }
 
-        /// <summary>
-        /// Adds a new note to a specific travel (trip) identified by its ID.
-        /// </summary>
-        /// <param name="note">The note to add. Can be <c>null</c>.</param>
-        /// <param name="travelID">The ID of the travel to which the note should be added.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating whether the operation succeeded or failed, wrapped in a <see cref="Task"/>.
-        /// </returns>
-        public Task<Result> AddNote(Note? note, int travelID)
+        public async Task<ServiceResult<bool, TravelServiceStatus>> CloneTravel(Travel travel)
         {
-            using var context = _context.CreateDbContext();
-            var log = _mapper.Map<LogBook>(note);
-            var trip = context.Trips.FirstOrDefault(t => t.TripId == travelID);
-            if (trip != null)
-            {
-                trip.LogBooks.Add(log);
-                context.SaveChanges();
-
-                return Task.FromResult(Result.Success("Note Ajoutée aevc success"));
-            }
-            else
-            {
-                return Task.FromResult(Result.Failure("Le Voyage n'existe pas "));
-            }
-        }
-
-        /// <summary>
-        /// Deletes a note from the database based on its identifier.
-        /// </summary>
-        /// <param name="note">The note to delete.</param>
-        /// <returns>
-        /// A <see cref="Result"/> wrapped in a <see cref="Task"/>, indicating whether the deletion was successful or failed.
-        /// </returns>
-        public Task<Result> DeleteNote(Note note)
-        {
-            using var context = _context.CreateDbContext();
+            // Validation de l'entrée
+            if (travel == null)
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.InvalidTravelId);
             try
             {
-                var log = context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
-                if (log == null) return Task.FromResult(Result.Failure("Note not found"));
-                context.LogBooks.Remove(log);
-                context.SaveChanges();
-                return Task.FromResult(Result.Success("Supprimé"));
+                await using var ctx = _context.CreateDbContext();
+                //Création du clone
+                if (!_mapper.TryMap(travel, out Trip tripCloned, _logger))
+                    return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.UnknownError);
+
+                tripCloned.TripId = 0;                     // Reset de la PK
+                ctx.Trips.Add(tripCloned);
+                //Persistance
+                await ctx.SaveChangesAsync();
+                //Succès
+                return new SuccessResult<bool, TravelServiceStatus>(true);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "Erreur lors de la sauvegarde");
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.DatabaseError);
             }
             catch (Exception ex)
             {
-                return Task.FromResult(Result.Failure(ex.Message));
-            }
-        }
-
-        /// <summary>
-        /// Updates the content of an existing note.
-        /// </summary>
-        /// <param name="note">The note containing the updated content and identifier.</param>
-        /// <returns>
-        /// A <see cref="Result"/> wrapped in a <see cref="Task"/>, indicating whether the update was successful or failed.
-        /// </returns>
-        public Task<Result> EditNote(Note note)
-        {
-            using var context = _context.CreateDbContext();
-            try
-            {
-                var log = context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
-                if (log == null) return Task.FromResult(Result.Failure("Note not found"));
-                log.Description = note.NoteContent;
-                context.LogBooks.Update(log);
-                context.SaveChanges();
-                return Task.FromResult(Result.Success("Updated"));
-            }
-            catch (Exception ex)
-            {
-                return Task.FromResult(Result.Failure(ex.Message));
-            }
-        }
-
-        public async Task<Result> AddMediaToTravel(List<byte[]> medias, int travelID, Commons.TypeMedia mediaType)
-        {
-            try
-            {
-                using var context = _context.CreateDbContext();
-                var trip = context.Trips.FirstOrDefault(t => t.TripId == travelID);
-                var savedFilesGuid = _mediaService.SaveMedias(medias, mediaType);
-                if (trip != null)
-                {
-                    foreach (var fileGuid in savedFilesGuid)
-                    {
-                        if (fileGuid == null) continue;
-
-                        trip.Media.Add(new Medium
-                        {
-                            FileGuid = fileGuid.Value,
-                            Description = string.Empty,
-                            MediaType = 1
-                        });
-                    }
-
-                    await context.SaveChangesAsync();
-
-
-                }
-                return Result.Success(); // Ou new Result(true)
-            }
-            catch (Exception ex)
-            {
-                // Log possible ici
-                return Result.Failure("Erreur lors de l'enregistrement des médias : " + ex.Message);
+                //Log et erreur
+                _logger.LogError(ex, "Erreur lors du clonage du voyage (ID original: {TravelId})", travel.Id);
+                return new ErrorResult<bool, TravelServiceStatus>(TravelServiceStatus.UnknownError);
             }
         }
 
@@ -355,7 +365,6 @@ namespace BussinessLogic.Services
                     Description = media.Description,
                     FileID = media.MediaId,
                     FileGuid = media.FileGuid
-
                 });
             }
 
@@ -376,23 +385,11 @@ namespace BussinessLogic.Services
                         if (_document.RemoveFile(media.FileGuid, TypeMedia.Images))
                             context.Media.Remove(media);
                     }
-
                 }
             }
             await context.SaveChangesAsync();
 
             return Result.Success("Success");
-
-        }
-
-        public Result CloneTravel(Travel travel)
-        {
-            using var context = _context.CreateDbContext();
-            var tripCloned = _mapper.Map<Trip>(travel);
-            tripCloned.TripId = 0;
-            context.Trips.Add(tripCloned);
-            context.SaveChanges();
-            return Result.Success("Cloné");
         }
 
         public Result UpdateMemory(MemoryFile memory)
@@ -402,10 +399,10 @@ namespace BussinessLogic.Services
             var media = context.Media.FirstOrDefault(m => m.MediaId == memory.FileID);
             if (media != null)
             {
-                media.Description = memory.Description??string.Empty;
+                media.Description = memory.Description ?? string.Empty;
                 context.SaveChanges();
             }
-           return Result.Success();
+            return Result.Success();
         }
     }
 }

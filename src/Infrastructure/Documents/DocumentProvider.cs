@@ -172,7 +172,7 @@ public class DocumentProvider
         return false;
     }
 
-    public bool RemoveFile(Guid fileGuid, TypeMedia typeMedia)
+    public bool RemoveFile(Guid? fileGuid, TypeMedia typeMedia)
     {
         SetMediaType(typeMedia);
         var fileName = fileGuid.ToString();

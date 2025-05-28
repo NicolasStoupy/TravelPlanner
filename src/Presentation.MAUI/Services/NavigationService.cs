@@ -56,5 +56,8 @@ namespace Presentation.MAUI.Services
         {
             await Navigate($"TravelActivities");
         }
+
+        public async Task GoHome() => await NavigateToTravelFinder();
+        
     }
 }

@@ -13,4 +13,12 @@ namespace Commons
         Images = 1,
         Pdf = 2
     }
+
+  
+  
+
+    public enum MessageType
+    {
+        Success, Error, Warning
+    }
 }

@@ -1,16 +1,16 @@
-﻿using BussinessLogic.Interfaces;
-using Presentation.MAUI.Models;
+﻿using Presentation.MAUI.Models;
 using BussinessLogic.Entities;
-using Commons.Extensions;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Presentation.MAUI.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Commons;
 
 namespace Presentation.MAUI.ViewModel
 {
     public partial class TravelVM : BaseVM
     {
 
-        protected static Travel? CurrentTravel { get; set; }
+        [ObservableProperty]
+        protected static Travel? _currentTravel;
         protected async Task NoTravelSelected()
         {
             await  _services.Alert.ShowAsync(MessageType.Warning, "Merci de sélectionner un voyage avant d’ajouter une note.");

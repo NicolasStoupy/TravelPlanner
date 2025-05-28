@@ -157,8 +157,17 @@ namespace Presentation.MAUI.ViewModel
         {
             if (CurrentTravel?.Id != null)
             {
-                await _services.Application.TravelService.AddMediaToTravel(files.ToList(), CurrentTravel.Id, TypeMedia.Images);
-                Reset();
+                var result = await _services.Application
+                                            .TravelService
+                                            .AddMediaToTravel(files.ToList(), CurrentTravel.Id, TypeMedia.Images);
+                if ((result.Status.IsSuccess))
+                {
+                    Reset();
+                }
+                else
+                {
+                    await _services.Alert.ShowAsync(result.Status);
+                }
             }
             else
             {
@@ -189,8 +198,6 @@ namespace Presentation.MAUI.ViewModel
         {
             if (imageBytes == null || imageBytes.Length == 0)
                 return;
-
-
             await Shell.Current.Navigation.PushAsync(new FullScreenImagePage(imageBytes));
         }
 

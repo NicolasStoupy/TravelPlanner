@@ -7,7 +7,6 @@ using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 
-
 namespace BussinessLogic.Services
 {
     public class MediaService : IMediaService
@@ -19,16 +18,6 @@ namespace BussinessLogic.Services
         {
             _context = context;
             _document = documentProvider;
-        }
-
-        public List<byte[]> GetMediasFromActivity(Activity activity, List<MediaType> mediaTypes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<byte[]> GetMediasFromCosting(ActivityCost activity, List<MediaType> mediaTypes)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -85,24 +74,14 @@ namespace BussinessLogic.Services
             return new List<byte[]>();
         }
 
-        public List<byte[]> GetMediasFromTrip(Trip trip, List<MediaType> mediaTypes)
+        public List<Guid> SaveMedias(List<byte[]> files, TypeMedia images)
         {
-            throw new NotImplementedException();
-        }
-
-        public List<byte[]> GetMediasFromActivity(Activity activity, TypeMedia typeMedia)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Guid?> SaveMedias(List<byte[]> files, TypeMedia images)
-        {
-            var result = new List<Guid?>();
+            var result = new List<Guid>();
             foreach (var file in files)
             {
                 var savedMediaGuid = SaveMedia(file, images);
-                if (savedMediaGuid != null)
-                    result.Add(savedMediaGuid);
+                if (savedMediaGuid.HasValue)
+                    result.Add(savedMediaGuid.Value);
             }
             return result;
         }

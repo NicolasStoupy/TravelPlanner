@@ -24,7 +24,7 @@
   <Class Name="Presentation.MAUI.ViewModel.ActivitiesTravelVM">
     <Position X="11.25" Y="10.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEEAAAAAAACQAQEAAAAgAACAAAQAAAAAQBBAAAEAAAQ=</HashCode>
+      <HashCode>AEEAAAAAAACQAQEgAAAgAACAAAQAAAAAQBBAAAEAAAQ=</HashCode>
       <FileName>ViewModel\Travel\ActivitiesTravelVM.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -52,21 +52,14 @@
   <Class Name="Presentation.MAUI.ViewModel.ActivityVM">
     <Position X="13" Y="8.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAABAgAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
       <FileName>ViewModel\BaseVM\ActivityVM.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Presentation.MAUI.ViewModel.ActivityAttendeeVM">
-    <Position X="13.25" Y="10.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\Activity\ActivityAttendeeVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Presentation.MAUI.ViewModel.Activity.NewActivityVM">
     <Position X="15" Y="10.75" Width="3" />
     <TypeIdentifier>
-      <HashCode>AgAAAIAAAAAABAAAAAAAAgAAAAAAAAAAAAABABAAQAA=</HashCode>
+      <HashCode>AgAAAIAAAAAABAAAAAAAAgAAAAAAAAAAAAABABAgQAA=</HashCode>
       <FileName>ViewModel\Activity\NewActivityVM.cs</FileName>
     </TypeIdentifier>
   </Class>

@@ -2,10 +2,7 @@
 using BussinessLogic;
 using CommunityToolkit.Maui;
 using Infrastructure;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Presentation.MAUI.Models;
 using QuestPDF.Infrastructure;
 
 

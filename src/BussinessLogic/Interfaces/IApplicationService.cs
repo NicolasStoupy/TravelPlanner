@@ -4,8 +4,9 @@
     {
         IExpenseService ExpenseService { get; }
         ITravelService TravelService { get; }
-
         IActivityService ActivityService { get; }
         IMediaService MediaService { get; }
+
+        ILogBookService LogBookService { get; }
     }
 }

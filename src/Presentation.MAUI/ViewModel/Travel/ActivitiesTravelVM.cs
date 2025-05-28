@@ -1,24 +1,17 @@
 ﻿using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Infrastructure.EntityModels;
 using Presentation.MAUI.Interfaces;
 using Presentation.MAUI.Resources.Localization;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 
 namespace Presentation.MAUI.ViewModel
 {
-    public partial class ActivitiesTravelVM : ActivityVM
+    public partial class ActivitiesTravelVM(IViewModelServices viewModelServices) : ActivityVM(viewModelServices)
     {
-        [ObservableProperty]
-        private ObservableCollection<TravelActivity>? _activities;
-
-        [ObservableProperty]
-        private bool _saveButtonVisible;
-        [ObservableProperty]
-        private bool _modificationNotSaved;
+        [ObservableProperty] private ObservableCollection<TravelActivity>? _activities;
+        [ObservableProperty] private bool _saveButtonVisible;
+        [ObservableProperty] private bool _modificationNotSaved;
         partial void OnModificationNotSavedChanged(bool value)
         {
             if (value)
@@ -31,23 +24,8 @@ namespace Presentation.MAUI.ViewModel
             }
 
         }
-
         public decimal TotalPlannedCost => 0;
         public decimal TotalRealCost => 0;
-        //[ObservableProperty]
-
-        //private UrlWebViewSource url = new UrlWebViewSource { Url = "https://www.google.com/search?q=Paris&hl=fr&udm=2" };
-        public ActivitiesTravelVM(IViewModelServices viewModelServices) : base(viewModelServices)
-        {
-        }
-
-        [RelayCommand]
-        private void MoveUp(TravelActivity activity)
-        { return; }
-
-        [RelayCommand]
-        private void MoveDown(TravelActivity activity)
-        { return; }
 
         public async Task LoadData()
         {
@@ -63,6 +41,8 @@ namespace Presentation.MAUI.ViewModel
                 SaveButtonVisible = false;
             }
         }
+        [RelayCommand] public async Task SaveActivity() => await SaveSequence();
+        [RelayCommand] public Task CostLinkClicked(int activityID) => _services.Navigation.NavigateToActivityCost(activityID);
 
         [RelayCommand]
         public async Task AddActivity()
@@ -80,13 +60,14 @@ namespace Presentation.MAUI.ViewModel
                     DialogsStrings.WIP_Confirmation,
                     DialogsStrings.WIP_OK,
                     DialogsStrings.WIP_NOK);
-               
+
                 if (confirm)
                 {
                     await SaveSequence();
                 }
             }
         }
+
         [RelayCommand]
         public async Task EditActivity(TravelActivity travelActivity)
         {
@@ -98,13 +79,7 @@ namespace Presentation.MAUI.ViewModel
         {
             await LoadData();
         }
-
-        [RelayCommand]
-        public async Task SaveActivity()
-        {
-            await SaveSequence();
-        }
-
+        
         [RelayCommand]
         public async Task DeleteActivity(TravelActivity activity)
         {
@@ -115,7 +90,7 @@ namespace Presentation.MAUI.ViewModel
                 .ConfirmAsync(DialogsStrings.DeleteActivity_Title,
                 DialogsStrings.DeleteActivity_Confirmation,
                 DialogsStrings.DeleteActivity_OK,
-                DialogsStrings.DeleteActivity_NOK, attendeesQty,activityCost );           
+                DialogsStrings.DeleteActivity_NOK, attendeesQty, activityCost);
             if (!confirm)
                 return;
             await _services.Alert.ShowAsync(await _services.Application.ActivityService.DeleteActivity(activity));
@@ -147,13 +122,5 @@ namespace Presentation.MAUI.ViewModel
             await LoadData();
             return;
         }
-
-        [RelayCommand]
-        public Task CostLinkClicked(int activityID) => _services.Navigation.NavigateToActivityCost(activityID);
-        
-
-       
-
-
     }
 }

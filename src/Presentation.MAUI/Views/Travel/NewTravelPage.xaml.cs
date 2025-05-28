@@ -11,10 +11,16 @@ public partial class NewTravelPage : ContentPage
 		this.BindingContext = vm;
 	}
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
+  
 
-        return;
+    protected override void OnDisappearing()
+    {
+        
+        if( this.BindingContext is NewTravelVM vm)
+        {
+            vm.Reset();
+        }
+            
+        
     }
 }

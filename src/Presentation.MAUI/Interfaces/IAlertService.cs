@@ -1,11 +1,14 @@
-﻿using Microsoft.VisualBasic;
+﻿using BussinessLogic.Entities;
+using Commons;
+using Commons.ErrorsHandlings;
+using Microsoft.VisualBasic;
 using Presentation.MAUI.Models;
 
 namespace Presentation.MAUI.Interfaces
 {
     public interface IAlertService
     {
-       
+
         /// <summary>
         /// Displays a single alert message to the user.
         /// </summary>
@@ -13,7 +16,7 @@ namespace Presentation.MAUI.Interfaces
         /// <param name="message">The message to display.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         Task ShowAsync(MessageType messageType, string? message);
-      
+
         /// <summary>
         /// Displays an alert dialog containing a list of messages, each separated by a new line.
         /// </summary>
@@ -34,7 +37,7 @@ namespace Presentation.MAUI.Interfaces
         /// if false, it's called when the result indicates failure.
         /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task HandleResultAndResetAsync(Commons.Models.Result result,  BaseVM baseVM, bool resetWhenResultIsSuccess = true);
+        Task HandleResultAndResetAsync(IServiceResult result, BaseVM baseVM, bool resetWhenResultIsSuccess = true,bool showSuccess=true);
 
         /// <summary>
         /// Shows a confirmation dialog with two buttons and returns true if the user accepts.
@@ -44,6 +47,9 @@ namespace Presentation.MAUI.Interfaces
         /// <param name="accept">Label for the affirmative button.</param>
         /// <param name="cancel">Label for the negative button.</param>
         /// <returns>True if the user tapped the accept button; otherwise false.</returns>
-        Task<bool> ConfirmAsync(string title, string message, string accept = "Yes", string cancel = "No", params object?[]? args) ;
+        Task<bool> ConfirmAsync(string title, string message, string accept = "Yes", string cancel = "No", params object?[]? args);
+        Task ShowAsync(IServiceResult result, bool showSuccess = false);
     }
+
+
 }

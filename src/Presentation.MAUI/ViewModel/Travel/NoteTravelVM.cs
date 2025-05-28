@@ -6,6 +6,7 @@ using Presentation.MAUI.Validators;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Presentation.MAUI.Interfaces;
 
+
 namespace Presentation.MAUI.ViewModel
 {
     /// <summary>
@@ -15,12 +16,6 @@ namespace Presentation.MAUI.ViewModel
     /// </summary>
     public partial class NoteTravelVM : TravelVM
     {
-        /// <summary>
-        /// Retrieves the validator used for this ViewModel.
-        /// </summary>
-   
-
-        [ObservableProperty] private Travel? _travels;
 
         [ObservableProperty] private Note _note = new();
 
@@ -36,15 +31,15 @@ namespace Presentation.MAUI.ViewModel
             {
                 Note.NoteContent = newValue.NoteContent;
             }
-            return ;
+            return;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NoteTravelVM"/> class.
         /// Loads data for the current travel entry using the application service.
         /// </summary>
-       
-        public NoteTravelVM(IViewModelServices viewModelServices):base(viewModelServices) 
+
+        public NoteTravelVM(IViewModelServices viewModelServices) : base(viewModelServices)
         {
             loadData();
         }
@@ -56,14 +51,23 @@ namespace Presentation.MAUI.ViewModel
         {
             if (CurrentTravel != null && CurrentTravel.Id != 0)
             {
-                Travels = _services.Application.TravelService.GetTravel(CurrentTravel.Id);
+                var result = _services.Application.TravelService.GetTravel(CurrentTravel.Id);
+                if (result.Status.IsSuccess)
+                {
+                    CurrentTravel = result.Value;
+                }
+                else
+                {
+                    await _services.Alert.ShowAsync(result.Status);
+                }
             }
             else
             {
                 await NoTravelSelected();
                 return;
             }
-            return;
+
+
         }
 
         /// <summary>
@@ -75,9 +79,9 @@ namespace Presentation.MAUI.ViewModel
         {
             if (!await _services.Validation.ValidateAndNotifyAsync(this))
                 return;
-            if (Travels != null)
+            if (CurrentTravel != null)
             {
-                var result = await _services.Application.TravelService.AddNote(Note, Travels.Id);
+                var result = await _services.Application.LogBookService.AddNote(Note, CurrentTravel.Id);
                 loadData();
                 if (result.IsSuccess) Note = new Note();
             }
@@ -95,7 +99,7 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         public async Task DeleteNote(Note note)
         {
-            await _services.Application.TravelService.DeleteNote(note);
+            await _services.Application.LogBookService.DeleteNote(note);
             loadData();
         }
 
@@ -106,7 +110,7 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         public async Task EditNote(Note note)
         {
-            await _services.Application.TravelService.EditNote(note);
+            await _services.Application.LogBookService.EditNote(note);
             loadData();
         }
 

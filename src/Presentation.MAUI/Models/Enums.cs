@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace Presentation.MAUI.Models
 {
-    public enum MessageType
-    {
-        Success,Error,Warning
-    }
+   
 }

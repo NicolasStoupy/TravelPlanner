@@ -17,6 +17,7 @@ namespace BussinessLogic
             collection.AddScoped<ITravelService, TravelService>();
             collection.AddScoped<IMediaService, MediaService>();
             collection.AddScoped<IActivityService, ActivityService>();
+            collection.AddScoped<ILogBookService, LogBookService>();
             collection.AddScoped<DocumentProvider>();
             collection.AddScoped<TravelImageResolver>();
             collection.AddScoped<TravelNotesResolver>();

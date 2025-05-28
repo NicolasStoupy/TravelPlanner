@@ -1,4 +1,6 @@
-﻿using Commons.Models;
+﻿using Commons;
+using Commons.ErrorsHandlings;
+using Commons.Models;
 using Microsoft.Extensions.Localization;
 using Microsoft.VisualBasic;
 using Presentation.MAUI.Interfaces;
@@ -17,9 +19,9 @@ namespace Presentation.MAUI.Services
         private Task<bool> DisplayConfirmationAsync(string title, string message, string accept, string cancel)
            => Shell.Current.DisplayAlert(title, message, accept, cancel);
 
-        public async Task HandleResultAndResetAsync(Result result, BaseVM baseVM, bool resetWhenResultIsSuccess = true)
+        public async Task HandleResultAndResetAsync(IServiceResult result , BaseVM baseVM, bool resetWhenResultIsSuccess = true, bool showSuccess = true)
         {
-            await ShowAsync(result);
+            await ShowAsync(result,showSuccess);
             if (result != null && result.IsSuccess == resetWhenResultIsSuccess)
             {
                 baseVM.Reset();
@@ -64,6 +66,15 @@ namespace Presentation.MAUI.Services
             }
 
             return DisplayConfirmationAsync(title, message, accept, cancel);
+        }
+        public async Task ShowAsync(IServiceResult result, bool showSuccess = false)
+        {
+           
+            bool shouldShow =!result.IsSuccess || (result.IsSuccess && showSuccess);
+            if (shouldShow)
+            {
+                await ShowAsync(result.MessageType, result.Message);
+            }
         }
     }
 }

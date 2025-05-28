@@ -1,13 +1,11 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Configuration;
+using Presentation.MAUI.Interfaces;
+using Presentation.MAUI.Models;
 using Presentation.MAUI.Services;
 using Presentation.MAUI.Validators;
 using Presentation.MAUI.ViewModel;
 using Presentation.MAUI.ViewModel.Activity;
-using Presentation.MAUI.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Presentation.MAUI.Models;
-
-
 
 namespace Presentation.MAUI
 {
@@ -32,7 +30,6 @@ namespace Presentation.MAUI
             collection.AddValidators();
             return collection;
         }
-
         /// <summary>
         /// Registers application-level services such as validation, alerts, and navigation.
         /// </summary>
@@ -40,7 +37,6 @@ namespace Presentation.MAUI
         /// <returns>The modified <see cref="IServiceCollection"/>.</returns>
         public static IServiceCollection AddApplicationServices(this IServiceCollection collection)
         {
-
             collection.AddSingleton<IValidationService, ValidationService>();
             collection.AddSingleton<IAlertService, AlertService>();
             collection.AddSingleton<INavigationService, NavigationService>();
@@ -50,7 +46,6 @@ namespace Presentation.MAUI
             collection.AddSingleton<IUrlBuilder, GoogleUrlBuilder>();
             return collection;
         }
-
         /// <summary>
         /// Registers view models with scoped lifetime.
         /// </summary>
@@ -80,9 +75,25 @@ namespace Presentation.MAUI
             collection.AddScoped<IValidator<NewActivityVM>, NewActivityVMValidator>();
             collection.AddScoped<IValidator<NoteTravelVM>, NoteTravelVMValidator>();
             collection.AddScoped<IValidator<NewCostActivityVM>, NewCostActivityVMValidator>();
-            collection.AddScoped < IValidator<ActivityFollowerVM>,ActivityAttendeeVMValidators>();
+            collection.AddScoped<IValidator<ActivityFollowerVM>, ActivityAttendeeVMValidators>();
             return collection;
         }
+
+        /// <summary>
+        /// Registers and configures the specified options types from the application's configuration.
+        /// </summary>
+        /// <param name="collection">
+        /// The <see cref="IServiceCollection"/> to add the configurations to.
+        /// </param>
+        /// <param name="builder">
+        /// The <see cref="MauiAppBuilder"/> containing the application configuration.
+        /// </param>
+        /// <returns>
+        /// The original <see cref="IServiceCollection"/> instance, enabling chaining.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the required configuration sections "OutputFileName" or "GoogleURL" are not found or invalid.
+        /// </exception>
         public static IServiceCollection AddConfigurations(this IServiceCollection collection, MauiAppBuilder builder)
         {
             collection.Configure<FileNameSettings>(builder.Configuration.GetSection("FileNameSettings"));
@@ -102,22 +113,24 @@ namespace Presentation.MAUI
             });
             return collection;
         }
+
+        /// <summary>
+        /// Loads configuration settings from the "appsettings.json" file
+        /// located in the application's current directory.
+        /// </summary>
+        /// <param name="manager">
+        /// The <see cref="ConfigurationManager"/> to which the JSON file is added.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ConfigurationManager"/> instance with the JSON file loaded.
+        /// </returns>
         public static ConfigurationManager LoadConfigurationsFile(this ConfigurationManager manager)
         {
             manager
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-
-
             return manager;
-
-
-
         }
-
-
-
     }
-
 }
