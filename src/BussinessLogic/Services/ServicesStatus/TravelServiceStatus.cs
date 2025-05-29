@@ -4,6 +4,9 @@ using Commons.ErrorsHandlings;
 
 namespace BussinessLogic.Services.ServicesStatus
 {
+    /// <summary>
+    /// Reserved 0 => 999
+    /// </summary>
     public sealed class TravelServiceStatus : SmartEnum<TravelServiceStatus>, IServiceResult
     {
         public static readonly TravelServiceStatus Success =

@@ -125,7 +125,13 @@ namespace Presentation.MAUI.ViewModel
             ExtraAction = false;
             if (CurrentTravel?.Id != null)
             {
-                MemoriesFiles = new ObservableCollection<MemoryFile>(_services.Application.TravelService.GetMemories(CurrentTravel.Id, Commons.TypeMedia.Images));
+                var result = _services.Application.TravelService.GetMemories(CurrentTravel.Id, Commons.TypeMedia.Images);
+                if (!result.IsSuccess)
+                {
+                   await _services.Alert.ShowAsync(result);
+                    return;
+                }
+                MemoriesFiles = result.Value.ToObservableCollection();
             }
             else
             {
@@ -160,13 +166,13 @@ namespace Presentation.MAUI.ViewModel
                 var result = await _services.Application
                                             .TravelService
                                             .AddMediaToTravel(files.ToList(), CurrentTravel.Id, TypeMedia.Images);
-                if ((result.Status.IsSuccess))
+                if ((result.IsSuccess))
                 {
                     Reset();
                 }
                 else
                 {
-                    await _services.Alert.ShowAsync(result.Status);
+                    await _services.Alert.ShowAsync(result);
                 }
             }
             else

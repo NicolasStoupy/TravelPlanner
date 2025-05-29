@@ -1,11 +1,13 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Presentation.MAUI.Interfaces;
 using Presentation.MAUI.Models;
 using Presentation.MAUI.Services;
 using Presentation.MAUI.Validators;
 using Presentation.MAUI.ViewModel;
 using Presentation.MAUI.ViewModel.Activity;
+using Serilog;
 
 namespace Presentation.MAUI
 {
@@ -29,7 +31,10 @@ namespace Presentation.MAUI
             collection.AddViewModels();
             collection.AddValidators();
             return collection;
+
+         
         }
+
         /// <summary>
         /// Registers application-level services such as validation, alerts, and navigation.
         /// </summary>
@@ -46,6 +51,7 @@ namespace Presentation.MAUI
             collection.AddSingleton<IUrlBuilder, GoogleUrlBuilder>();
             return collection;
         }
+
         /// <summary>
         /// Registers view models with scoped lifetime.
         /// </summary>
@@ -97,6 +103,8 @@ namespace Presentation.MAUI
         public static IServiceCollection AddConfigurations(this IServiceCollection collection, MauiAppBuilder builder)
         {
             collection.Configure<FileNameSettings>(builder.Configuration.GetSection("FileNameSettings"));
+
+            //injecte via Ioption dans le constructeur de FileNameSettings
             collection.Configure<FileNameSettings>(opts =>
             {
                 opts.Patterns = builder.Configuration
@@ -105,12 +113,24 @@ namespace Presentation.MAUI
                                 ?? throw new InvalidOperationException("Missing OutputFileName section");
             });
 
+            //injecte via Ioption dans le constructeur de UrlBuilder
             collection.Configure<UrlBuilder>(opts =>
             {
                 opts.BaseUrl = builder.Configuration
                                     .GetSection("GoogleURL")
                                     .Get<string>() ?? throw new InvalidOperationException("Missing GoogleURL section");
             });
+
+       
+            //Configuration du logger
+            Log.Logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(builder.Configuration) // Charge la config
+                        .CreateLogger();
+            // 3) Brancher Serilog comme provider de logging
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog(dispose: true);
+
+
             return collection;
         }
 

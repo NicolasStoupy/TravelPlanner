@@ -52,13 +52,13 @@ namespace Presentation.MAUI.ViewModel
             if (CurrentTravel != null && CurrentTravel.Id != 0)
             {
                 var result = _services.Application.TravelService.GetTravel(CurrentTravel.Id);
-                if (result.Status.IsSuccess)
+                if (result.IsSuccess)
                 {
                     CurrentTravel = result.Value;
                 }
                 else
                 {
-                    await _services.Alert.ShowAsync(result.Status);
+                    await _services.Alert.ShowAsync(result);
                 }
             }
             else

@@ -16,9 +16,9 @@ namespace Presentation.MAUI.Services
         private Task<bool> DisplayConfirmationAsync(string title, string message, string accept, string cancel)
            => Shell.Current.DisplayAlert(title, message, accept, cancel);
 
-        public async Task HandleResultAndResetAsync(IServiceResult result , BaseVM baseVM, bool resetWhenResultIsSuccess = true, bool showSuccess = true)
+        public async Task HandleResultAndResetAsync(IServiceResult result, BaseVM baseVM, bool resetWhenResultIsSuccess = true, bool showSuccess = true)
         {
-            await ShowAsync(result,showSuccess);
+            await ShowAsync(result, showSuccess);
             if (result != null && result.IsSuccess == resetWhenResultIsSuccess)
             {
                 baseVM.Reset();
@@ -66,8 +66,9 @@ namespace Presentation.MAUI.Services
         }
         public async Task ShowAsync(IServiceResult result, bool showSuccess = false)
         {
+            var msg = Presentation.MAUI.Resources.Localization.DialogsStrings.CommonsNo;
            
-            bool shouldShow =!result.IsSuccess || (result.IsSuccess && showSuccess);
+            bool shouldShow = !result.IsSuccess || (result.IsSuccess && showSuccess);
             if (shouldShow)
             {
                 await ShowAsync(result.MessageType, result.Message);

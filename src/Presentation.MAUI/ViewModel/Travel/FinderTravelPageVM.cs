@@ -112,7 +112,7 @@ public partial class FinderTravelPageVM : TravelVM
         }
 
         var result = await _services.Application.TravelService.DeleteTravel(tripId);
-        await _services.Alert.ShowAsync(result.Status, true);
+        await _services.Alert.ShowAsync(result, true);
         Reset();
         IsBusy = false;
     }
@@ -127,7 +127,7 @@ public partial class FinderTravelPageVM : TravelVM
         _allTravelItems.Clear();
         TravelItems.Clear();
         var result = await _services.Application.TravelService.GetTravels();
-        if (result.Status.IsSuccess)
+        if (result.IsSuccess)
         {
             _allTravelItems = result.Value;
             TravelItems = [.. _allTravelItems];
@@ -135,8 +135,7 @@ public partial class FinderTravelPageVM : TravelVM
         }
         else
         {
-
-            await _services.Alert.ShowAsync(result.Status);
+            await _services.Alert.ShowAsync(result);
         }
         return;
     }
@@ -158,7 +157,7 @@ public partial class FinderTravelPageVM : TravelVM
     {
         var result = await _services.Application.TravelService.CloneTravel(travel);
         if (!result.IsSuccess)
-            await _services.Alert.ShowAsync(result.Status);
+            await _services.Alert.ShowAsync(result);
         Reset();
     }
 }

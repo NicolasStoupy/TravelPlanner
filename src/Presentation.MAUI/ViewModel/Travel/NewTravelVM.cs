@@ -86,13 +86,13 @@ namespace Presentation.MAUI.ViewModel
             {
                 case Mode.New:
                     var result = await _services.Application.TravelService.SaveTravel(Travel);
-                    await _services.Alert.HandleResultAndResetAsync(result.Status, this, true);
+                    await _services.Alert.HandleResultAndResetAsync(result, this, true);
                     break;
 
                 case Mode.Edit:
 
                     var resultUpdate = await _services.Application.TravelService.UpdateTravel(Travel);
-                    await _services.Alert.HandleResultAndResetAsync(resultUpdate.Status, this, false);
+                    await _services.Alert.HandleResultAndResetAsync(resultUpdate, this, false);
                     break;
 
                 default:
@@ -113,7 +113,7 @@ namespace Presentation.MAUI.ViewModel
                 CurrentMode = Mode.Edit;
                 var result = _services.Application.TravelService.GetTravel(travelId);
 
-                if (result.Status.IsSuccess)
+                if (result.IsSuccess)
                 {
                     Travel = result.Value;
                     ImageSelected = Travel.image;
@@ -126,7 +126,7 @@ namespace Presentation.MAUI.ViewModel
                 }
                 else
                 {
-                    await _services.Alert.ShowAsync(result.Status);
+                    await _services.Alert.ShowAsync(result);
                     Reset();
                     await _services.Navigation.GoHome();
                 }

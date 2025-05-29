@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace BussinessLogic.Services.ServicesStatus
 {
+    /// <summary>
+    /// Reserved 1000 => 1999
+    /// </summary>
     public class MediaServiceStatus : SmartEnum<MediaServiceStatus>, IServiceResult
     {
         public static readonly MediaServiceStatus Success =

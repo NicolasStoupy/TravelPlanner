@@ -23,8 +23,7 @@ namespace Presentation.MAUI.Services
             // If args is null, or contains nulls, replace with empty strings:
             var safeArgs = (args ?? Array.Empty<object?>())
                            .Select(a => a ?? string.Empty)
-                           .ToArray();
-
+                           .ToArray();          
             // If the pattern has no placeholders, this will just return it verbatim.
             return string.Format(pattern, safeArgs);
         }

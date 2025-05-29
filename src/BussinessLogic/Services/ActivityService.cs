@@ -48,14 +48,7 @@ namespace BussinessLogic.Services
                 return new ErrorResult<bool, ActivityServiceStatus>(
                     ActivityServiceStatus.PersistenceError);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    "Unexpected error saving activity for TravelID={TravelID}",
-                    newActivity.TravelID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
+          
         }
 
         /// <summary>
@@ -112,16 +105,10 @@ namespace BussinessLogic.Services
                 return new ErrorResult<bool, ActivityServiceStatus>(
                     ActivityServiceStatus.PersistenceError);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    "Unexpected error updating activity {ActivityID}", travelActivity.ActivityID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
+           
         }
-        
-        
+
+
         public ServiceResult<List<TypeOfActivity>, ActivityServiceStatus> GetActivitiesTypes()
         {
             try
@@ -143,12 +130,7 @@ namespace BussinessLogic.Services
                 return new ErrorResult<List<TypeOfActivity>, ActivityServiceStatus>(
                     ActivityServiceStatus.PersistenceError);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error fetching activity types");
-                return new ErrorResult<List<TypeOfActivity>, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
+           
         }
         public async Task<ServiceResult<List<TravelActivity>, ActivityServiceStatus>> GetActivities(int travelID)
         {
@@ -156,42 +138,33 @@ namespace BussinessLogic.Services
                 return new ErrorResult<List<TravelActivity>, ActivityServiceStatus>(
                     ActivityServiceStatus.InvalidActivity);
 
-            try
-            {
-                await using var ctx = _contextFactory.CreateDbContext();
-                var entities = await ctx.Activities
-                    .Where(a => a.TripId == travelID)
-                    .ToListAsync();
+            await using var ctx = _contextFactory.CreateDbContext();
+            var entities = await ctx.Activities
+                .Where(a => a.TripId == travelID)
+                .ToListAsync();
 
-                if (entities == null || entities.Count == 0)
-                    return new SuccessResult<List<TravelActivity>, ActivityServiceStatus>(new List<TravelActivity>());
+            if (entities == null || entities.Count == 0)
+                return new SuccessResult<List<TravelActivity>, ActivityServiceStatus>(new List<TravelActivity>());
 
-                if (!_mapper.TryMap(entities, out List<TravelActivity> dtos, _logger))
-                    return new ErrorResult<List<TravelActivity>, ActivityServiceStatus>(
-                        ActivityServiceStatus.MappingError);
-
-                foreach (var activity in dtos)
-                    activity.Total = activity.Cost.Sum(c => c.Price);
-
-                var ordered = dtos.OrderBy(a => a.Sequence).ToList();
-                return new SuccessResult<List<TravelActivity>, ActivityServiceStatus>(ordered);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    "Unexpected error fetching activities for TravelID={TravelID}", travelID);
+            if (!_mapper.TryMap(entities, out List<TravelActivity> dtos, _logger))
                 return new ErrorResult<List<TravelActivity>, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
+                    ActivityServiceStatus.MappingError);
+
+            foreach (var activity in dtos)
+                activity.Total = activity.Cost.Sum(c => c.Price);
+
+            var ordered = dtos.OrderBy(a => a.Sequence).ToList();
+            return new SuccessResult<List<TravelActivity>, ActivityServiceStatus>(ordered);
+
         }
-     
+
         public async Task<ServiceResult<bool, ActivityServiceStatus>> DeleteActivity(TravelActivity travelActivity)
         {
+            try { 
             if (travelActivity is null || travelActivity.ActivityID <= 0)
                 return new ErrorResult<bool, ActivityServiceStatus>(
                     ActivityServiceStatus.InvalidActivity);
-            try
-            {
+            
                 await using var ctx = _contextFactory.CreateDbContext();
 
                 var entity = await ctx.Activities
@@ -221,15 +194,8 @@ namespace BussinessLogic.Services
                 return new ErrorResult<bool, ActivityServiceStatus>(
                     ActivityServiceStatus.PersistenceError);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    "Unexpected error deleting activity {ActivityID}",
-                    travelActivity.ActivityID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
-        }      
+          
+        }
         public async Task<ServiceResult<bool, ActivityServiceStatus>> UpdateSequence(List<TravelActivity>? activities)
         {
             // 1. Input validation
@@ -273,14 +239,7 @@ namespace BussinessLogic.Services
                 await transaction.RollbackAsync();
                 return new ErrorResult<bool, ActivityServiceStatus>(
                     ActivityServiceStatus.PersistenceError);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error reordering activities");
-                await transaction.RollbackAsync();
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
+            }           
         }
 
         public ServiceResult<TravelActivity, ActivityServiceStatus> GetActivity(int activityID)
@@ -288,9 +247,7 @@ namespace BussinessLogic.Services
             if (activityID <= 0)
                 return new ErrorResult<TravelActivity, ActivityServiceStatus>(
                     ActivityServiceStatus.InvalidActivity);
-
-            try
-            {
+            
                 using var ctx = _contextFactory.CreateDbContext();
                 var entity = ctx.Activities
                                 .Include(a => a.ActivityCosts).ThenInclude(c => c.Media)
@@ -307,14 +264,7 @@ namespace BussinessLogic.Services
 
                 result.Total = result.Cost.Sum(c => c.Price);
                 return new SuccessResult<TravelActivity, ActivityServiceStatus>(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    "Unexpected error retrieving activity {ActivityID}", activityID);
-                return new ErrorResult<TravelActivity, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
+      
         }
 
         public async Task<ServiceResult<bool, ActivityServiceStatus>> AddFollower(int activityID, Follower follower)
@@ -357,13 +307,7 @@ namespace BussinessLogic.Services
                 return new ErrorResult<bool, ActivityServiceStatus>(
                     ActivityServiceStatus.PersistenceError);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    "Unexpected error adding follower to activity {ActivityID}", activityID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
+          
         }
         public async Task<ServiceResult<List<Follower>, ActivityServiceStatus>> GetFollowers(int activityID)
         {
@@ -395,15 +339,10 @@ namespace BussinessLogic.Services
                 return new ErrorResult<List<Follower>, ActivityServiceStatus>(
                     ActivityServiceStatus.PersistenceError);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error fetching followers for ActivityID={ActivityID}", activityID);
-                return new ErrorResult<List<Follower>, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
+          
         }
 
-        public async Task<ServiceResult<bool, ActivityServiceStatus>> RemoveFollower(Follower follower,int activityID)
+        public async Task<ServiceResult<bool, ActivityServiceStatus>> RemoveFollower(Follower follower, int activityID)
         {
             // 1. Validate input
             if (follower is null || activityID <= 0)
@@ -443,16 +382,8 @@ namespace BussinessLogic.Services
                     follower.FollowerID, activityID);
                 return new ErrorResult<bool, ActivityServiceStatus>(
                     ActivityServiceStatus.PersistenceError);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    "Unexpected error removing follower {FollowerID} from activity {ActivityID}",
-                    follower.FollowerID, activityID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.UnknownError);
-            }
+            }          
         }
-       
+
     }
 }
