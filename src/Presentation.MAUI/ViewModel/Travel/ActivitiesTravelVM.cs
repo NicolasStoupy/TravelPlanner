@@ -36,9 +36,15 @@ namespace Presentation.MAUI.ViewModel
             }
             else
             {
-                Activities = new ObservableCollection<TravelActivity>(
-                                  _services.Application.ActivityService.GetActivities(CurrentTravel.Id));
-                SaveButtonVisible = false;
+                var result = await _services.Application.ActivityService.GetActivities(CurrentTravel.Id);
+                if (result.Status.IsSuccess)
+                {
+                    Activities = new ObservableCollection<TravelActivity>(
+                                     result.Value);
+                    SaveButtonVisible = false;
+                }
+
+
             }
         }
         [RelayCommand] public async Task SaveActivity() => await SaveSequence();
@@ -79,7 +85,7 @@ namespace Presentation.MAUI.ViewModel
         {
             await LoadData();
         }
-        
+
         [RelayCommand]
         public async Task DeleteActivity(TravelActivity activity)
         {
@@ -91,10 +97,14 @@ namespace Presentation.MAUI.ViewModel
                 DialogsStrings.DeleteActivity_Confirmation,
                 DialogsStrings.DeleteActivity_OK,
                 DialogsStrings.DeleteActivity_NOK, attendeesQty, activityCost);
+
             if (!confirm)
                 return;
-            await _services.Alert.ShowAsync(await _services.Application.ActivityService.DeleteActivity(activity));
-            await LoadData();
+
+            var result = await _services.Application.ActivityService.DeleteActivity(activity);
+            await _services.Alert.ShowAsync(result.Status);
+            if (result.Status.IsSuccess)
+                await LoadData();
         }
 
         [RelayCommand]
@@ -117,10 +127,20 @@ namespace Presentation.MAUI.ViewModel
         }
         public async Task SaveSequence()
         {
-            await _services.Application.ActivityService.UpdateSequence(Activities);
-            ModificationNotSaved = false;
-            await LoadData();
-            return;
+            if (Activities != null)
+            {
+                var result = await _services.Application.ActivityService.UpdateSequence(Activities.ToList());
+                await _services.Alert.ShowAsync(result.Status);
+                if (result.Status.IsSuccess)
+                {
+                    ModificationNotSaved = false;
+                    await LoadData();
+                }
+
+                return;
+            }
+
+
         }
     }
 }

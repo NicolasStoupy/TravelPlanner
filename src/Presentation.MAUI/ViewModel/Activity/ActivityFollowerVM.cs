@@ -16,7 +16,12 @@ namespace Presentation.MAUI.ViewModel.Activity
         private int _activityID;
         partial void OnActivityIDChanged(int value)
         {
-            CurrentTravelActivity = _services.Application.ActivityService.GetActivity(_activityID);
+            var result = _services.Application.ActivityService.GetActivity(_activityID);
+            if (result.Status.IsSuccess)
+            {
+                CurrentTravelActivity = result.Value;
+            }
+
         }
         public ActivityFollowerVM(IViewModelServices viewModelServices) : base(viewModelServices)
         {
@@ -62,30 +67,37 @@ namespace Presentation.MAUI.ViewModel.Activity
         [RelayCommand]
         public async Task AddFollower()
         {
-
+            
             if (CurrentTravelActivity == null) { await NoActivitySelected(); return; }
 
             if (await _services.Validation.ValidateAndNotifyAsync(this))
             {
-                await _services.Application.ActivityService.AddFollower(CurrentTravelActivity.ActivityID, newFollower);
-                OnActivityIDChanged(CurrentTravelActivity.ActivityID);
+                var result = await _services.Application.ActivityService.AddFollower(CurrentTravelActivity.ActivityID, newFollower);
+                await _services.Alert.ShowAsync(result.Status);
+                if (result.Status.IsSuccess)
+                {
+                    OnActivityIDChanged(CurrentTravelActivity.ActivityID);
+                }
+
             }
-          
         }
+
         [RelayCommand]
 
         public async Task RemoveFollower(Follower follower)
         {
-            if(follower == null || CurrentTravelActivity == null) return;
+            if (follower == null || CurrentTravelActivity == null) return;
 
-            await _services.Application.ActivityService.RemoveFollower(follower,CurrentTravelActivity.ActivityID);
-            OnActivityIDChanged(CurrentTravelActivity.ActivityID);
+            var result = await _services.Application.ActivityService.RemoveFollower(follower, CurrentTravelActivity.ActivityID);
+            await _services.Alert.ShowAsync(result.Status);
+            if (result.Status.IsSuccess) { OnActivityIDChanged(CurrentTravelActivity.ActivityID);}
+          
         }
         public override void Reset()
         {
             Name = null;
             Forname = null;
-            newFollower = new Follower();           
+            newFollower = new Follower();
 
         }
 

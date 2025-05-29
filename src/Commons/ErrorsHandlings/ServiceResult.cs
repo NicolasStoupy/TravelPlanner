@@ -49,7 +49,7 @@ namespace Commons.ErrorsHandlings
         public ErrorResult(TStatus errorStatus)
             : base(errorStatus, default!)
         {
-            if (errorStatus.Equals(SmartEnum<TStatus>.List.First()))
+            if (errorStatus.Equals(SmartEnum<TStatus>.FromName("Success")))
                 throw new ArgumentException("Le statut d'erreur ne peut pas être la valeur 'Success'.");
         }
     }

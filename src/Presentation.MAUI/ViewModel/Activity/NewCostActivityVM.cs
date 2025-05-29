@@ -37,8 +37,8 @@ namespace Presentation.MAUI.ViewModel.Activity
         [RelayCommand]
         public async Task AddCost()
         {
-            if (!await _services.Validation.ValidateAndNotifyAsync(this))            
-                return;            
+            if (!await _services.Validation.ValidateAndNotifyAsync(this))
+                return;
             else
             {
                 var cost = new Cost()
@@ -107,8 +107,14 @@ namespace Presentation.MAUI.ViewModel.Activity
             NewCostAmount = 0;
             NewCostName = string.Empty;
             NewCurrency = string.Empty;
-            TravelActivity = _services.Application.ActivityService.GetActivity(ActivityID);
-            Costs = TravelActivity.Cost.ToObservableCollection();
+            var result = _services.Application.ActivityService.GetActivity(ActivityID);
+            if (result.Status.IsSuccess)
+            {
+                TravelActivity = result.Value;
+                Costs = TravelActivity.Cost.ToObservableCollection();
+
+            }
+
         }
     }
 }

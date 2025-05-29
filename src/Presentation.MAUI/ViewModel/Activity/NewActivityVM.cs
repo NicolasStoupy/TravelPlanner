@@ -94,9 +94,9 @@ namespace Presentation.MAUI.ViewModel.Activity
             {
                 if (Mode == Mode.Edit)
                 {
-                    var result = _services.Application.ActivityService.UpdateActivity(CurrentTravelActivity, CurrentTravel.Id);
+                    var result = await _services.Application.ActivityService.UpdateActivity(CurrentTravelActivity, CurrentTravel.Id);
 
-                    await _services.Alert.ShowAsync(await result);
+                    await _services.Alert.ShowAsync(result.Status, true);
                     Mode = Mode.New;
                     Reset();
 
@@ -108,8 +108,8 @@ namespace Presentation.MAUI.ViewModel.Activity
                 {
                     CurrentTravelActivity.TravelID = CurrentTravel.Id;
                     var result = await _services.Application.ActivityService.SaveNewActivity(CurrentTravelActivity);
-                    await _services.Alert.ShowAsync(result);
-                    if (result.IsSuccess)
+                    await _services.Alert.ShowAsync(result.Status, true);
+                    if (result.Status.IsSuccess)
                     {
                         Reset();
                         await _services.Navigation.GoBack();
@@ -134,7 +134,9 @@ namespace Presentation.MAUI.ViewModel.Activity
                     return;
 
                 case Mode.Edit:
-                    CurrentTravelActivity = _services.Application.ActivityService.GetActivity(ActivityID);                    
+                    var result = _services.Application.ActivityService.GetActivity(ActivityID);
+                    if (result.Status.IsSuccess)
+                        CurrentTravelActivity = result.Value;
                     return;
 
                 default:

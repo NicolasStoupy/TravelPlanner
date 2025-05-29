@@ -1,11 +1,8 @@
 ﻿using Commons;
 using Commons.ErrorsHandlings;
 using Commons.Models;
-using Microsoft.Extensions.Localization;
-using Microsoft.VisualBasic;
 using Presentation.MAUI.Interfaces;
 using Presentation.MAUI.Models;
-using Presentation.MAUI.Resources;
 
 namespace Presentation.MAUI.Services
 {
