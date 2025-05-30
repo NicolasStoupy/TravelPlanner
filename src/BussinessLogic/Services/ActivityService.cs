@@ -2,8 +2,8 @@
 using BussinessLogic.Entities;
 using BussinessLogic.Extensions;
 using BussinessLogic.Interfaces;
-using BussinessLogic.Services.ServicesStatus;
-using Commons.ErrorsHandlings;
+using Commons.Models;
+using Commons.Resources;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,17 +16,15 @@ namespace BussinessLogic.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<ActivityService> _logger = logger;
 
-        public async Task<ServiceResult<bool, ActivityServiceStatus>> SaveNewActivity(TravelActivity newActivity)
+        public async Task<ServiceResult<bool>> SaveNewActivity(TravelActivity newActivity)
         {
             // 1. Input validation
             if (newActivity is null)
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
+                return ServiceResult<bool>.Failure(ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
 
             // 2. Mapping
             if (!_mapper.TryMap(newActivity, out Activity entity, _logger))
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.MappingError);
+                return ServiceResult<bool>.Failure(ActivityServiceMessage.ActivityServiceStatus_MappingError_Message);
 
             // 3. Business logic
             entity.Sequence = GetSequenceForActivity(newActivity.TravelID);
@@ -38,17 +36,15 @@ namespace BussinessLogic.Services
                 ctx.Activities.Add(entity);
                 await ctx.SaveChangesAsync();
 
-                return new SuccessResult<bool, ActivityServiceStatus>(true);
+                return ServiceResult<bool>.Success(true );
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx,
                     "DB error saving activity for TravelID={TravelID}",
                     newActivity.TravelID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.PersistenceError);
+                return ServiceResult<bool>.Failure(ActivityServiceMessage.ActivityServiceStatus_PersistenceError_Message);
             }
-          
         }
 
         /// <summary>
@@ -73,21 +69,21 @@ namespace BussinessLogic.Services
             return maxSequence + 1;
         }
 
-        public async Task<ServiceResult<bool, ActivityServiceStatus>> UpdateActivity(
+        public async Task<ServiceResult<bool>> UpdateActivity(
             TravelActivity travelActivity, int travelID)
         {
             // 1. Validate input
             if (travelActivity is null)
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
+                return ServiceResult<bool>.Failure(ActivityServiceMessage
+                    .ActivityServiceStatus_InvalidActivity_Message);
             if (travelID <= 0)
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
+                return ServiceResult<bool>.Failure(ActivityServiceMessage
+                    .ActivityServiceStatus_InvalidActivity_Message);
 
             // 2. Map DTO to entity
             if (!_mapper.TryMap(travelActivity, out Activity entity, _logger))
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.MappingError);
+                return ServiceResult<bool>.Failure(ActivityServiceMessage
+                    .ActivityServiceStatus_MappingError_Message);
 
             entity.TripId = travelID;
 
@@ -96,20 +92,18 @@ namespace BussinessLogic.Services
                 await using var ctx = _contextFactory.CreateDbContext();
                 ctx.Activities.Update(entity);
                 await ctx.SaveChangesAsync();
-                return new SuccessResult<bool, ActivityServiceStatus>(true);
+                return ServiceResult<bool>.Success(true);
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx,
                     "Database error updating activity {ActivityID}", travelActivity.ActivityID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.PersistenceError);
+                return ServiceResult<bool>.Success(true,
+                    ActivityServiceMessage.ActivityServiceStatus_PersistenceError_Message);
             }
-           
         }
 
-
-        public ServiceResult<List<TypeOfActivity>, ActivityServiceStatus> GetActivitiesTypes()
+        public ServiceResult<List<TypeOfActivity>> GetActivitiesTypes()
         {
             try
             {
@@ -118,25 +112,27 @@ namespace BussinessLogic.Services
 
                 if (!_mapper.TryMap(entities, out List<TypeOfActivity> dtoList, _logger))
                 {
-                    return new ErrorResult<List<TypeOfActivity>, ActivityServiceStatus>(
-                        ActivityServiceStatus.MappingError);
+                    return ServiceResult<List<TypeOfActivity>>
+                        .Failure(ActivityServiceMessage.
+                        ActivityServiceStatus_MappingError_Message);
                 }
 
-                return new SuccessResult<List<TypeOfActivity>, ActivityServiceStatus>(dtoList);
+                return ServiceResult<List<TypeOfActivity>>
+                    .Success(dtoList);
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx, "Database error fetching activity types");
-                return new ErrorResult<List<TypeOfActivity>, ActivityServiceStatus>(
-                    ActivityServiceStatus.PersistenceError);
+                return ServiceResult<List<TypeOfActivity>>
+                    .Failure(GlobalServiceMessage.DATABASE_ERROR);
             }
-           
         }
-        public async Task<ServiceResult<List<TravelActivity>, ActivityServiceStatus>> GetActivities(int travelID)
+
+        public async Task<ServiceResult<List<TravelActivity>>> GetActivities(int travelID)
         {
             if (travelID <= 0)
-                return new ErrorResult<List<TravelActivity>, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
+                return ServiceResult<List<TravelActivity>>
+                    .Failure(ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
 
             await using var ctx = _contextFactory.CreateDbContext();
             var entities = await ctx.Activities
@@ -144,27 +140,27 @@ namespace BussinessLogic.Services
                 .ToListAsync();
 
             if (entities == null || entities.Count == 0)
-                return new SuccessResult<List<TravelActivity>, ActivityServiceStatus>(new List<TravelActivity>());
+                return ServiceResult<List<TravelActivity>>.Success(new List<TravelActivity>());
 
             if (!_mapper.TryMap(entities, out List<TravelActivity> dtos, _logger))
-                return new ErrorResult<List<TravelActivity>, ActivityServiceStatus>(
-                    ActivityServiceStatus.MappingError);
+                return ServiceResult<List<TravelActivity>>
+                    .Failure(ActivityServiceMessage.ActivityServiceStatus_MappingError_Message);
 
             foreach (var activity in dtos)
                 activity.Total = activity.Cost.Sum(c => c.Price);
 
             var ordered = dtos.OrderBy(a => a.Sequence).ToList();
-            return new SuccessResult<List<TravelActivity>, ActivityServiceStatus>(ordered);
-
+            return ServiceResult<List<TravelActivity>>
+                .Success(ordered);
         }
 
-        public async Task<ServiceResult<bool, ActivityServiceStatus>> DeleteActivity(TravelActivity travelActivity)
+        public async Task<ServiceResult<bool>> DeleteActivity(TravelActivity travelActivity)
         {
-            try { 
-            if (travelActivity is null || travelActivity.ActivityID <= 0)
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
-            
+            try
+            {
+                if (travelActivity is null || travelActivity.ActivityID <= 0)
+                    return ServiceResult<bool>.Failure(ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
+
                 await using var ctx = _contextFactory.CreateDbContext();
 
                 var entity = await ctx.Activities
@@ -184,24 +180,23 @@ namespace BussinessLogic.Services
                 }
 
                 // If entity was null, we consider it already "deleted"
-                return new SuccessResult<bool, ActivityServiceStatus>(true);
+                return ServiceResult<bool>.Success(true);
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx,
                     "Database error deleting activity {ActivityID}",
                     travelActivity.ActivityID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.PersistenceError);
+                return ServiceResult<bool>.Failure(GlobalServiceMessage.DATABASE_ERROR);
             }
-          
         }
-        public async Task<ServiceResult<bool, ActivityServiceStatus>> UpdateSequence(List<TravelActivity>? activities)
+
+        public async Task<ServiceResult<bool>> UpdateSequence(List<TravelActivity>? activities)
         {
             // 1. Input validation
             if (activities == null || activities.Count == 0)
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
+                return ServiceResult<bool>.Failure(ActivityServiceMessage
+                    .ActivityServiceStatus_InvalidActivity_Message);
 
             await using var ctx = _contextFactory.CreateDbContext();
             await using var transaction = await ctx.Database.BeginTransactionAsync();
@@ -231,56 +226,55 @@ namespace BussinessLogic.Services
                 await ctx.SaveChangesAsync();
 
                 await transaction.CommitAsync();
-                return new SuccessResult<bool, ActivityServiceStatus>(true);
+                return ServiceResult<bool>.Success(true);
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx, "Database error reordering activities");
                 await transaction.RollbackAsync();
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.PersistenceError);
-            }           
+                return ServiceResult<bool>.Failure(GlobalServiceMessage.DATABASE_ERROR);
+            }
         }
 
-        public ServiceResult<TravelActivity, ActivityServiceStatus> GetActivity(int activityID)
+        public ServiceResult<TravelActivity> GetActivity(int activityID)
         {
             if (activityID <= 0)
-                return new ErrorResult<TravelActivity, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
-            
-                using var ctx = _contextFactory.CreateDbContext();
-                var entity = ctx.Activities
-                                .Include(a => a.ActivityCosts).ThenInclude(c => c.Media)
-                                .Include(a => a.Attendees)
-                                .SingleOrDefault(a => a.ActivityId == activityID);
+                return ServiceResult<TravelActivity>.Failure(
+                    ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
 
-                if (entity == null)
-                    return new ErrorResult<TravelActivity, ActivityServiceStatus>(
-                        ActivityServiceStatus.ActivityNotFound);
+            using var ctx = _contextFactory.CreateDbContext();
+            var entity = ctx.Activities
+                            .Include(a => a.ActivityCosts).ThenInclude(c => c.Media)
+                            .Include(a => a.Attendees)
+                            .SingleOrDefault(a => a.ActivityId == activityID);
 
-                if (!_mapper.TryMap(entity, out TravelActivity result, _logger))
-                    return new ErrorResult<TravelActivity, ActivityServiceStatus>(
-                        ActivityServiceStatus.MappingError);
+            if (entity == null)
+                return ServiceResult<TravelActivity>.Failure(
+                        ActivityServiceMessage.ActivityServiceStatus_ActivityNotFound_Message);
 
-                result.Total = result.Cost.Sum(c => c.Price);
-                return new SuccessResult<TravelActivity, ActivityServiceStatus>(result);
-      
+            if (!_mapper.TryMap(entity, out TravelActivity result, _logger))
+                return ServiceResult<TravelActivity>.Failure(
+                     ActivityServiceMessage.ActivityServiceStatus_MappingError_Message);
+
+            result.Total = result.Cost.Sum(c => c.Price);
+            return ServiceResult<TravelActivity>.Success(result);
+                  
         }
 
-        public async Task<ServiceResult<bool, ActivityServiceStatus>> AddFollower(int activityID, Follower follower)
+        public async Task<ServiceResult<bool>> AddFollower(int activityID, Follower follower)
         {
             // 1. Validate inputs
             if (activityID <= 0)
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
+                return ServiceResult<bool>.Failure(
+                    ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
             if (follower is null)
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.ErrorWhenAddingAttendee);
+                return ServiceResult<bool>.Failure(
+                    ActivityServiceMessage.ActivityServiceStatus_FollowerInvalid_Message);
 
             // 2. Map DTO to entity
             if (!_mapper.TryMap(follower, out Attendee attendee, _logger))
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.MappingError);
+                return ServiceResult<bool>.Failure(
+                     ActivityServiceMessage.ActivityServiceStatus_MappingError_Message);
 
             try
             {
@@ -291,29 +285,29 @@ namespace BussinessLogic.Services
                     .Include(a => a.Attendees)
                     .FirstOrDefaultAsync(a => a.ActivityId == activityID);
                 if (activity == null)
-                    return new ErrorResult<bool, ActivityServiceStatus>(
-                        ActivityServiceStatus.ActivityNotFound);
+                    return ServiceResult<bool>.Failure(
+                      ActivityServiceMessage.ActivityServiceStatus_ActivityNotFound_Message);
 
                 // 4. Add and save
                 activity.Attendees.Add(attendee);
                 await ctx.SaveChangesAsync();
 
-                return new SuccessResult<bool, ActivityServiceStatus>(true);
+                return ServiceResult<bool>.Success(true);
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx,
                     "Database error adding follower to activity {ActivityID}", activityID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.PersistenceError);
+                return ServiceResult<bool>.Failure(
+                     GlobalServiceMessage.DATABASE_ERROR);
             }
-          
         }
-        public async Task<ServiceResult<List<Follower>, ActivityServiceStatus>> GetFollowers(int activityID)
+
+        public async Task<ServiceResult<List<Follower>>> GetFollowers(int activityID)
         {
             if (activityID <= 0)
-                return new ErrorResult<List<Follower>, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
+                return ServiceResult<List<Follower>>.Failure(
+                    ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
 
             try
             {
@@ -323,31 +317,31 @@ namespace BussinessLogic.Services
                     .FirstOrDefaultAsync(a => a.ActivityId == activityID);
 
                 if (activity == null)
-                    return new ErrorResult<List<Follower>, ActivityServiceStatus>(
-                        ActivityServiceStatus.ActivityNotFound);
+                    return ServiceResult<List<Follower>>.Failure(
+                 ActivityServiceMessage.ActivityServiceStatus_ActivityNotFound_Message);
 
                 var attendees = activity.Attendees.ToList();
                 if (!_mapper.TryMap(attendees, out List<Follower> followers, _logger))
-                    return new ErrorResult<List<Follower>, ActivityServiceStatus>(
-                        ActivityServiceStatus.MappingError);
+                    if (activity == null)
+                        return ServiceResult<List<Follower>>.Failure(
+                     ActivityServiceMessage.ActivityServiceStatus_MappingError_Message);
 
-                return new SuccessResult<List<Follower>, ActivityServiceStatus>(followers);
+                return ServiceResult<List<Follower>>.Success(followers);
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx, "Database error fetching followers for ActivityID={ActivityID}", activityID);
-                return new ErrorResult<List<Follower>, ActivityServiceStatus>(
-                    ActivityServiceStatus.PersistenceError);
+                return ServiceResult<List<Follower>>.Failure(
+                  GlobalServiceMessage.DATABASE_ERROR);
             }
-          
         }
 
-        public async Task<ServiceResult<bool, ActivityServiceStatus>> RemoveFollower(Follower follower, int activityID)
+        public async Task<ServiceResult<bool>> RemoveFollower(Follower follower, int activityID)
         {
             // 1. Validate input
             if (follower is null || activityID <= 0)
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.InvalidActivity);
+                return ServiceResult<bool>.Failure(
+                      ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
 
             try
             {
@@ -359,8 +353,8 @@ namespace BussinessLogic.Services
                     .FirstOrDefaultAsync(a => a.ActivityId == activityID);
 
                 if (activity == null)
-                    return new ErrorResult<bool, ActivityServiceStatus>(
-                        ActivityServiceStatus.ActivityNotFound);
+                    return ServiceResult<bool>.Failure(
+                        ActivityServiceMessage.ActivityServiceStatus_ActivityNotFound_Message);
 
                 // 3. Locate the attendee
                 var attendee = activity.Attendees
@@ -373,17 +367,16 @@ namespace BussinessLogic.Services
                     await ctx.SaveChangesAsync();
                 }
 
-                return new SuccessResult<bool, ActivityServiceStatus>(true);
+                return ServiceResult<bool>.Success(true); 
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LogError(dbEx,
                     "Database error removing follower {FollowerID} from activity {ActivityID}",
                     follower.FollowerID, activityID);
-                return new ErrorResult<bool, ActivityServiceStatus>(
-                    ActivityServiceStatus.PersistenceError);
-            }          
+                return ServiceResult<bool>.Failure(
+                       GlobalServiceMessage.DATABASE_ERROR);
+            }
         }
-
     }
 }

@@ -37,7 +37,7 @@ namespace Presentation.MAUI.ViewModel
             else
             {
                 var result = await _services.Application.ActivityService.GetActivities(CurrentTravel.Id);
-                if (result.Status.IsSuccess)
+                if (result.IsSuccess)
                 {
                     Activities = new ObservableCollection<TravelActivity>(
                                      result.Value);
@@ -102,8 +102,8 @@ namespace Presentation.MAUI.ViewModel
                 return;
 
             var result = await _services.Application.ActivityService.DeleteActivity(activity);
-            await _services.Alert.ShowAsync(result.Status);
-            if (result.Status.IsSuccess)
+            await _services.Alert.ShowAsync(result);
+            if (result.IsSuccess)
                 await LoadData();
         }
 
@@ -130,8 +130,8 @@ namespace Presentation.MAUI.ViewModel
             if (Activities != null)
             {
                 var result = await _services.Application.ActivityService.UpdateSequence(Activities.ToList());
-                await _services.Alert.ShowAsync(result.Status);
-                if (result.Status.IsSuccess)
+                await _services.Alert.ShowAsync(result);
+                if (result.IsSuccess)
                 {
                     ModificationNotSaved = false;
                     await LoadData();

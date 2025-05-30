@@ -22,14 +22,14 @@ namespace Commons.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class TravelServiceMessage {
+    public class ActivityServiceMessage {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal TravelServiceMessage() {
+        internal ActivityServiceMessage() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Commons.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Commons.Resources.TravelServiceMessage", typeof(TravelServiceMessage).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Commons.Resources.ActivityServiceMessage", typeof(ActivityServiceMessage).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,101 +61,84 @@ namespace Commons.Resources {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à  Impossible de cloner le voyage..
+        ///   Recherche une chaîne localisée semblable à Aucune activité trouvée pour cet ID..
         /// </summary>
-        public static string CLONE_FAILED {
+        public static string ActivityServiceStatus_ActivityNotFound_Message {
             get {
-                return ResourceManager.GetString("CLONE_FAILED", resourceCulture);
+                return ResourceManager.GetString("ActivityServiceStatus_ActivityNotFound_Message", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Erreur inattendue, les fichiers n&apos;ont pas été ajoutés correctement..
+        ///   Recherche une chaîne localisée semblable à Erreur lors de l&apos;ajout d&apos;un participant à l&apos;activité..
         /// </summary>
-        public static string ERROR_WHEN_ADDING_FILE {
+        public static string ActivityServiceStatus_ErrorWhenAddingAttendee_Message {
             get {
-                return ResourceManager.GetString("ERROR_WHEN_ADDING_FILE", resourceCulture);
+                return ResourceManager.GetString("ActivityServiceStatus_ErrorWhenAddingAttendee_Message", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Erreur inattendue, les souvenirs n&apos;ont pas été supprimés correctement..
+        ///   Recherche une chaîne localisée semblable à ActivityServiceStatus_ErrorWhenAddingFile_Message.
         /// </summary>
-        public static string ERROR_WHEN_REMOVING_FILE {
+        public static string ActivityServiceStatus_ErrorWhenAddingFile_Message {
             get {
-                return ResourceManager.GetString("ERROR_WHEN_REMOVING_FILE", resourceCulture);
+                return ResourceManager.GetString("ActivityServiceStatus_ErrorWhenAddingFile_Message", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Le souvenir n&apos;existe pas .
+        ///   Recherche une chaîne localisée semblable à Erreur lors de la suppression d&apos;un ou plusieurs fichiers médias de l&apos;activité..
         /// </summary>
-        public static string INVALID_MEMORY {
+        public static string ActivityServiceStatus_ErrorWhenRemovingFile_Message {
             get {
-                return ResourceManager.GetString("INVALID_MEMORY", resourceCulture);
+                return ResourceManager.GetString("ActivityServiceStatus_ErrorWhenRemovingFile_Message", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à  Les données du voyage sont manquantes ou invalides..
+        ///   Recherche une chaîne localisée semblable à Le Participant est invalide.
         /// </summary>
-        public static string INVALID_TRAVEL {
+        public static string ActivityServiceStatus_FollowerInvalid_Message {
             get {
-                return ResourceManager.GetString("INVALID_TRAVEL", resourceCulture);
+                return ResourceManager.GetString("ActivityServiceStatus_FollowerInvalid_Message", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à  L’identifiant du voyage est invalide..
+        ///   Recherche une chaîne localisée semblable à Données de l&apos;activité invalides..
         /// </summary>
-        public static string INVALID_TRAVEL_ID {
+        public static string ActivityServiceStatus_InvalidActivity_Message {
             get {
-                return ResourceManager.GetString("INVALID_TRAVEL_ID", resourceCulture);
+                return ResourceManager.GetString("ActivityServiceStatus_InvalidActivity_Message", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Le souvenir n&apos;existe pas .
+        ///   Recherche une chaîne localisée semblable à Erreur lors du mapping des données de l&apos;activité..
         /// </summary>
-        public static string MEDIA_NOT_FOUND {
+        public static string ActivityServiceStatus_MappingError_Message {
             get {
-                return ResourceManager.GetString("MEDIA_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("ActivityServiceStatus_MappingError_Message", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Pas de média à ajouter !.
+        ///   Recherche une chaîne localisée semblable à Aucun média fourni pour l&apos;activité..
         /// </summary>
-        public static string NO_MEDIA {
+        public static string ActivityServiceStatus_NoMedia_Message {
             get {
-                return ResourceManager.GetString("NO_MEDIA", resourceCulture);
+                return ResourceManager.GetString("ActivityServiceStatus_NoMedia_Message", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Voyage ajouté avec succès.
+        ///   Recherche une chaîne localisée semblable à Erreur lors de l&apos;enregistrement d&apos;un ou plusieurs fichiers médias de l&apos;activité.
+        ///.
         /// </summary>
-        public static string TRAVEL_ADDED {
+        public static string ActivityServiceStatus_PersistenceError_Message {
             get {
-                return ResourceManager.GetString("TRAVEL_ADDED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à  Aucun voyage trouvé avec cet ID..
-        /// </summary>
-        public static string TRAVEL_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("TRAVEL_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Voyage supprimé avec succès.
-        /// </summary>
-        public static string TRAVEL_REMOVED {
-            get {
-                return ResourceManager.GetString("TRAVEL_REMOVED", resourceCulture);
+                return ResourceManager.GetString("ActivityServiceStatus_PersistenceError_Message", resourceCulture);
             }
         }
     }

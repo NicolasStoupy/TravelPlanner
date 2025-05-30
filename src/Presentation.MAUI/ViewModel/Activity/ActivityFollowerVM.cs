@@ -17,7 +17,7 @@ namespace Presentation.MAUI.ViewModel.Activity
         partial void OnActivityIDChanged(int value)
         {
             var result = _services.Application.ActivityService.GetActivity(_activityID);
-            if (result.Status.IsSuccess)
+            if (result.IsSuccess)
             {
                 CurrentTravelActivity = result.Value;
             }
@@ -73,8 +73,8 @@ namespace Presentation.MAUI.ViewModel.Activity
             if (await _services.Validation.ValidateAndNotifyAsync(this))
             {
                 var result = await _services.Application.ActivityService.AddFollower(CurrentTravelActivity.ActivityID, newFollower);
-                await _services.Alert.ShowAsync(result.Status);
-                if (result.Status.IsSuccess)
+                await _services.Alert.ShowAsync(result);
+                if (result.IsSuccess)
                 {
                     OnActivityIDChanged(CurrentTravelActivity.ActivityID);
                 }
@@ -89,8 +89,8 @@ namespace Presentation.MAUI.ViewModel.Activity
             if (follower == null || CurrentTravelActivity == null) return;
 
             var result = await _services.Application.ActivityService.RemoveFollower(follower, CurrentTravelActivity.ActivityID);
-            await _services.Alert.ShowAsync(result.Status);
-            if (result.Status.IsSuccess) { OnActivityIDChanged(CurrentTravelActivity.ActivityID);}
+            await _services.Alert.ShowAsync(result);
+            if (result.IsSuccess) { OnActivityIDChanged(CurrentTravelActivity.ActivityID);}
           
         }
         public override void Reset()

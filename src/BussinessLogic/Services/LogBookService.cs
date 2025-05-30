@@ -2,12 +2,19 @@
 using BussinessLogic.Entities;
 using BussinessLogic.Interfaces;
 using Commons.Models;
+using Commons.Resources;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BussinessLogic.Services
 {
+    /// <summary>
+    /// Provides operations for adding, deleting, and editing logbook entries (notes)
+    /// associated with a travel record.  
+    /// All methods return a <see cref="ServiceResult{T}"/>, and on failure 
+    /// no changes are persisted (the initial state is restored).
+    /// </summary>
     public class LogBookService(
         IDbContextFactory<TravelPlannerContext> context,
         IMapper mapper,ILogger<LogBookService> logger) : ILogBookService
@@ -16,80 +23,141 @@ namespace BussinessLogic.Services
         private readonly IDbContextFactory<TravelPlannerContext> _context = context;
         private readonly IMapper _mapper = mapper;
 
-
         /// <summary>
-        /// Adds a new note to a specific travel (trip) identified by its ID.
+        /// Adds a new note to the specified travel.
+        /// If the travel is not found or <paramref name="note"/> is null,
+        /// no state change occurs.
         /// </summary>
-        /// <param name="note">The note to add. Can be <c>null</c>.</param>
-        /// <param name="travelID">The ID of the travel to which the note should be added.</param>
+        /// <param name="note">The note to add; may be null.</param>
+        /// <param name="travelID">The ID of the travel to attach the note to.</param>
         /// <returns>
-        /// A <see cref="Result"/> indicating whether the operation succeeded or failed, wrapped in a <see cref="Task"/>.
+        /// A <see cref="ServiceResult{Boolean}"/>:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>
+        ///       Success(true) if the note was added.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       Failure(...) if the input is invalid or the travel was not found;
+        ///       no changes are saved.
+        ///     </description>
+        ///   </item>
+        /// </list>
         /// </returns>
-        public Task<Result> AddNote(Note? note, int travelID)
+        public async Task<ServiceResult<bool>> AddNoteAsync(Note? note, int travelID)
         {
-            using var context = _context.CreateDbContext();
-            var log = _mapper.Map<LogBook>(note);
-            var trip = context.Trips.FirstOrDefault(t => t.TripId == travelID);
-            if (trip != null)
-            {
-                trip.LogBooks.Add(log);
-                context.SaveChanges();
+            if (note == null)
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.INVALID_NOTE);
 
-                return Task.FromResult(Result.Success("Note Ajoutée aevc success"));
-            }
-            else
-            {
-                return Task.FromResult(Result.Failure("Le Voyage n'existe pas "));
-            }
-        }
+            await using var ctx = _context.CreateDbContext();
+            var trip = await ctx.Trips.FindAsync(travelID);
+            if (trip == null)
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.TRAVEL_NOT_FOUND);
 
-        /// <summary>
-        /// Deletes a note from the database based on its identifier.
-        /// </summary>
-        /// <param name="note">The note to delete.</param>
-        /// <returns>
-        /// A <see cref="Result"/> wrapped in a <see cref="Task"/>, indicating whether the deletion was successful or failed.
-        /// </returns>
-        public Task<Result> DeleteNote(Note note)
-        {
-            using var context = _context.CreateDbContext();
             try
             {
-                var log = context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
-                if (log == null) return Task.FromResult(Result.Failure("Note not found"));
-                context.LogBooks.Remove(log);
-                context.SaveChanges();
-                return Task.FromResult(Result.Success("Supprimé"));
+                var logEntity = _mapper.Map<LogBook>(note);
+                trip.LogBooks.Add(logEntity);
+                await ctx.SaveChangesAsync();
+                return ServiceResult<bool>.Success(true);
             }
-            catch (Exception ex)
+            catch (DbUpdateException dbEx)
             {
-                return Task.FromResult(Result.Failure(ex.Message));
-            }
+                _logger.LogError(dbEx, "DB error adding note to travel {TravelID}", travelID);
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.DATABASE_ERROR);
+            }           
         }
+        /// <summary>
+        /// Deletes an existing note.
+        /// If the note is not found, no state change occurs.
+        /// </summary>
+        /// <param name="note">The note to delete (identifies the log entry).</param>
+        /// <returns>
+        /// A <see cref="ServiceResult{Boolean}"/>:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>
+        ///       Success(true) if the note was deleted.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       Failure(...) if the note was not found or a database error occurred;
+        ///       no partial deletions occur.
+        ///     </description>
+        ///   </item>
+        /// </list>
+        /// </returns>
+        public async Task<ServiceResult<bool>> DeleteNoteAsync(Note note)
+        {
+            if (note == null || note.NoteId <= 0)
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.INVALID_NOTE);
 
+            await using var ctx = _context.CreateDbContext();
+            var entity = await ctx.LogBooks.FindAsync(note.NoteId);
+            if (entity == null)
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.NOTE_NOT_FOUND);
+
+            try
+            {
+                ctx.LogBooks.Remove(entity);
+                await ctx.SaveChangesAsync();
+                return ServiceResult<bool>.Success(true);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "DB error deleting note {NoteId}", note.NoteId);
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.DATABASE_ERROR);
+            }
+           
+        }
         /// <summary>
         /// Updates the content of an existing note.
+        /// If the note is not found, no state change occurs.
         /// </summary>
-        /// <param name="note">The note containing the updated content and identifier.</param>
+        /// <param name="note">The note with updated content and a valid NoteId.</param>
         /// <returns>
-        /// A <see cref="Result"/> wrapped in a <see cref="Task"/>, indicating whether the update was successful or failed.
+        /// A <see cref="ServiceResult{Boolean}"/>:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>
+        ///       Success(true) if the note was updated.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       Failure(...) if the note was not found or a database error occurred;
+        ///       no partial updates occur.
+        ///     </description>
+        ///   </item>
+        /// </list>
         /// </returns>
-        public Task<Result> EditNote(Note note)
+        public async Task<ServiceResult<bool>> EditNoteAsync(Note note)
         {
-            using var context = _context.CreateDbContext();
+            if (note == null || note.NoteId <= 0)
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.INVALID_NOTE);
+
+            await using var ctx = _context.CreateDbContext();
+            var entity = await ctx.LogBooks.FindAsync(note.NoteId);
+            if (entity == null)
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.NOTE_NOT_FOUND);
+
             try
             {
-                var log = context.LogBooks.FirstOrDefault(l => l.LogBookId == note.NoteId);
-                if (log == null) return Task.FromResult(Result.Failure("Note not found"));
-                log.Description = note.NoteContent;
-                context.LogBooks.Update(log);
-                context.SaveChanges();
-                return Task.FromResult(Result.Success("Updated"));
+                entity.Description = note.NoteContent ?? string.Empty;
+                ctx.LogBooks.Update(entity);
+                await ctx.SaveChangesAsync();
+                return ServiceResult<bool>.Success(true);
             }
-            catch (Exception ex)
+            catch (DbUpdateException dbEx)
             {
-                return Task.FromResult(Result.Failure(ex.Message));
+                _logger.LogError(dbEx, "DB error updating note {NoteId}", note.NoteId);
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.DATABASE_ERROR);
             }
-        }
+           
+        }    
+    
     }
 }

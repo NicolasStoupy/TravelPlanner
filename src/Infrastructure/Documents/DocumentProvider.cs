@@ -198,6 +198,17 @@ public class DocumentProvider
         }
     }
 
+    public bool RemoveFiles(List<Guid> fileGuids, TypeMedia typeMedia)
+    {
+        SetMediaType(typeMedia);
+        foreach (var fileGuid in fileGuids)
+        {
+            RemoveFile(fileGuid, typeMedia);
+        }
+
+        return true;
+    }
+
     private IEnumerable<byte[]> GetFiles(IEnumerable<Guid> filesGuids, TypeMedia typeMedia)
     {
         var result = new List<byte[]>();
@@ -229,5 +240,5 @@ public class DocumentProvider
         return zipPath;
 
     }
-    
+
 }

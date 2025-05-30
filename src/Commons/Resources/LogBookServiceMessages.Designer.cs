@@ -22,14 +22,14 @@ namespace Commons.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class TravelServiceMessage {
+    public class LogBookServiceMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal TravelServiceMessage() {
+        internal LogBookServiceMessages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Commons.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Commons.Resources.TravelServiceMessage", typeof(TravelServiceMessage).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Commons.Resources.LogBookServiceMessages", typeof(LogBookServiceMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,88 +61,34 @@ namespace Commons.Resources {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à  Impossible de cloner le voyage..
+        ///   Recherche une chaîne localisée semblable à Une erreur s’est produite lors de l’accès à la base de données..
         /// </summary>
-        public static string CLONE_FAILED {
+        public static string DATABASE_ERROR {
             get {
-                return ResourceManager.GetString("CLONE_FAILED", resourceCulture);
+                return ResourceManager.GetString("DATABASE_ERROR", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Erreur inattendue, les fichiers n&apos;ont pas été ajoutés correctement..
+        ///   Recherche une chaîne localisée semblable à Note invalide fournie..
         /// </summary>
-        public static string ERROR_WHEN_ADDING_FILE {
+        public static string INVALID_NOTE {
             get {
-                return ResourceManager.GetString("ERROR_WHEN_ADDING_FILE", resourceCulture);
+                return ResourceManager.GetString("INVALID_NOTE", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Erreur inattendue, les souvenirs n&apos;ont pas été supprimés correctement..
+        ///   Recherche une chaîne localisée semblable à Note introuvable..
         /// </summary>
-        public static string ERROR_WHEN_REMOVING_FILE {
+        public static string NOTE_NOT_FOUND {
             get {
-                return ResourceManager.GetString("ERROR_WHEN_REMOVING_FILE", resourceCulture);
+                return ResourceManager.GetString("NOTE_NOT_FOUND", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Le souvenir n&apos;existe pas .
-        /// </summary>
-        public static string INVALID_MEMORY {
-            get {
-                return ResourceManager.GetString("INVALID_MEMORY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à  Les données du voyage sont manquantes ou invalides..
-        /// </summary>
-        public static string INVALID_TRAVEL {
-            get {
-                return ResourceManager.GetString("INVALID_TRAVEL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à  L’identifiant du voyage est invalide..
-        /// </summary>
-        public static string INVALID_TRAVEL_ID {
-            get {
-                return ResourceManager.GetString("INVALID_TRAVEL_ID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Le souvenir n&apos;existe pas .
-        /// </summary>
-        public static string MEDIA_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("MEDIA_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Pas de média à ajouter !.
-        /// </summary>
-        public static string NO_MEDIA {
-            get {
-                return ResourceManager.GetString("NO_MEDIA", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Voyage ajouté avec succès.
-        /// </summary>
-        public static string TRAVEL_ADDED {
-            get {
-                return ResourceManager.GetString("TRAVEL_ADDED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à  Aucun voyage trouvé avec cet ID..
+        ///   Recherche une chaîne localisée semblable à Voyage introuvable..
         /// </summary>
         public static string TRAVEL_NOT_FOUND {
             get {
@@ -151,11 +97,11 @@ namespace Commons.Resources {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Voyage supprimé avec succès.
+        ///   Recherche une chaîne localisée semblable à Une erreur inattendue s’est produite. Veuillez contacter le support..
         /// </summary>
-        public static string TRAVEL_REMOVED {
+        public static string UNKNOWN_ERROR {
             get {
-                return ResourceManager.GetString("TRAVEL_REMOVED", resourceCulture);
+                return ResourceManager.GetString("UNKNOWN_ERROR", resourceCulture);
             }
         }
     }

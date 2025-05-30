@@ -81,9 +81,13 @@ namespace Presentation.MAUI.ViewModel
                 return;
             if (CurrentTravel != null)
             {
-                var result = await _services.Application.LogBookService.AddNote(Note, CurrentTravel.Id);
-                loadData();
+                var result = await _services.Application.LogBookService.AddNoteAsync(Note, CurrentTravel.Id);
+
                 if (result.IsSuccess) Note = new Note();
+                await _services.Alert.ShowAsync(result);
+                loadData();
+
+
             }
             else
             {
@@ -99,7 +103,8 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         public async Task DeleteNote(Note note)
         {
-            await _services.Application.LogBookService.DeleteNote(note);
+            var result = await _services.Application.LogBookService.DeleteNoteAsync(note);
+            await _services.Alert.ShowAsync(result);
             loadData();
         }
 
@@ -110,7 +115,8 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         public async Task EditNote(Note note)
         {
-            await _services.Application.LogBookService.EditNote(note);
+            var serviceResult = await _services.Application.LogBookService.EditNoteAsync(note);
+            await _services.Alert.ShowAsync(serviceResult);
             loadData();
         }
 

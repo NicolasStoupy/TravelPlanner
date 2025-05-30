@@ -143,12 +143,19 @@ public partial class FinderTravelPageVM : TravelVM
     [RelayCommand]
     public async Task ExtractTravelToPdf(Travel travel, CancellationToken cancellationToken)
     {
-        var PDFFile = _services.Application.MediaService.GeneratePdfSummary(travel);
-        var fileName = _services.OutputFileNameProvider.GetFileName(Constants.PDF_TRAVEL_CONFIG, travel.name);
+        var PDFFileServiceResult = _services.Application.MediaService.GeneratePdfSummary(travel);
 
-        using var pdfFileStream = new MemoryStream(PDFFile);
-        var fileSaverResult = await FileSaver.Default
-            .SaveAsync(fileName, pdfFileStream, cancellationToken);
+        if (PDFFileServiceResult.IsSuccess)
+        {
+            var fileName = _services.OutputFileNameProvider.GetFileName(Constants.PDF_TRAVEL_CONFIG, travel.name);
+
+            using var pdfFileStream = new MemoryStream(PDFFileServiceResult.Value);
+            var fileSaverResult = await FileSaver.Default
+                .SaveAsync(fileName, pdfFileStream, cancellationToken);
+
+        }
+        await _services.Alert.ShowAsync(PDFFileServiceResult);
+        return;
 
     }
 

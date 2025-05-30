@@ -30,106 +30,9 @@ namespace BussinessLogic.Services
     {
         private readonly IDbContextFactory<TravelPlannerContext> _context = context;
         private readonly DocumentProvider _document = document;
+        private readonly ILogger<TravelService> _logger = logger;
         private readonly IMapper _mapper = mapper;
         private readonly IMediaService _mediaService = mediaService;
-        private readonly ILogger<TravelService> _logger = logger;
-
-        /// <summary>
-        /// Retrieves a <see cref="Travel"/> instance by its identifier.
-        /// </summary>
-        /// <param name="travelID">
-        /// The unique identifier of the travel record to retrieve. Must be greater than zero.
-        /// </param>
-        /// <returns>
-        /// A <see cref="ServiceResult{T}"/> containing:
-        /// <list type="bullet">
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{T}.Success"/> with the <see cref="Travel"/> instance if found and mapped successfully.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{T}.Warning"/> with
-        ///       <see cref="TravelServiceMessage.INVALID_TRAVEL_ID"/> if <paramref name="travelID"/> is less than or equal to zero.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{T}.Warning"/> with
-        ///       <see cref="TravelServiceMessage.TRAVEL_NOT_FOUND"/> if no matching record exists.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{T}.Warning"/> with
-        ///       <see cref="TravelServiceMessage.UNKNOWN_ERROR"/> if an error occurs during mapping.
-        ///     </description>
-        ///   </item>
-        /// </list>
-        /// </returns>
-        public ServiceResult<Travel> GetTravel(int travelID)
-        {
-            if (travelID <= 0)
-                return ServiceResult<Travel>
-                    .Warning(TravelServiceMessage.INVALID_TRAVEL_ID);
-
-            using var ctx = _context.CreateDbContext();
-            var entity = ctx.Trips.FirstOrDefault(t => t.TripId == travelID);
-
-            if (entity == null)
-                return ServiceResult<Travel>
-                    .Warning(TravelServiceMessage.TRAVEL_NOT_FOUND);
-
-            if (!_mapper.TryMap(entity, out Travel travel, _logger))
-                return ServiceResult<Travel>
-                    .Warning(TravelServiceMessage.UNKNOWN_ERROR);
-
-            return ServiceResult<Travel>.Success(travel);
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves all <see cref="Travel"/> records, ordered by creation date.
-        /// </summary>
-        /// <param name="includeActivity">
-        /// If <c>true</c>, include related activity data. Currently reserved for future use.
-        /// </param>
-        /// <param name="includeNotes">
-        /// If <c>true</c>, include related notes data. Currently reserved for future use.
-        /// </param>
-        /// <param name="includeFollowers">
-        /// If <c>true</c>, include related follower data. Currently reserved for future use.
-        /// </param>
-        /// <returns>
-        /// A <see cref="ServiceResult{T}"/> containing:
-        /// <list type="bullet">
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{T}.Success"/> with a <see cref="List{Travel}"/> of all travels if mapping succeeds.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{T}.Warning"/> with
-        ///       <see cref="TravelServiceMessage.UNKNOWN_ERROR"/> if an error occurs during mapping.
-        ///     </description>
-        ///   </item>
-        /// </list>
-        /// </returns>
-        public async Task<ServiceResult<List<Travel>>> GetTravels(bool includeActivity = false, bool includeNotes = false, bool includeFollowers = false)
-        {
-            using var context = _context.CreateDbContext();
-            var trips = await context.Trips.OrderBy(t => t.CreatedAt).ToListAsync();
-
-            if (!_mapper.TryMap(trips, out List<Travel> travelItems, _logger))
-            {
-                return ServiceResult<List<Travel>>
-                   .Warning(TravelServiceMessage.UNKNOWN_ERROR);
-            }
-
-            return ServiceResult<List<Travel>>.Success(travelItems);
-        }
-
         /// <summary>
         /// Asynchronously adds one or more media files to the specified travel record.
         /// </summary>
@@ -179,6 +82,7 @@ namespace BussinessLogic.Services
         public async Task<ServiceResult<bool>> AddMediaToTravel(
             List<byte[]> medias, int travelID, Commons.TypeMedia mediaType)
         {
+           
             if (travelID <= 0)
                 return ServiceResult<bool>.Failure(TravelServiceMessage.INVALID_TRAVEL_ID);
             if (medias.Count == 0)
@@ -193,27 +97,21 @@ namespace BussinessLogic.Services
 
             var savedFilesGuid = _mediaService.SaveMedias(medias, mediaType);
 
-            //if some files failed to save (already saved files will be rolled back)
-            if (savedFilesGuid != null && savedFilesGuid.Count() != medias.Count)
+            if (!savedFilesGuid.IsSuccess)
             {
-                foreach (var item in savedFilesGuid)
-                {
-                    _document.RemoveFile(item, mediaType);
-                }
                 return ServiceResult<bool>.Failure(TravelServiceMessage.ERROR_WHEN_ADDING_FILE);
             }
-            if (savedFilesGuid != null)
+
+            foreach (var fileGuid in savedFilesGuid.Value)
             {
-                foreach (var fileGuid in savedFilesGuid)
+                trip.Media.Add(new Medium
                 {
-                    trip.Media.Add(new Medium
-                    {
-                        FileGuid = fileGuid,
-                        Description = string.Empty,
-                        MediaType = 1
-                    });
-                }
+                    FileGuid = fileGuid,
+                    Description = string.Empty,
+                    MediaType = 1
+                });
             }
+
 
             await context.SaveChangesAsync();
 
@@ -221,25 +119,24 @@ namespace BussinessLogic.Services
         }
 
         /// <summary>
-        /// Asynchronously saves a <see cref="Travel"/> instance, including its associated image if provided.
-        /// Ensures the operation is atomic by using a database transaction.
+        /// Asynchronously creates a duplicate of the specified <see cref="Travel"/> record.
+        /// The clone will have a new primary key and identical property values (excluding the ID).
         /// </summary>
         /// <param name="travel">
-        /// The <see cref="Travel"/> object to save. Must not be null.
+        /// The <see cref="Travel"/> object to clone. Must not be null.
         /// </param>
         /// <returns>
         /// A <see cref="ServiceResult{Boolean}"/> indicating:
         /// <list type="bullet">
         ///   <item>
         ///     <description>
-        ///       <see cref="ServiceResult{Boolean}.Success"/> with <c>true</c> and message <see cref="TravelServiceMessage.TRAVEL_ADDED"/>
-        ///       if the travel (and optional image) is saved successfully.
+        ///       <see cref="ServiceResult{Boolean}.Success"/> with <c>true</c> if the travel record is cloned successfully.
         ///     </description>
         ///   </item>
         ///   <item>
         ///     <description>
         ///       <see cref="ServiceResult{Boolean}.Failure"/> with
-        ///       <see cref="TravelServiceMessage.INVALID_TRAVEL_ID"/> if <paramref name="travel"/> is null.
+        ///       <see cref="TravelServiceMessage.INVALID_TRAVEL"/> if <paramref name="travel"/> is null.
         ///     </description>
         ///   </item>
         ///   <item>
@@ -251,67 +148,39 @@ namespace BussinessLogic.Services
         ///   <item>
         ///     <description>
         ///       <see cref="ServiceResult{Boolean}.Failure"/> with
-        ///       <see cref="TravelServiceMessage.ERROR_WHEN_ADDING_FILE"/> if saving the travel's image fails (any saved data will be rolled back).
+        ///       <see cref="TravelServiceMessage.DATABASE_ERROR"/> if a database update exception occurs during save.
         ///     </description>
         ///   </item>
         /// </list>
         /// </returns>
-        /// <exception cref="Exception">
-        /// Propagates any exception encountered during database operations or transaction commit.
+        /// <exception cref="DbUpdateException">
+        /// Thrown if an error occurs while saving the cloned entity to the database;
+        /// this exception is caught and translated into a failure <see cref="ServiceResult{Boolean}"/>.
         /// </exception>
-        public async Task<ServiceResult<bool>> SaveTravel(Travel travel)
+        public async Task<ServiceResult<bool>> CloneTravel(Travel travel)
         {
+
+            // Validation de l'entrée
             if (travel == null)
-                return ServiceResult<bool>.Failure(TravelServiceMessage.INVALID_TRAVEL_ID);
-
-            using var context = _context.CreateDbContext();
-
-            if (!_mapper.TryMap(travel, out Trip trip, _logger))
-                return ServiceResult<bool>.Failure(TravelServiceMessage.UNKNOWN_ERROR);
-
-            //trip.CurrencyCode = travel.currencie;
-
-            Guid? savedFileGuid = null;
-            using var transaction = await context.Database.BeginTransactionAsync();
-
+                return ServiceResult<bool>.Failure(TravelServiceMessage.INVALID_TRAVEL);
             try
             {
-                // 1. Save The trip without image
-                context.Trips.Add(trip);
-                await context.SaveChangesAsync();
+                await using var ctx = _context.CreateDbContext();
+                //Création du clone
+                if (!_mapper.TryMap(travel, out Trip tripCloned, _logger))
+                    return ServiceResult<bool>.Failure(GlobalServiceMessage.UNKNOWN_ERROR);
 
-                // 2. Save Image
-                if (travel.image != null)
-                {
-                    _document.SetMediaType(Commons.TypeMedia.Images);
-                    var savedImageGuid = _document.SaveFile(travel.image);
-                    if (savedImageGuid == null)
-                    {
-                        transaction.Rollback();
-                        return ServiceResult<bool>.Failure(TravelServiceMessage.ERROR_WHEN_ADDING_FILE);
-                    }
-
-                    // 3. Update the trip information
-                    trip.TripBackgroundGuid = savedImageGuid;
-                    context.Trips.Update(trip);
-                    await context.SaveChangesAsync();
-                }
-
-                await transaction.CommitAsync();
-
-                return ServiceResult<bool>.Success(true, TravelServiceMessage.TRAVEL_ADDED);
+                tripCloned.TripId = 0;                     // Reset de la PK
+                ctx.Trips.Add(tripCloned);
+                //Persistance
+                await ctx.SaveChangesAsync();
+                //Succès
+                return ServiceResult<bool>.Success(true);
             }
-            catch (Exception ex)
+            catch (DbUpdateException dbEx)
             {
-                _logger.LogError(ex, "Erreur lors de l'ajout d'un voyage {travelID}", travel.Id);
-                await transaction.RollbackAsync();
-                //  remove orphan file
-                if (savedFileGuid.HasValue)
-                {
-                    _document.RemoveFile(savedFileGuid.Value, Commons.TypeMedia.Images);
-                }
-
-                throw;
+                _logger.LogError(dbEx, "Erreur lors de la sauvegarde");
+                return ServiceResult<bool>.Failure(GlobalServiceMessage.DATABASE_ERROR);
             }
         }
 
@@ -421,165 +290,6 @@ namespace BussinessLogic.Services
         }
 
         /// <summary>
-        /// Asynchronously updates an existing <see cref="Travel"/> record, including its associated image if provided.
-        /// Ensures atomicity by using a database transaction.
-        /// </summary>
-        /// <param name="travel">
-        /// The <see cref="Travel"/> object containing updated values. Must not be null and must reference an existing record.
-        /// </param>
-        /// <returns>
-        /// A <see cref="ServiceResult{Boolean}"/> indicating:
-        /// <list type="bullet">
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{Boolean}.Success"/> with <c>true</c> if the update (and optional image replacement) succeeds.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
-        ///       <see cref="TravelServiceMessage.INVALID_TRAVEL"/> if <paramref name="travel"/> is null.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
-        ///       <see cref="TravelServiceMessage.UNKNOWN_ERROR"/> if mapping the <see cref="Travel"/> to a <see cref="Trip"/> entity fails.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
-        ///       <see cref="TravelServiceMessage.TRAVEL_NOT_FOUND"/> if no existing record matches <paramref name="travel"/>.<see cref="Travel.Id"/>.
-        ///     </description>
-        ///   </item>
-        /// </list>
-        /// </returns>
-        /// <exception cref="Exception">
-        /// Propagates any exception encountered during database operations or transaction commit; rolls back and cleans up any replaced image file.
-        /// </exception>
-        public async Task<ServiceResult<bool>> UpdateTravel(Travel travel)
-        {
-            if (travel == null)
-                return ServiceResult<bool>.Failure(TravelServiceMessage.INVALID_TRAVEL);
-
-            using var context = _context.CreateDbContext();
-
-            if (!_mapper.TryMap(travel, out Trip trip, _logger))
-                return ServiceResult<bool>.Failure(TravelServiceMessage.UNKNOWN_ERROR);
-
-            Guid? savedFileGuid = null;
-
-            using var transaction = await context.Database.BeginTransactionAsync();
-
-            try
-            {
-                var existingTrip = await context.Trips.FindAsync(trip.TripId);
-                if (existingTrip == null)
-                {
-                    return ServiceResult<bool>.Failure(TravelServiceMessage.TRAVEL_NOT_FOUND);
-                }
-
-                // 1. Update les propriétés (hors image pour le moment)
-                context.Entry(existingTrip).CurrentValues.SetValues(trip);
-
-                await context.SaveChangesAsync();
-
-                // 2. Save nouvelle image si nécessaire
-                if (travel?.image != null)
-                {
-                    _document.SetMediaType(Commons.TypeMedia.Images);
-                    savedFileGuid = _document.ReplaceFile(travel.imageID, travel.image);
-
-                    // 3. Mise à jour du GUID image
-                    existingTrip.TripBackgroundGuid = savedFileGuid;
-                    context.Trips.Update(existingTrip);
-                    await context.SaveChangesAsync();
-                }
-
-                await transaction.CommitAsync();
-
-                return ServiceResult<bool>.Success(true);
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync();
-
-                // Suppression de l'image si elle avait été enregistrée
-                if (savedFileGuid.HasValue)
-                {
-                    _document.RemoveFile(savedFileGuid.Value, Commons.TypeMedia.Images);
-                }
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously creates a duplicate of the specified <see cref="Travel"/> record.
-        /// The clone will have a new primary key and identical property values (excluding the ID).
-        /// </summary>
-        /// <param name="travel">
-        /// The <see cref="Travel"/> object to clone. Must not be null.
-        /// </param>
-        /// <returns>
-        /// A <see cref="ServiceResult{Boolean}"/> indicating:
-        /// <list type="bullet">
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{Boolean}.Success"/> with <c>true</c> if the travel record is cloned successfully.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
-        ///       <see cref="TravelServiceMessage.INVALID_TRAVEL"/> if <paramref name="travel"/> is null.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
-        ///       <see cref="TravelServiceMessage.UNKNOWN_ERROR"/> if mapping the <see cref="Travel"/> to a <see cref="Trip"/> entity fails.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <description>
-        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
-        ///       <see cref="TravelServiceMessage.DATABASE_ERROR"/> if a database update exception occurs during save.
-        ///     </description>
-        ///   </item>
-        /// </list>
-        /// </returns>
-        /// <exception cref="DbUpdateException">
-        /// Thrown if an error occurs while saving the cloned entity to the database;
-        /// this exception is caught and translated into a failure <see cref="ServiceResult{Boolean}"/>.
-        /// </exception>
-        public async Task<ServiceResult<bool>> CloneTravel(Travel travel)
-        {
-            // Validation de l'entrée
-            if (travel == null)
-                return ServiceResult<bool>.Failure(TravelServiceMessage.INVALID_TRAVEL);
-            try
-            {
-                await using var ctx = _context.CreateDbContext();
-                //Création du clone
-                if (!_mapper.TryMap(travel, out Trip tripCloned, _logger))
-                    return ServiceResult<bool>.Failure(TravelServiceMessage.UNKNOWN_ERROR);
-
-                tripCloned.TripId = 0;                     // Reset de la PK
-                ctx.Trips.Add(tripCloned);
-                //Persistance
-                await ctx.SaveChangesAsync();
-                //Succès
-                return ServiceResult<bool>.Success(true);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                _logger.LogError(dbEx, "Erreur lors de la sauvegarde");
-                return ServiceResult<bool>.Failure(TravelServiceMessage.DATABASE_ERROR);
-            }
-        }
-
-        /// <summary>
         /// Retrieves all memory files for the specified travel record.
         /// </summary>
         /// <param name="travelID">
@@ -649,6 +359,101 @@ namespace BussinessLogic.Services
             return ServiceResult<List<MemoryFile>>.Success(result);
         }
 
+        /// <summary>
+        /// Retrieves a <see cref="Travel"/> instance by its identifier.
+        /// </summary>
+        /// <param name="travelID">
+        /// The unique identifier of the travel record to retrieve. Must be greater than zero.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ServiceResult{T}"/> containing:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{T}.Success"/> with the <see cref="Travel"/> instance if found and mapped successfully.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{T}.Warning"/> with
+        ///       <see cref="TravelServiceMessage.INVALID_TRAVEL_ID"/> if <paramref name="travelID"/> is less than or equal to zero.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{T}.Warning"/> with
+        ///       <see cref="TravelServiceMessage.TRAVEL_NOT_FOUND"/> if no matching record exists.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{T}.Warning"/> with
+        ///       <see cref="TravelServiceMessage.UNKNOWN_ERROR"/> if an error occurs during mapping.
+        ///     </description>
+        ///   </item>
+        /// </list>
+        /// </returns>
+        public ServiceResult<Travel> GetTravel(int travelID)
+        {
+            if (travelID <= 0)
+                return ServiceResult<Travel>
+                    .Warning(TravelServiceMessage.INVALID_TRAVEL_ID);
+
+            using var ctx = _context.CreateDbContext();
+            var entity = ctx.Trips.FirstOrDefault(t => t.TripId == travelID);
+
+            if (entity == null)
+                return ServiceResult<Travel>
+                    .Warning(TravelServiceMessage.TRAVEL_NOT_FOUND);
+
+            if (!_mapper.TryMap(entity, out Travel travel, _logger))
+                return ServiceResult<Travel>
+                    .Warning(GlobalServiceMessage.UNKNOWN_ERROR);
+
+            return ServiceResult<Travel>.Success(travel);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves all <see cref="Travel"/> records, ordered by creation date.
+        /// </summary>
+        /// <param name="includeActivity">
+        /// If <c>true</c>, include related activity data. Currently reserved for future use.
+        /// </param>
+        /// <param name="includeNotes">
+        /// If <c>true</c>, include related notes data. Currently reserved for future use.
+        /// </param>
+        /// <param name="includeFollowers">
+        /// If <c>true</c>, include related follower data. Currently reserved for future use.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ServiceResult{T}"/> containing:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{T}.Success"/> with a <see cref="List{Travel}"/> of all travels if mapping succeeds.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{T}.Warning"/> with
+        ///       <see cref="TravelServiceMessage.UNKNOWN_ERROR"/> if an error occurs during mapping.
+        ///     </description>
+        ///   </item>
+        /// </list>
+        /// </returns>
+        public async Task<ServiceResult<List<Travel>>> GetTravels(bool includeActivity = false, bool includeNotes = false, bool includeFollowers = false)
+        {
+            using var context = _context.CreateDbContext();
+            var trips = await context.Trips.OrderBy(t => t.CreatedAt).ToListAsync();
+
+            if (!_mapper.TryMap(trips, out List<Travel> travelItems, _logger))
+            {
+                return ServiceResult<List<Travel>>
+                   .Warning(GlobalServiceMessage.UNKNOWN_ERROR);
+            }
+
+            return ServiceResult<List<Travel>>.Success(travelItems);
+        }
         /// <summary>
         /// Asynchronously removes the specified memory files from the given travel record.
         /// </summary>
@@ -729,6 +534,100 @@ namespace BussinessLogic.Services
         }
 
         /// <summary>
+        /// Asynchronously saves a <see cref="Travel"/> instance, including its associated image if provided.
+        /// Ensures the operation is atomic by using a database transaction.
+        /// </summary>
+        /// <param name="travel">
+        /// The <see cref="Travel"/> object to save. Must not be null.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ServiceResult{Boolean}"/> indicating:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{Boolean}.Success"/> with <c>true</c> and message <see cref="TravelServiceMessage.TRAVEL_ADDED"/>
+        ///       if the travel (and optional image) is saved successfully.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
+        ///       <see cref="TravelServiceMessage.INVALID_TRAVEL_ID"/> if <paramref name="travel"/> is null.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
+        ///       <see cref="TravelServiceMessage.UNKNOWN_ERROR"/> if mapping the <see cref="Travel"/> to a <see cref="Trip"/> entity fails.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
+        ///       <see cref="TravelServiceMessage.ERROR_WHEN_ADDING_FILE"/> if saving the travel's image fails (any saved data will be rolled back).
+        ///     </description>
+        ///   </item>
+        /// </list>
+        /// </returns>
+        /// <exception cref="Exception">
+        /// Propagates any exception encountered during database operations or transaction commit.
+        /// </exception>
+        public async Task<ServiceResult<bool>> SaveTravel(Travel travel)
+        {
+            if (travel == null)
+                return ServiceResult<bool>.Failure(TravelServiceMessage.INVALID_TRAVEL_ID);
+
+            using var context = _context.CreateDbContext();
+
+            if (!_mapper.TryMap(travel, out Trip trip, _logger))
+                return ServiceResult<bool>.Failure(GlobalServiceMessage.UNKNOWN_ERROR);
+
+            //trip.CurrencyCode = travel.currencie;
+
+            Guid? savedFileGuid = null;
+            using var transaction = await context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // 1. Save The trip without image
+                context.Trips.Add(trip);
+                await context.SaveChangesAsync();
+
+                // 2. Save Image
+                if (travel.image != null)
+                {
+                    _document.SetMediaType(Commons.TypeMedia.Images);
+                    var savedImageGuid = _document.SaveFile(travel.image);
+                    if (savedImageGuid == null)
+                    {
+                        transaction.Rollback();
+                        return ServiceResult<bool>.Failure(TravelServiceMessage.ERROR_WHEN_ADDING_FILE);
+                    }
+
+                    // 3. Update the trip information
+                    trip.TripBackgroundGuid = savedImageGuid;
+                    context.Trips.Update(trip);
+                    await context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return ServiceResult<bool>.Success(true, TravelServiceMessage.TRAVEL_ADDED);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de l'ajout d'un voyage {travelID}", travel.Id);
+                await transaction.RollbackAsync();
+                //  remove orphan file
+                if (savedFileGuid.HasValue)
+                {
+                    _document.RemoveFile(savedFileGuid.Value, Commons.TypeMedia.Images);
+                }
+
+                throw;
+            }
+        }
+        /// <summary>
         /// Updates the description of a specific memory file.
         /// </summary>
         /// <param name="memory">
@@ -775,6 +674,98 @@ namespace BussinessLogic.Services
             return ServiceResult<bool>.Success(true);
         }
 
-      
+        /// <summary>
+        /// Asynchronously updates an existing <see cref="Travel"/> record, including its associated image if provided.
+        /// Ensures atomicity by using a database transaction.
+        /// </summary>
+        /// <param name="travel">
+        /// The <see cref="Travel"/> object containing updated values. Must not be null and must reference an existing record.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ServiceResult{Boolean}"/> indicating:
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{Boolean}.Success"/> with <c>true</c> if the update (and optional image replacement) succeeds.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
+        ///       <see cref="TravelServiceMessage.INVALID_TRAVEL"/> if <paramref name="travel"/> is null.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
+        ///       <see cref="TravelServiceMessage.UNKNOWN_ERROR"/> if mapping the <see cref="Travel"/> to a <see cref="Trip"/> entity fails.
+        ///     </description>
+        ///   </item>
+        ///   <item>
+        ///     <description>
+        ///       <see cref="ServiceResult{Boolean}.Failure"/> with
+        ///       <see cref="TravelServiceMessage.TRAVEL_NOT_FOUND"/> if no existing record matches <paramref name="travel"/>.<see cref="Travel.Id"/>.
+        ///     </description>
+        ///   </item>
+        /// </list>
+        /// </returns>
+        /// <exception cref="Exception">
+        /// Propagates any exception encountered during database operations or transaction commit; rolls back and cleans up any replaced image file.
+        /// </exception>
+        public async Task<ServiceResult<bool>> UpdateTravel(Travel travel)
+        {
+            if (travel == null)
+                return ServiceResult<bool>.Failure(TravelServiceMessage.INVALID_TRAVEL);
+
+            using var context = _context.CreateDbContext();
+
+            if (!_mapper.TryMap(travel, out Trip trip, _logger))
+                return ServiceResult<bool>.Failure(GlobalServiceMessage.UNKNOWN_ERROR);
+
+            Guid? savedFileGuid = null;
+
+            using var transaction = await context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var existingTrip = await context.Trips.FindAsync(trip.TripId);
+                if (existingTrip == null)
+                {
+                    return ServiceResult<bool>.Failure(TravelServiceMessage.TRAVEL_NOT_FOUND);
+                }
+
+                // 1. Update les propriétés (hors image pour le moment)
+                context.Entry(existingTrip).CurrentValues.SetValues(trip);
+
+                await context.SaveChangesAsync();
+
+                // 2. Save nouvelle image si nécessaire
+                if (travel?.image != null)
+                {
+                    _document.SetMediaType(Commons.TypeMedia.Images);
+                    savedFileGuid = _document.ReplaceFile(travel.imageID, travel.image);
+
+                    // 3. Mise à jour du GUID image
+                    existingTrip.TripBackgroundGuid = savedFileGuid;
+                    context.Trips.Update(existingTrip);
+                    await context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return ServiceResult<bool>.Success(true);
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+
+                // Suppression de l'image si elle avait été enregistrée
+                if (savedFileGuid.HasValue)
+                {
+                    _document.RemoveFile(savedFileGuid.Value, Commons.TypeMedia.Images);
+                }
+                throw;
+            }
+        }
     }
 }

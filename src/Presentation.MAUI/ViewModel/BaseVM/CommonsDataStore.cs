@@ -14,11 +14,15 @@ namespace Presentation.MAUI.ViewModel
         {
             _applicationService = applicationService;
             var ActivityTypesResult = _applicationService.ActivityService.GetActivitiesTypes();
-            if (ActivityTypesResult.Status.IsSuccess)
+            if (ActivityTypesResult.IsSuccess)
             {
                 ActivityType = ActivityTypesResult.Value.ToObservableCollection();
             }
-            Currencies = _applicationService.ExpenseService.GetCurrencies();
+            var currenciesServiceResult = _applicationService.ExpenseService.GetCurrencies();
+            if (currenciesServiceResult.IsSuccess)
+            {
+                Currencies = currenciesServiceResult.Value;
+            }
         }
 
         [ObservableProperty]

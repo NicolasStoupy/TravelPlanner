@@ -117,48 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="INVALID_TRAVEL_ID" xml:space="preserve">
-    <value> L’identifiant du voyage est invalide.</value>
-    <comment> L’identifiant du voyage est invalide.</comment>
+  <data name="INVALID_INPUT" xml:space="preserve">
+    <value>Les paramètres ne sont pas correctement encodé</value>
   </data>
-  <data name="INVALID_TRAVEL" xml:space="preserve">
-    <value> Les données du voyage sont manquantes ou invalides.</value>
-    <comment> Les données du voyage sont manquantes ou invalides.</comment>
-  </data>
-  <data name="TRAVEL_NOT_FOUND" xml:space="preserve">
-    <value> Aucun voyage trouvé avec cet ID.</value>
-    <comment> Aucun voyage trouvé avec cet ID.</comment>
-  </data>
-  <data name="CLONE_FAILED" xml:space="preserve">
-    <value> Impossible de cloner le voyage.</value>
-    <comment> Impossible de cloner le voyage.</comment>
-  </data>
-  <data name="NO_MEDIA" xml:space="preserve">
-    <value>Pas de média à ajouter !</value>
-    <comment>Pas de média à ajouter !</comment>
-  </data>
-  <data name="ERROR_WHEN_ADDING_FILE" xml:space="preserve">
-    <value>Erreur inattendue, les fichiers n'ont pas été ajoutés correctement.</value>
-    <comment>Erreur inattendue, les fichiers n'ont pas été ajoutés correctement.</comment>
-  </data>
-  <data name="ERROR_WHEN_REMOVING_FILE" xml:space="preserve">
-    <value>Erreur inattendue, les souvenirs n'ont pas été supprimés correctement.</value>
-    <comment>Erreur inattendue, les souvenirs n'ont pas été supprimés correctement.</comment>
-  </data>
-  <data name="TRAVEL_ADDED" xml:space="preserve">
-    <value>Voyage ajouté avec succès</value>
-    <comment>Voyage ajouté avec succès</comment>
-  </data>
-  <data name="TRAVEL_REMOVED" xml:space="preserve">
-    <value>Voyage supprimé avec succès</value>
-    <comment>Voyage supprimé avec succès</comment>
-  </data>
-  <data name="INVALID_MEMORY" xml:space="preserve">
-    <value>Le souvenir n'existe pas </value>
-    <comment>Souvenir invalide</comment>
-  </data>
-  <data name="MEDIA_NOT_FOUND" xml:space="preserve">
-    <value>Le souvenir n'existe pas </value>
-    <comment>Le souvenir n'existe pas </comment>
+  <data name="NOT_FOUND" xml:space="preserve">
+    <value>Souvenir  pas trouvé</value>
+    <comment>Souvenir  pas trouvé</comment>
   </data>
 </root>

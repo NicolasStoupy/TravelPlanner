@@ -2,6 +2,8 @@
 using BussinessLogic.Interfaces;
 using BussinessLogic.Models;
 using Commons;
+using Commons.Models;
+using Commons.Resources;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
@@ -20,46 +22,38 @@ namespace BussinessLogic.Services
             _document = documentProvider;
         }
 
-        /// <summary>
-        /// Retrieves media files associated with the specified trip and filtered by given media types.
-        /// </summary>
-        /// <param name="trip">The trip to retrieve media files for.</param>
-        /// <param name="mediaTypes">A list of media types to filter the results (e.g., images, videos).</param>
-        /// <returns>A list of byte arrays representing the media files.</returns>
-        public List<byte[]> GetMediasFromTrip(Trip trip, TypeMedia typeMedia)
+        public async Task<ServiceResult<string>> ExportMemoriesToZip(
+            IEnumerable<MemoryFile> memoryFiles,
+            TypeMedia mediaType,
+            string zipPath,
+            string fileName)
         {
-            var result = new List<byte[]>();
-            using var context = _context.CreateDbContext();
-            var medias = trip.Media.ToList();
+            if (memoryFiles == null || !memoryFiles.Any())
+                return ServiceResult<string>.Failure(MediaServiceMessages.INVALID_INPUT);
 
-            foreach (var media in medias)
-            {
-                var file = _document.GetFile(media.FileGuid, typeMedia);
-                if (file != null)
-                {
-                    result.Add(file);
-                }
-            }
+            var guids = memoryFiles.Select(m => m.FileGuid);
+            var path = await _document.ExportToZipAsync(guids, mediaType, zipPath, fileName);
 
-            return result;
+            return ServiceResult<string>.Success(path);
         }
 
-        public byte[]? GetMedia(Guid fileGuid, TypeMedia typeMedia)
-        { return _document.GetFile(fileGuid, typeMedia); }
-
-        /// <summary>
-        /// Saves a media file to storage and returns its unique identifier.
-        /// </summary>
-        /// <param name="fileBytes">The binary content of the media file to save.</param>
-        /// <param name="typeMedia">The type of the media (e.g., image, video, document).</param>
-        /// <returns>
-        /// A <see cref="Guid"/> representing the saved file's identifier, or <c>null</c> if <paramref name="fileBytes"/> is null.
-        /// </returns>
-        public Guid? SaveMedia(byte[]? fileBytes, TypeMedia typeMedia)
+        public ServiceResult<byte[]> GeneratePdfSummary(Travel travel)
         {
-            if (fileBytes == null) return null;
-            _document.SetMediaType(typeMedia);
-            return _document.SaveFile(fileBytes);
+            if (travel == null)
+                return ServiceResult<byte[]>.Failure(MediaServiceMessages.INVALID_INPUT);
+
+            var document = new TravelDocumentPDF(travel);
+            var pdf = document.GeneratePdf();
+            return ServiceResult<byte[]>.Success(pdf);
+        }
+
+        public ServiceResult<byte[]> GetMedia(Guid fileGuid, TypeMedia typeMedia)
+        {
+            var file = _document.GetFile(fileGuid, typeMedia);
+            if (file == null)
+                return ServiceResult<byte[]>.Failure(MediaServiceMessages.NOT_FOUND);
+
+            return ServiceResult<byte[]>.Success(file);
         }
 
         public List<byte[]> GetMediasFromTrip(int tripID, TypeMedia mediaTypes)
@@ -69,39 +63,58 @@ namespace BussinessLogic.Services
 
             if (trip != null)
             {
-                return GetMediasFromTrip(trip, mediaTypes);
+                var medias = GetMediasFromTrip(trip, mediaTypes);
+                if (medias.IsSuccess)
+                {
+                    return medias.Value;
+                }
             }
             return new List<byte[]>();
         }
 
-        public List<Guid> SaveMedias(List<byte[]> files, TypeMedia images)
+        public ServiceResult<List<Guid>> SaveMedias(List<byte[]> files, TypeMedia typeMedia)
         {
-            var result = new List<Guid>();
+            if (files == null || files.Count == 0)
+                return ServiceResult<List<Guid>>.Failure(MediaServiceMessages.INVALID_INPUT);
+
+            var guids = new List<Guid>();
             foreach (var file in files)
             {
-                var savedMediaGuid = SaveMedia(file, images);
-                if (savedMediaGuid.HasValue)
-                    result.Add(savedMediaGuid.Value);
+                var res = SaveMedia(file, typeMedia);
+                if (!res.IsSuccess)
+                {
+                    _document.RemoveFiles(guids, typeMedia);
+                    return ServiceResult<List<Guid>>.Failure(res.Message);
+                }
+                guids.Add(res.Value);
             }
-            return result;
+            return ServiceResult<List<Guid>>.Success(guids);
         }
 
-        public async Task<string> ExportMemoriesToZip(IEnumerable<MemoryFile> memoryFiles, TypeMedia mediaType, string zipPath, string fileName)
+        private ServiceResult<List<byte[]>> GetMediasFromTrip(Trip trip, TypeMedia typeMedia)
         {
-            var result = string.Empty;
-            var guidList = memoryFiles.Select(mf => mf.FileGuid);
-            if (guidList.Any())
+            if (trip == null)
+                return ServiceResult<List<byte[]>>.Failure(TravelServiceMessage.INVALID_TRAVEL);
+
+            var result = new List<byte[]>();
+            foreach (var media in trip.Media)
             {
-                result = await _document.ExportToZipAsync(guidList, mediaType, zipPath, fileName);
+                var file = _document.GetFile(media.FileGuid, typeMedia);
+                if (file != null) result.Add(file);
             }
-
-            return result.ToString();
+            return ServiceResult<List<byte[]>>.Success(result);
         }
-
-        public byte[] GeneratePdfSummary(Travel travel)
+        private ServiceResult<Guid> SaveMedia(byte[] fileBytes, TypeMedia typeMedia)
         {
-            var document = new TravelDocumentPDF(travel);
-            return document.GeneratePdf();
+            if (fileBytes == null || fileBytes.Length == 0)
+                return ServiceResult<Guid>.Failure(MediaServiceMessages.INVALID_INPUT);
+
+            _document.SetMediaType(typeMedia);
+            var guid = _document.SaveFile(fileBytes);
+            if (guid == null)
+                return ServiceResult<Guid>.Failure(MediaServiceMessages.NOT_FOUND);
+
+            return ServiceResult<Guid>.Success(guid.Value);
         }
     }
 }

@@ -2,12 +2,13 @@
 using Autofac;
 using Autofac.Extras.DynamicProxy;
 using BussinessLogic;
-using BussinessLogic.Middleware;
+
 using BussinessLogic.Services;
 using CommunityToolkit.Maui;
 using Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
 using QuestPDF.Infrastructure;
 using Serilog;
 
@@ -19,7 +20,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         MauiAppBuilder builder = MauiApp.CreateBuilder();
-     
+      
         builder.Configuration.LoadConfigurationsFile();     
         builder.UseMauiCommunityToolkit();
         builder.Services.AddInfrastructure(builder.Configuration);
@@ -45,7 +46,7 @@ public static class MauiProgram
                 // ajoutés au IServiceCollection (via AddBusiness)               
 
                 // Création d'un intercepteur pour le logging
-                containerBuilder.RegisterType<LoggingInterceptor>();
+                containerBuilder.RegisterType<LoggingInterceptor>().AsSelf(); ;
 
                 // Activation de l’interception pour tous les services se terminant par "Service"
                 containerBuilder

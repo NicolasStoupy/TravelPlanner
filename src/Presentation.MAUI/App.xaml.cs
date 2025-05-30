@@ -1,22 +1,29 @@
-﻿using System.Runtime.ExceptionServices;
+﻿
+
+using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
+using System.Runtime.ExceptionServices;
 
 namespace Presentation.MAUI
 {
     public partial class App : Application
     {
-        public App()
+        private readonly ILogger<App> _logger;
+        public App(ILogger<App> logger)
         {
+            _logger = logger;
             InitializeComponent();
+
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-          
+           
         }
 
-        private void CurrentDomain_FirstChanceException(object? sender,
-   System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
+        private void CurrentDomain_FirstChanceException(object? sender,FirstChanceExceptionEventArgs e)
         {
             try
             {
+               
                 // logguer
                 Console.WriteLine(e.Exception.Message);
             }
