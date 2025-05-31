@@ -13,14 +13,5 @@ public partial class NewTravelPage : ContentPage
 
   
 
-    protected override void OnDisappearing()
-    {
-        
-        if( this.BindingContext is NewTravelVM vm)
-        {
-            vm.Reset();
-        }
-            
-        
-    }
+   
 }

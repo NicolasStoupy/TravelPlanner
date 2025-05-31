@@ -106,6 +106,24 @@ namespace Commons.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Le fichier pour charger un voyage n&apos;est pas compatible.
+        /// </summary>
+        public static string INVALID_TRAVEL_FILE {
+            get {
+                return ResourceManager.GetString("INVALID_TRAVEL_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Le fichier n&apos;est pas au bon format .
+        /// </summary>
+        public static string INVALID_TRAVEL_FORMAT {
+            get {
+                return ResourceManager.GetString("INVALID_TRAVEL_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à  L’identifiant du voyage est invalide..
         /// </summary>
         public static string INVALID_TRAVEL_ID {

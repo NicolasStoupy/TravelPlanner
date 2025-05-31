@@ -247,5 +247,9 @@ namespace BussinessLogic.Interfaces
         /// </list>
         /// </returns>
         Task<ServiceResult<bool>> UpdateTravel(Travel travel);
+
+        ServiceResult<byte[]> ExportTravel(int travelID);
+        
+        Task<ServiceResult<bool>> ImportTravel(byte[] travelFile);
     }
 }

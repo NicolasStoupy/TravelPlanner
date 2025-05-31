@@ -26,5 +26,10 @@ namespace Commons.Models
            => new(default, true, messageType: MessageType.Warning);
         public static ServiceResult<T> Failure(string error)
             => new(default, false, MessageType.Warning, error);
+
+        public static ServiceResult<bool> Failure(object iNVALID_TRAVEL_FILE)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

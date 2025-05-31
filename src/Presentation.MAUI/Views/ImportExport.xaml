@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Presentation.MAUI.Views.ImportExport"
+             xmlns:views="clr-namespace:Presentation.MAUI.Views"
+             xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
+             xmlns:bu="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
+             x:DataType="vm:ImportExportVM">
+    <VerticalStackLayout
+      Padding="16"
+      Spacing="12">
+
+        <!-- Bouton pour charger la liste -->
+        <Button
+        Text="Charger mes voyages" BackgroundColor="Green"
+        Command="{Binding ImportCommand}" />
+
+        <!-- Affichage de la liste -->
+        <CollectionView
+        ItemsSource="{Binding Travels}"
+        SelectionMode="Single"
+        SelectedItem="{Binding SelectedTravel, Mode=TwoWay}"
+        VerticalOptions="FillAndExpand">
+
+            <CollectionView.EmptyView>
+                <Label
+            Text="Aucun voyage disponible."
+            HorizontalOptions="Center"
+            VerticalOptions="CenterAndExpand"
+            TextColor="Gray" />
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="bu:Travel">
+                    <Frame
+              Margin="0,4"
+              CornerRadius="8"
+              HasShadow="True"
+              Padding="12">
+                        <VerticalStackLayout>
+                            <Label
+                  Text="{Binding name}"
+                  FontAttributes="Bold"
+                  FontSize="Medium" />
+                            <Label
+                  Text="{Binding description}"
+                  FontSize="Small"
+                  TextColor="DarkGray" />
+                            <Label
+                  Text="{Binding StartDate, StringFormat='Début : {0:dd/MM/yyyy}'}"
+                  FontSize="Small" />
+                            <Button ImageSource="importexport.png" 
+                                    BackgroundColor="red" 
+                                    Text="Exporter"
+                                    Command="{Binding BindingContext.ExportCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                    CommandParameter="{Binding .}"
+                                   
+                                    />
+                            
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Boutons d'import/export selon la sélection -->
+        <HorizontalStackLayout
+            Spacing="16"
+            Padding="0,12"
+            HorizontalOptions="Center">
+            
+            
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>

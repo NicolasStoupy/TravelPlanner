@@ -26,6 +26,8 @@
             <x:String x:Key="SaveIcon">save.png</x:String>
             <x:String x:Key="NoteIcon">notepad.png</x:String>
             <x:String x:Key="BillIcon">bill.png</x:String>
+            <x:String x:Key="AirPlaneIcon" >airplane.png</x:String>
+            <x:String x:Key="TravelIcon" >countrylocationicon.svg</x:String>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

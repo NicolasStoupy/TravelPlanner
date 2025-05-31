@@ -8,6 +8,8 @@ namespace BussinessLogic.Entities
 {
     public class Ticket
     {
+
+        public int Id { get; set; }
         public byte[]? TicketFile { get; set; }
 
     }

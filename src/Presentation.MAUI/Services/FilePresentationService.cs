@@ -1,4 +1,5 @@
 ﻿using Commons;
+using Infrastructure.EntityModels;
 using Presentation.MAUI.Interfaces;
 using Presentation.MAUI.Models;
 
@@ -41,6 +42,35 @@ namespace Presentation.MAUI.Services
                     $"Failed to load file: {ex.Message}");
                 return null;
             }
+        }
+
+        public async Task<byte[]?> LoadTbinFile()
+        {
+            var tbinFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>> { { DevicePlatform.WinUI, new[] { ".tbin" } } });
+            var pickOptions = new PickOptions
+            {
+                PickerTitle = "Sélectionnez un fichier tbin",
+                FileTypes = tbinFileType
+            };
+            var result = await FilePicker.PickAsync(pickOptions);
+
+            if (result == null)
+                return null;
+
+            try
+            {
+                using var stream = await result.OpenReadAsync();
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                return ms.ToArray();
+            }
+            catch (Exception ex)
+            {
+                await _alertService.ShowAsync(MessageType.Error,
+                    $"Failed to load file: {ex.Message}");
+                return null;
+            }
+
         }
 
         public async Task ShowFileAsync(byte[]? fileToShow)

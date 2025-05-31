@@ -177,6 +177,9 @@
 	  <MauiXaml Update="Views\FullScreenImagePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\ImportExport.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\NavigationLayout.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -204,6 +207,10 @@
 	  <Folder Include="Controls\" />
 	  <Folder Include="Extensions\" />
 	  <Folder Include="ViewModel\Models\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiImage Include="Resources\AppIcon\countrylocationicon.svg" />
 	</ItemGroup>
 
 	<ItemGroup>

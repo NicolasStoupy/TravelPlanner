@@ -17,6 +17,7 @@ public partial class FinderTravelPage : ContentPage
             Console.WriteLine(ex.Message);
         }
 
+
     }
    
     protected override void OnAppearing()

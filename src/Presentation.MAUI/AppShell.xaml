@@ -5,72 +5,82 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:activity="clr-namespace:Presentation.MAUI.Views.Activity"
     xmlns:travel="clr-namespace:Presentation.MAUI.Views.Travel"
-    Shell.FlyoutBehavior="Disabled"
+    xmlns:views="clr-namespace:Presentation.MAUI.Views"
+    Shell.FlyoutBehavior="Locked"
+    Shell.TitleColor="Black"
+    Shell.BackgroundColor="White"
+    Shell.TabBarTitleColor="Transparent"
+    Shell.TabBarUnselectedColor="Gray"
+    Shell.TabBarBackgroundColor="Transparent"
+    
     Title="Carnet de voyage">
     <Shell.Resources>
         <Style TargetType="Shell">
             <Setter Property="Shell.BackgroundColor" Value="#ffffff" />
-            <Setter Property="Shell.DisabledColor" Value="#0077cc" />
+            <Setter Property="Shell.DisabledColor" Value="DarkBlue" />
             <Setter Property="Shell.UnselectedColor" Value="#999999" />
-            <Setter Property="Shell.ForegroundColor" Value="#0077cc" />
+            <Setter Property="Shell.ForegroundColor" Value="DarkBlue" />
             <Setter Property="Shell.BackgroundImageSource" Value="splash.png" />
+
         </Style>
+
     </Shell.Resources>
+    <!-- En-tête du Flyout -->
+    <Shell.FlyoutHeader>
+        <Grid Padding="16" BackgroundColor="DarkBlue">
+            <Label Text="Carnet de voyage"
+             FontSize="20"
+             TextColor="White"
+             VerticalOptions="End" />
+        </Grid>
+    </Shell.FlyoutHeader>
 
-    <MenuItem>
-
-    </MenuItem>
-    <!--VOYAGES --><!--
-    <FlyoutItem Title="Voyages"  Icon="trip.png">
-        <ShellContent Title="Mes Voyages"
-                      Route="TravelFinder"
-                      ContentTemplate="{DataTemplate travel:FinderTravelPage}" />
-        <ShellContent Title="Informations"
-                      Route="TravelInformations"
-                      ContentTemplate="{DataTemplate travel:NewTravelPage}" />
-        <ShellContent Title="Notes"
-                      Route="Travel/Notes"
-                      ContentTemplate="{DataTemplate travel:NoteTravelPage}" />
-        <ShellContent Title="Souvenirs"
-                      Route="TravelMemories"
-                      ContentTemplate="{DataTemplate travel:MemoriesTravelPage}" />
-        <ShellContent Title="Activités liées"
-                      Route="TravelActivities"
-                      ContentTemplate="{DataTemplate travel:ActivitiesTravelPage}" />
-    </FlyoutItem>-->
-
-  
-    <TabBar>
-        <Tab Title="Mes Voyages" Icon="trip.png">
-            <ShellContent
+    <!-- Eléments du Flyout -->
+    <FlyoutItem Title="Mes Voyages" Icon="countrylocationicon.png">
+        <ShellContent
+            Title="Mes Voyages"
             Route="TravelFinder"
             ContentTemplate="{DataTemplate travel:FinderTravelPage}" />
-        </Tab>
+    </FlyoutItem>
 
-        <Tab Title="Informations" Icon="info.png">
-            <ShellContent
+    <FlyoutItem Title="Informations" Icon="info.png">
+        <ShellContent
+            Title="Informations"
             Route="TravelInformations"
             ContentTemplate="{DataTemplate travel:NewTravelPage}" />
-        </Tab>
+    </FlyoutItem>
 
-        <Tab Title="Notes" Icon="note.png">
-            <ShellContent
-            Route="Travel/Notes"
+    <FlyoutItem Title="Notes" Icon="pencil.png">
+        <ShellContent
+            Title="Notes"         
             ContentTemplate="{DataTemplate travel:NoteTravelPage}" />
-        </Tab>
+    </FlyoutItem>
 
-        <Tab Title="Souvenirs" Icon="memory.png">
-            <ShellContent
+    <FlyoutItem Title="Souvenirs" Icon="traveler.png">
+        <ShellContent
+            Title="Souvenirs"
             Route="TravelMemories"
             ContentTemplate="{DataTemplate travel:MemoriesTravelPage}" />
-        </Tab>
+    </FlyoutItem>
 
-        <Tab Title="Activités" Icon="activity.png"
-         x:Name="ActivitiesTab">
-            <ShellContent
+    <FlyoutItem Title="Activités" Icon="activity.png">
+        <ShellContent
+            Title="Activités"
             Route="TravelActivities"
             ContentTemplate="{DataTemplate travel:ActivitiesTravelPage}" />
-        </Tab>
-    </TabBar>
+    </FlyoutItem>
+    <FlyoutItem Title="Import/Export" Icon="importexport.png">
+        <ShellContent
+        Title="Activités"
+        Route="TravelActivities"
+        ContentTemplate="{DataTemplate views:ImportExport}" />
+    </FlyoutItem>
+    <!-- Actions globales en bas du menu -->
+   
+    <MenuItem
+        
+        Text="Déconnexion"
+        IconImageSource="logout.png"
+    Command="{Binding LogoutCommand}" />
 
 </Shell>

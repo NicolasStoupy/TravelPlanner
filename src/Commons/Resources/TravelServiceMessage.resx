@@ -161,4 +161,12 @@
     <value>Le souvenir n'existe pas </value>
     <comment>Le souvenir n'existe pas </comment>
   </data>
+  <data name="INVALID_TRAVEL_FILE" xml:space="preserve">
+    <value>Le fichier pour charger un voyage n'est pas compatible</value>
+    <comment>Le fichier pour charger un voyage n'est pas compatible</comment>
+  </data>
+  <data name="INVALID_TRAVEL_FORMAT" xml:space="preserve">
+    <value>Le fichier n'est pas au bon format </value>
+    <comment>Le fichier n'est pas au bon format </comment>
+  </data>
 </root>

@@ -67,6 +67,7 @@ namespace Presentation.MAUI
             collection.AddScoped<MemoriesTravelVM>();
             collection.AddScoped<NewCostActivityVM>();
             collection.AddScoped<ActivityFollowerVM>();
+            collection.AddScoped<ImportExportVM>();
             return collection;
         }
 

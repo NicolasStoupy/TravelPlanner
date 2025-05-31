@@ -8,7 +8,16 @@ namespace Presentation.MAUI.Services
     {
         private async Task Navigate(string query)
         {
-            await Shell.Current.GoToAsync(query);
+            try
+            {
+                await Shell.Current.GoToAsync(query);
+            }
+            catch (Exception ex)
+            {
+
+               
+            }
+
         }
         public async Task NavigateToNewTravelPageAsync()
         {
@@ -38,7 +47,7 @@ namespace Presentation.MAUI.Services
 
         public async Task NavigateToEditActivity(TravelActivity travelActivity)
         {
-        
+
             await Navigate($"ActivityNew?ActivityID={travelActivity.ActivityID}");
         }
 
@@ -58,6 +67,6 @@ namespace Presentation.MAUI.Services
         }
 
         public async Task GoHome() => await NavigateToTravelFinder();
-        
+
     }
 }

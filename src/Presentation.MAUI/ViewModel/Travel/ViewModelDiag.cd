@@ -3,7 +3,7 @@
   <Class Name="Presentation.MAUI.Models.BaseVM">
     <Position X="7" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAQAAABAAQAkAAQAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAQAAABAAQAkAAQAAAAAAAAAAAAABAIAAAAAA=</HashCode>
       <FileName>ViewModel\BaseVM\BaseVM.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -17,14 +17,14 @@
   <Class Name="Presentation.MAUI.ViewModel.TravelVM">
     <Position X="7" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAABAAAgQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AEAAAAAAAAAABAAAgAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
       <FileName>ViewModel\BaseVM\TravelVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Presentation.MAUI.ViewModel.ActivitiesTravelVM">
     <Position X="11.25" Y="10.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEEAAAAAAACQAQEgAAAgAACAAAQAAAAAQBBAAAEAAAQ=</HashCode>
+      <HashCode>AEAAAAAAAACQAQEgAAAgAACAAAQAAAAAQBBAAAEAAAQ=</HashCode>
       <FileName>ViewModel\Travel\ActivitiesTravelVM.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -45,7 +45,7 @@
   <Class Name="Presentation.MAUI.ViewModel.NoteTravelVM">
     <Position X="9.25" Y="8.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAQABAAAAAABAAAAAAAAAAEAAAAAAQIAAAAAAAIAAA=</HashCode>
+      <HashCode>AAAQABAAAAAABAAAAAAAAAAEAAAAAAQAAAAAAAAIAAA=</HashCode>
       <FileName>ViewModel\Travel\NoteTravelVM.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -61,6 +61,20 @@
     <TypeIdentifier>
       <HashCode>AgAAAIAAAAAABAAAAAAAAgAAAAAAAAAAAAABABAgQAA=</HashCode>
       <FileName>ViewModel\Activity\NewActivityVM.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Presentation.MAUI.ViewModel.Activity.ActivityFollowerVM">
+    <Position X="13.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAgIAAACAAABAAAAAAAAAQAAAAAAQAAAAQAAAAgAAA=</HashCode>
+      <FileName>ViewModel\Activity\ActivityFollowerVM.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Presentation.MAUI.ViewModel.Activity.NewCostActivityVM">
+    <Position X="15.75" Y="15.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAABAAgCAQABAAAQAAAIhAAAAAAAAAAAAAAAAAEgA=</HashCode>
+      <FileName>ViewModel\Activity\NewCostActivityVM.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

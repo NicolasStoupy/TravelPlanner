@@ -5,17 +5,19 @@
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
              xmlns:bu="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
              x:DataType="vm:NoteTravelVM"
-             Title="📝 Notes">
+             Title="Notes">
 
     <Grid RowDefinitions="Auto,*,Auto" Padding="15" RowSpacing="10">
 
         <!-- Saisie -->
         <HorizontalStackLayout Grid.Row="0" Spacing="8">
-            <Entry Placeholder="Nouvelle note"
+            <Editor Placeholder="Nouvelle note" 
                    Text="{Binding Note.NoteContent}"
                    FontSize="13"
-                   HorizontalOptions="FillAndExpand" />
-
+                    MinimumWidthRequest="400"
+                    AutoSize="TextChanges"
+                   />
+           
             <Button  ImageSource="{StaticResource PlusIcon}"
                     FontSize="14"
                     Padding="6"
@@ -34,7 +36,7 @@
                               BackgroundColor="#F9F9F9"
                            >
 
-                            <Entry Grid.Column="0"
+                            <Editor Grid.Column="0"
                                    Text="{Binding NoteContent}"
                                    FontSize="13"
                                    BackgroundColor="Transparent"

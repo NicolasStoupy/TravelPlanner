@@ -22,6 +22,7 @@ namespace Presentation.MAUI.Interfaces
         /// or <c>null</c> if the user cancelled or an error occurred.
         /// </returns>
         Task<byte[]?> LoadFileAsync(FilePickerFileType mediaType, string pickerTitle);
+        Task <byte[]?> LoadTbinFile();
 
         /// <summary>
         /// Writes the provided byte array to a temporary cache file and opens it

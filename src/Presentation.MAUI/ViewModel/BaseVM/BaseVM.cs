@@ -59,6 +59,7 @@ namespace Presentation.MAUI.Models
         /// </summary>
         public abstract void Reset();
 
+        public abstract Task ResetAsync();
         #endregion
 
         [ObservableProperty]

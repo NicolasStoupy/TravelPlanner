@@ -1,9 +1,13 @@
-﻿using Presentation.MAUI.Views.Activity;
+﻿using Presentation.MAUI.Views;
+using Presentation.MAUI.Views.Activity;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Presentation.MAUI
 {
     public partial class AppShell : Shell
     {
+
+
         public AppShell()
         {
             InitializeComponent();
@@ -11,17 +15,12 @@ namespace Presentation.MAUI
 
            
         }
-        public void SetShellBackground(byte[] imageBytes)
+
+     
+
+        private void MenuItem_Clicked_1(object sender, EventArgs e)
         {
-            if (imageBytes == null || imageBytes.Length == 0)
-                return;
 
-            // Convert byte[] to ImageSource
-            ImageSource imageSource = ImageSource.FromStream(() => new MemoryStream(imageBytes));
-
-            // Apply to Image
-           
-         
         }
     }
 }

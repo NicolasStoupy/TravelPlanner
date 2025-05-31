@@ -32,7 +32,7 @@ public static class MauiProgram
 
 #pragma warning disable CA1416 // Valider la compatibilité de la plateforme
         builder
-            .UseMauiApp<App>()
+            .UseMauiApp<App>()           
           
             .ConfigureFonts(fonts =>
             {

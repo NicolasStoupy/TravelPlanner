@@ -11,6 +11,15 @@ namespace Presentation.MAUI.ViewModel
 
         [ObservableProperty]
         protected static Travel? _currentTravel;
+
+        partial void OnCurrentTravelChanged(Travel? value)
+        {
+            if (value == null) { 
+                Mode= Mode.New;            
+                        
+            }
+            Mode = Mode.Edit;
+        }
         protected async Task NoTravelSelected()
         {
             await  _services.Alert.ShowAsync(MessageType.Warning, "Merci de sélectionner un voyage avant d’ajouter une note.");
@@ -25,6 +34,11 @@ namespace Presentation.MAUI.ViewModel
         public override void Reset()
         {
             return;
+        }
+
+        public override Task ResetAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }
