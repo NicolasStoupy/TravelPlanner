@@ -1,4 +1,5 @@
 ﻿using BussinessLogic.Entities;
+using Commons.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Presentation.MAUI.Interfaces;
@@ -39,8 +40,7 @@ namespace Presentation.MAUI.ViewModel
                 var result = await _services.Application.ActivityService.GetActivities(CurrentTravel.Id);
                 if (result.IsSuccess)
                 {
-                    Activities = new ObservableCollection<TravelActivity>(
-                                     result.Value);
+                    Activities = result.Value.ToObservableCollection();
                     SaveButtonVisible = false;
                 }
 
@@ -73,6 +73,11 @@ namespace Presentation.MAUI.ViewModel
                 }
             }
         }
+
+
+        [RelayCommand]
+        public async Task AddNotes(int activityID) => await _services.Navigation.NavigationToNoteForActivity(activityID);
+
 
         [RelayCommand]
         public async Task EditActivity(TravelActivity travelActivity)

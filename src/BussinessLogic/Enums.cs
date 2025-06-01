@@ -15,6 +15,12 @@ namespace BussinessLogic
         EUR,USD
     }
 
+
+    public enum MappingContextExclusion
+    {
+        Notes,Activities,Memories,
+        Followers
+    }
    
 
 

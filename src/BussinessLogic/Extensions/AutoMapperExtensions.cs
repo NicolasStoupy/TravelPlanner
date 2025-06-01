@@ -32,5 +32,28 @@ namespace BussinessLogic.Extensions
                 return false;
             }
         }
+
+        public static bool TryMap<TSource, TDestination>(
+    this IMapper mapper,
+    TSource source,
+    out TDestination destination,
+    ILogger logger,
+    Action<IMappingOperationOptions> optsAction)
+        {
+            try
+            {
+                destination = mapper.Map<TDestination>(source, optsAction);
+                return true;
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                logger.LogError(ex,
+                    "AutoMapper failed to map from {SourceType} to {DestType}",
+                    typeof(TSource).Name, typeof(TDestination).Name);
+                destination = default!;
+                return false;
+            }
+        }
+
     }
 }

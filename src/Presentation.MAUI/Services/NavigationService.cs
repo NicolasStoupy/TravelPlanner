@@ -68,5 +68,14 @@ namespace Presentation.MAUI.Services
 
         public async Task GoHome() => await NavigateToTravelFinder();
 
+        public async Task NavigationToNoteForActivity(int activityID)
+        {
+            await Navigate($"Notes?ActivityID={activityID}");
+        }
+
+        public async Task NavigationToNoteForTravel(int travelID)
+        {
+            await Navigate($"//Notes?TravelID={travelID}");
+        }
     }
 }

@@ -97,6 +97,15 @@ namespace Commons.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Le  fichier tbin est conrompu .
+        /// </summary>
+        public static string INVALID_TBIN_FORMAT {
+            get {
+                return ResourceManager.GetString("INVALID_TBIN_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à  Les données du voyage sont manquantes ou invalides..
         /// </summary>
         public static string INVALID_TRAVEL {

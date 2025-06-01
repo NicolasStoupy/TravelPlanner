@@ -6,6 +6,7 @@
     xmlns:activity="clr-namespace:Presentation.MAUI.Views.Activity"
     xmlns:travel="clr-namespace:Presentation.MAUI.Views.Travel"
     xmlns:views="clr-namespace:Presentation.MAUI.Views"
+    x:Name="AppShellInstance"   
     Shell.FlyoutBehavior="Locked"
     Shell.TitleColor="Black"
     Shell.BackgroundColor="White"
@@ -50,10 +51,12 @@
             ContentTemplate="{DataTemplate travel:NewTravelPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Notes" Icon="pencil.png">
+    <FlyoutItem Icon="pencil.png"
+                Route="Notes"
+                Title="Notes">
         <ShellContent
-            Title="Notes"         
-            ContentTemplate="{DataTemplate travel:NoteTravelPage}" />
+       
+        ContentTemplate="{DataTemplate travel:NoteTravelPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Souvenirs" Icon="traveler.png">
@@ -69,7 +72,7 @@
             Route="TravelActivities"
             ContentTemplate="{DataTemplate travel:ActivitiesTravelPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Import/Export" Icon="importexport.png">
+    <FlyoutItem Title="Import/Export" Icon="{StaticResource ExportIcon}">
         <ShellContent
         Title="Activités"
         Route="TravelActivities"

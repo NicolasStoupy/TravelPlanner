@@ -136,6 +136,11 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>ExceptionMessage.resx</DependentUpon>
 	  </Compile>
+	  <Compile Update="Resources\Localization\Explication.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Explication.resx</DependentUpon>
+	  </Compile>
 	  <Compile Update="Resources\Localization\PageTitle.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
@@ -225,6 +230,10 @@
 	  <EmbeddedResource Update="Resources\Localization\ExceptionMessage.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>ExceptionMessage.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\Explication.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Explication.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	  <EmbeddedResource Update="Resources\Localization\PageTitle.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>

@@ -25,15 +25,7 @@ namespace BussinessLogic.Interfaces
             string zipPath,
             string fileName);
 
-        /// <summary>
-        /// Generates a PDF summary document for the specified travel.
-        /// </summary>
-        /// <param name="travel">The travel entity to summarize in the PDF.</param>
-        /// <returns>
-        /// A <see cref="ServiceResult{Byte[]}"/> whose Value is the PDF content as a byte array on success,
-        /// or a failure result containing an error message. No state changes occur on failure.
-        /// </returns>
-        ServiceResult<byte[]> GeneratePdfSummary(Travel travel);
+       
 
         /// <summary>
         /// Retrieves a single media file by its unique identifier and type.

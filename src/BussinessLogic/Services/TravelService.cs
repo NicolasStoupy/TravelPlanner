@@ -2,23 +2,18 @@
 using BussinessLogic.Entities;
 using BussinessLogic.Extensions;
 using BussinessLogic.Interfaces;
-using BussinessLogic.Processors;
+using BussinessLogic.Models;
 using Commons;
-using Commons.ErrorsHandlings;
-using Commons.Extensions;
 using Commons.Models;
 using Commons.Resources;
 using Infrastructure.Documents;
 using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
-using System.Diagnostics;
-using System.IO.Compression;
+using QuestPDF.Fluent;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace BussinessLogic.Services
 {
@@ -325,17 +320,6 @@ namespace BussinessLogic.Services
             return ServiceResult<bool>.Success(true, TravelServiceMessage.TRAVEL_REMOVED);
         }
 
-        /// <summary>
-        /// Exporte les données d’un voyage au format JSON et renvoie le contenu sous forme de tableau d’octets.
-        /// </summary>
-        /// <param name="travel">Le DTO <see cref="Travel"/> à exporter.</param>
-        /// <returns>
-        /// Un <see cref="ServiceResult{Byte[]}"/> contenant :
-        /// <list type="bullet">
-        ///   <item>Success(byte[]) avec le JSON UTF-8 du voyage en cas de succès.</item>
-        ///   <item>Failure(...) avec un message d’erreur si l’entrée est nulle ou qu’une exception survient.</item>
-        /// </list>
-        /// </returns>
         public ServiceResult<byte[]> ExportTravel(int travelID)
         {
             if (travelID <= 0)
@@ -348,39 +332,61 @@ namespace BussinessLogic.Services
                 .Include(l => l.LogBooks)
                 .Include(c => c.Media)
                 .FirstOrDefault(t => t.TripId == travelID);
-
-            var mediaList = new Dictionary<Guid, byte[]?>();
+            if (travel == null)
+                return ServiceResult<byte[]>.Failure(TravelServiceMessage.TRAVEL_NOT_FOUND);
+            // Load the medias from disk
+            var mediaList = new Dictionary<Guid, byte[]>();
             foreach (var medium in travel.Media)
             {
-                mediaList.Add(medium.FileGuid, _document.GetFile(medium.FileGuid, TypeMedia.Images));
+                var mediaFile = _document.GetFile(medium.FileGuid, TypeMedia.Images);
+                if (mediaFile != null)
+                    mediaList.Add(medium.FileGuid, mediaFile);
             }
+            // Load the default media for a trip
             if (travel.TripBackgroundGuid.HasValue)
-                mediaList.Add(travel.TripBackgroundGuid.Value, _document.GetFile(travel.TripBackgroundGuid, TypeMedia.Images));
+            {
+                var tripMediaFile = _document.GetFile(travel.TripBackgroundGuid, TypeMedia.Images);
+                if (tripMediaFile != null)
+                    mediaList.Add(travel.TripBackgroundGuid.Value, tripMediaFile);
+            }
 
-            var tBinModel = new TBinModel();
+            var tBinModel = new TBinModel(); // creation of the model required for Export
 
             tBinModel.trip = travel;
             tBinModel.medias = mediaList;
 
-
-            if (travel == null)
-                return ServiceResult<byte[]>.Failure(TravelServiceMessage.TRAVEL_NOT_FOUND);
-
-            // 1) Préparer les options pour gérer les cycles d’objets
+            //Options for cyclic object understanding
             var options = new JsonSerializerOptions
             {
                 ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true  // facultatif, pour un JSON plus lisible
-                                      // , MaxDepth = 64        // si vous dépassez la profondeur maximale (par défaut 64), vous pouvez augmenter ici
+                WriteIndented = true
             };
 
-            // 2) Sérialiser en passant les options
+            //Serialize with options
             string jsonString = JsonSerializer.Serialize(tBinModel, options);
 
-            // 3) Convertir en UTF-8
+            //converting to URF8 encoding
             byte[] payload = Encoding.UTF8.GetBytes(jsonString);
 
             return ServiceResult<byte[]>.Success(payload);
+        }
+
+        public ServiceResult<byte[]> GeneratePdfSummary(Travel travel)
+        {
+
+            if (travel == null)
+                return ServiceResult<byte[]>.Failure(MediaServiceMessages.INVALID_INPUT);
+
+
+
+            var fullTravel = GetTravel(travel.Id);
+            if (fullTravel.IsSuccess)
+            {
+                var document = new TravelDocumentPDF(fullTravel.Value);
+                var pdf = document.GeneratePdf();
+                return ServiceResult<byte[]>.Success(pdf);
+            }
+            return ServiceResult<byte[]>.Failure(GlobalServiceMessage.UNKNOWN_ERROR);
         }
 
         /// <summary>
@@ -500,7 +506,15 @@ namespace BussinessLogic.Services
                 return ServiceResult<Travel>
                     .Warning(TravelServiceMessage.TRAVEL_NOT_FOUND);
 
-            if (!_mapper.TryMap(entity, out Travel travel, _logger))
+            Action<IMappingOperationOptions> mappingOptions = opts =>
+            {
+                opts.Items[MappingContextExclusion.Activities.ToString()] = true;
+                opts.Items[MappingContextExclusion.Notes.ToString()] = true;
+                opts.Items[MappingContextExclusion.Followers.ToString()] = true;
+                opts.Items[MappingContextExclusion.Memories.ToString()] = true;
+            };
+
+            if (!_mapper.TryMap(entity, out Travel travel, _logger,mappingOptions))
                 return ServiceResult<Travel>
                     .Warning(GlobalServiceMessage.UNKNOWN_ERROR);
 
@@ -535,12 +549,24 @@ namespace BussinessLogic.Services
         ///   </item>
         /// </list>
         /// </returns>
-        public async Task<ServiceResult<List<Travel>>> GetTravels(bool includeActivity = false, bool includeNotes = false, bool includeFollowers = false)
+        public async Task<ServiceResult<List<Travel>>> GetTravels(
+                bool includeActivity = false,
+                bool includeNotes = false,
+                bool includeFollowers = false,
+                bool includeMemories =false)
         {
             using var context = _context.CreateDbContext();
             var trips = await context.Trips.OrderBy(t => t.CreatedAt).ToListAsync();
 
-            if (!_mapper.TryMap(trips, out List<Travel> travelItems, _logger))
+            Action<IMappingOperationOptions> mappingOptions = opts =>
+            {
+                opts.Items[MappingContextExclusion.Activities.ToString()] = includeActivity;
+                opts.Items[MappingContextExclusion.Notes.ToString()] = includeNotes;
+                opts.Items[MappingContextExclusion.Followers.ToString()] = includeFollowers;
+                opts.Items[MappingContextExclusion.Memories.ToString()] = includeMemories;
+            };
+
+            if (!_mapper.TryMap(trips, out List<Travel> travelItems, _logger,mappingOptions))
             {
                 return ServiceResult<List<Travel>>
                    .Warning(GlobalServiceMessage.UNKNOWN_ERROR);
@@ -549,114 +575,129 @@ namespace BussinessLogic.Services
             return ServiceResult<List<Travel>>.Success(travelItems);
         }
 
-        public async Task<ServiceResult<bool>> ImportTravel(byte[] travelFile)
+        /// <summary>
+        /// Imports a travel package from a serialized binary file and persists it to the database.
+        /// </summary>
+        /// <param name="travelFile">
+        /// A byte array containing the UTF-8 encoded representation of a <see cref="TBinModel"/>,
+        /// which includes the trip data and associated media blobs.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ServiceResult{Boolean}"/> indicating whether the import succeeded.
+        /// On success, the <c>Data</c> property will be <c>true</c>. On failure, an appropriate
+        /// error message will be returned (e.g., invalid file format or database error).
+        /// </returns>
+        /// <remarks>
+        /// The method deserializes the <paramref name="travelFile"/> using <see cref="JsonSerializer"/>
+        /// with <see cref="ReferenceHandler.Preserve"/> to handle object reference cycles. 
+        /// It then resets primary keys on the imported entities to force insertion of new records,
+        /// saves any media files to storage via <c>_document.SaveFile</c>, and finally persists
+        /// the graph of entities in "Added" state to the database. Any JSON decoding or format
+        /// errors will be caught and returned as a failure result with <see cref="TravelServiceMessage.INVALID_TBIN_FORMAT"/>.
+        /// </remarks>
+        public async Task<ServiceResult<string>> ImportTravel(byte[] travelFile)
         {
-            var payload = UTF32Encoding.UTF8.GetString(travelFile);
-
-
-            // 1) Recomposer le JSON en string
-            string jsonString;
-
-
-            // 2) Préparer les options pour la désérialisation (avec ReferenceHandler.Preserve)
-            var options = new JsonSerializerOptions
+            string payload;
+            Trip importedTravel = new Trip();
+            TBinModel? binModel = new TBinModel();
+            try
             {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                PropertyNameCaseInsensitive = true
-                // (éventuellement MaxDepth = 64 ou plus si besoin)
-            };
+                payload = UTF32Encoding.UTF8.GetString(travelFile);
 
-            // 3) Désérialiser en un objet (et gérer les références cycliques grâce à Preserve)
-            Trip importedTravel;
-
-            TBinModel binModel = JsonSerializer.Deserialize<TBinModel>(payload, options);
-            importedTravel = binModel.trip;
-
-
-            // 4) (Optionnel mais fréquent) : Remettre à zéro les clés si vous voulez INSERTER de nouvelles lignes
-            //
-            // Si vos entités utilisent des clés auto-générées (IDENTITY/AuToIncrement),
-            // vous ne pouvez pas imposer un Id explicite (sauf à gérer manuellement IDENTITY_INSERT).
-            // Pour forcer EF Core à créer de nouvelles lignes (au lieu de chercher les PK existantes),
-            // on remet à 0 tous les Id de tête de graphe + les Id des objets enfants.
-            //
-            // Exemple (supposons que TripId, ActivityId, ActivityCostId, LogBookId, MediaId soient des int auto-incrément) :
-
-            importedTravel.TripId = 0;
-            _document.SetMediaType(TypeMedia.Images);
-            importedTravel.TripBackgroundGuid = _document.SaveFile( binModel.medias[importedTravel.TripBackgroundGuid.Value]);
-
-            if (importedTravel.Activities != null)
-            {
-                foreach (var activity in importedTravel.Activities)
+                //Préparer les options pour la désérialisation (avec ReferenceHandler.Preserve)
+                var options = new JsonSerializerOptions
                 {
-                    activity.ActivityId = 0;
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    PropertyNameCaseInsensitive = true
+                };
+                //Désérialiser en un objet (et gérer les références cycliques grâce à Preserve)
+                if (options != null && payload != null)
+                    binModel = JsonSerializer.Deserialize<TBinModel>(payload, options);
 
-                    if (activity.ActivityCosts != null)
+                if (binModel != null)
+                    importedTravel = binModel.trip;
+
+            }
+            catch (NotSupportedException jsonExc)
+            {
+                _logger.LogError(jsonExc, "tbin file not compatible");
+                return ServiceResult<string>.Failure(TravelServiceMessage.INVALID_TBIN_FORMAT);
+            }
+            catch (DecoderFallbackException ex)
+            {
+                _logger.LogError(ex, "tbin file not compatible");
+                return ServiceResult<string>.Failure(TravelServiceMessage.INVALID_TBIN_FORMAT);
+            }
+            if (importedTravel != null && binModel != null && importedTravel.TripBackgroundGuid != null)
+            {
+                importedTravel.TripId = 0;
+                importedTravel.Name = importedTravel.Name + "(Imported)";
+                _document.SetMediaType(TypeMedia.Images);
+                importedTravel.TripBackgroundGuid = _document.SaveFile(binModel.medias[importedTravel.TripBackgroundGuid.Value]);
+
+                if (importedTravel.Activities != null)
+                {
+                    foreach (var activity in importedTravel.Activities)
                     {
-                        foreach (var cost in activity.ActivityCosts)
+                        activity.ActivityId = 0;
+
+                        if (activity.ActivityCosts != null)
                         {
-                            cost.ActivityCostId = 0;
-                            // Étant donné qu’on a mis ActivityId = 0, EF Core saura re-lier au nouvel Id de activity
-                            cost.ActivityId = 0;
+                            foreach (var cost in activity.ActivityCosts)
+                            {
+                                cost.ActivityCostId = 0;
+                                cost.ActivityId = 0;
+                            }
                         }
                     }
                 }
-            }
-
-            if (importedTravel.LogBooks != null)
-            {
-                foreach (var log in importedTravel.LogBooks)
+                if (importedTravel.LogBooks != null)
                 {
-                    log.LogBookId = 0;
-                    log.TripId = 0;
+                    foreach (var log in importedTravel.LogBooks)
+                    {
+                        log.LogBookId = 0;
+                        log.TripId = 0;
+                    }
+                }
+                if (importedTravel.Media != null)
+                {
+                    foreach (var media in importedTravel.Media)
+                    {
+                        var newGuid = _document.SaveFile(binModel.medias[media.FileGuid]);
+                        if (newGuid.HasValue)
+                        {
+                            media.FileGuid = newGuid.Value;
+                        }
+                        else
+                        {
+                            media.FileGuid = Guid.NewGuid();
+                        }
+                        media.MediaId = 0;
+                        media.TripId = 0;
+                    }
+                }
+
+                // change  context to add 
+                try
+                {
+                    using var context2 = _context.CreateDbContext();
+
+                    // change the contexte in mode Add
+                    context2.ChangeTracker.TrackGraph(importedTravel, entry =>
+                    {
+                        entry.Entry.State = EntityState.Added;
+                    });
+                    await context2.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, "Error during importation of a Tbin file ");
+                    return ServiceResult<string>.Failure(
+                        GlobalServiceMessage.DATABASE_ERROR
+                    );
                 }
             }
-
-            if (importedTravel.Media != null)
-            {
-                foreach (var media in importedTravel.Media)
-                {
-
-                    var newGuid = _document.SaveFile(binModel.medias[media.FileGuid]);
-                    if (newGuid.HasValue)
-                    {
-                        media.FileGuid = newGuid.Value;
-                    }
-                    else
-                    {
-                        media.FileGuid = Guid.NewGuid();
-                    }
-                    media.MediaId = 0;
-                    media.TripId = 0;
-                }
-            }
-
-            // 5) Attacher le graphe à un nouveau DbContext et indiquer que chaque entité est « Added »
-            try
-            {
-                using var context2 = _context.CreateDbContext();
-
-                // Si vous voulez simplement INSÉRER tout le graphe en une fois :
-                context2.ChangeTracker.TrackGraph(importedTravel, entry =>
-                {
-                    entry.Entry.State = EntityState.Added;
-                });
-
-                // Ou, de façon plus concise si vous n’avez pas besoin de contrôle fin :
-                // context2.Add(importedTravel);
-
-                context2.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                // Si l’insertion en base échoue (conflit, contraintes, etc.)
-                return ServiceResult<bool>.Failure(
-                    GlobalServiceMessage.DATABASE_ERROR
-                );
-            }
-
-            return ServiceResult<bool>.Success(true);
+            return ServiceResult<string>.Success(importedTravel?.Name??string.Empty);
         }
 
         /// <summary>
@@ -794,11 +835,11 @@ namespace BussinessLogic.Services
 
             try
             {
-                // 1. Save The trip without image
+                //Save The trip without image
                 context.Trips.Add(trip);
                 await context.SaveChangesAsync();
 
-                // 2. Save Image
+                //Save Image
                 if (travel.image != null)
                 {
                     _document.SetMediaType(Commons.TypeMedia.Images);
@@ -809,7 +850,7 @@ namespace BussinessLogic.Services
                         return ServiceResult<bool>.Failure(TravelServiceMessage.ERROR_WHEN_ADDING_FILE);
                     }
 
-                    // 3. Update the trip information
+                    //Update the trip information
                     trip.TripBackgroundGuid = savedImageGuid;
                     context.Trips.Update(trip);
                     await context.SaveChangesAsync();
@@ -823,7 +864,7 @@ namespace BussinessLogic.Services
             {
                 _logger.LogError(ex, "Erreur lors de l'ajout d'un voyage {travelID}", travel.Id);
                 await transaction.RollbackAsync();
-                //  remove orphan file
+                //remove orphan file
                 if (savedFileGuid.HasValue)
                 {
                     _document.RemoveFile(savedFileGuid.Value, Commons.TypeMedia.Images);

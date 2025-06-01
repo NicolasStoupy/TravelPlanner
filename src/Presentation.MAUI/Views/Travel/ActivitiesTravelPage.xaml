@@ -12,7 +12,7 @@
             <conv:CurrencyInputConverter x:Key="CurrencyInputConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    <Grid RowDefinitions="60,*" Margin="0"  BackgroundColor="#FFD580">
+    <Grid RowDefinitions="70,*" Margin="0"  BackgroundColor="#FFD580">
         <VerticalStackLayout Grid.Row="0" Background="LightGrey" >
             <FlexLayout JustifyContent="SpaceAround"  AlignContent="SpaceBetween" AlignItems="Start"  Margin="5">
                 <Button 
@@ -55,7 +55,7 @@
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="entities:TravelActivity">
                         <Border
-                        WidthRequest="250"
+                        WidthRequest="300"
                         HeightRequest="250"
                         FlexLayout.Grow="0"
                         FlexLayout.Shrink="0"
@@ -129,10 +129,10 @@
                                 HorizontalOptions="FillAndExpand"/>
 
                                 <!-- Pied de carte : coût estimé + lien Google -->
-                                <FlexLayout Margin="10"
+                                <FlexLayout Margin="0"
                                 Direction="Row"
-                                AlignItems="Center"
-                                JustifyContent="Start">
+                                AlignItems="Center"                                            
+                                JustifyContent="SpaceBetween">
                                     <Button
                                     ImageSource="{StaticResource InvoiceIcon}"            
                                     BackgroundColor="Transparent"
@@ -152,18 +152,24 @@
                                         HeightRequest="24"
                                         Command="{Binding BindingContext.EditActivityCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                         CommandParameter="{Binding .}" />
-                                    <Button ImageSource="{StaticResource WwwIcon}" 
+                                    <Button ImageSource="{StaticResource FollowersIcon}" 
                                         BackgroundColor="Transparent"
                                         WidthRequest="24"
                                         HeightRequest="24"
                                         Command="{Binding BindingContext.FollowerCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                         CommandParameter="{Binding ActivityID}" />
-                                    <Button ImageSource="{StaticResource NoteIcon}" 
+                                    <Button ImageSource="{StaticResource GoogleMapIcon}" 
                                             BackgroundColor="Transparent"
                                             WidthRequest="24"
                                             HeightRequest="24"
                                             Command="{Binding BindingContext.OpenGoogleLinkCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                             CommandParameter="{Binding GoogleLink}" />
+                                    <Button ImageSource="{StaticResource NoteIcon}" 
+                                            BackgroundColor="Transparent"
+                                            WidthRequest="24"
+                                            HeightRequest="24"
+                                            Command="{Binding BindingContext.AddNotesCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                            CommandParameter="{Binding ActivityID}" />
                                 </FlexLayout>
                             </VerticalStackLayout>
                         </Border>

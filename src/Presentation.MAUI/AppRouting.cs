@@ -1,6 +1,7 @@
 ﻿
 using Presentation.MAUI.Views;
 using Presentation.MAUI.Views.Activity;
+using Presentation.MAUI.Views.Travel;
 
 namespace Presentation.MAUI
 {
@@ -19,6 +20,7 @@ namespace Presentation.MAUI
             Routing.RegisterRoute("ActivityCost",typeof(NewCostActivityPage));
             Routing.RegisterRoute("ActivityFollower", typeof(ActivityFollowerPage));
             Routing.RegisterRoute("ImportExport", typeof(ImportExport));
+            Routing.RegisterRoute("Notes", typeof(NoteTravelPage));
         }
     }
 }

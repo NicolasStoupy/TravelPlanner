@@ -58,21 +58,33 @@ namespace Presentation.MAUI.Services
                .ToArray();
             if (safeArgs.Length > 0)
             {
-
                 message = string.Format(message, safeArgs);
             }
 
             return DisplayConfirmationAsync(title, message, accept, cancel);
         }
+
         public async Task ShowAsync(IServiceResult result, bool showSuccess = false)
         {
             var msg = Presentation.MAUI.Resources.Localization.DialogsStrings.CommonsNo;
-           
+
             bool shouldShow = !result.IsSuccess || (result.IsSuccess && showSuccess);
             if (shouldShow)
             {
                 await ShowAsync(result.MessageType, result.Message);
             }
+        }
+
+        public async Task ShowAsync(MessageType messageType,string message, params object?[]? args)
+        {
+            var safeArgs = (args ?? Array.Empty<object?>())
+                .Select(a => a ?? string.Empty)
+                .ToArray();
+            if (safeArgs.Length > 0)
+            {
+                message = string.Format(message, safeArgs);
+            }
+            await ShowAsync(messageType, message);
         }
     }
 }

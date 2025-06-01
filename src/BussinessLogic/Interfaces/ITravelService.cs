@@ -157,7 +157,8 @@ namespace BussinessLogic.Interfaces
         Task<ServiceResult<List<Travel>>> GetTravels(
             bool includeActivity = false,
             bool includeNotes = false,
-            bool includeFollowers = false);
+            bool includeFollowers = false,
+            bool includeMemories = false);
 
         /// <summary>
         /// Asynchronously removes specified <see cref="MemoryFile"/> entries from a travel.
@@ -249,7 +250,15 @@ namespace BussinessLogic.Interfaces
         Task<ServiceResult<bool>> UpdateTravel(Travel travel);
 
         ServiceResult<byte[]> ExportTravel(int travelID);
-        
-        Task<ServiceResult<bool>> ImportTravel(byte[] travelFile);
+        /// <summary>
+        /// Generates a PDF summary document for the specified travel.
+        /// </summary>
+        /// <param name="travel">The travel entity to summarize in the PDF.</param>
+        /// <returns>
+        /// A <see cref="ServiceResult{Byte[]}"/> whose Value is the PDF content as a byte array on success,
+        /// or a failure result containing an error message. No state changes occur on failure.
+        /// </returns>
+        ServiceResult<byte[]> GeneratePdfSummary(Travel travel);
+        Task<ServiceResult<string>> ImportTravel(byte[] travelFile);
     }
 }

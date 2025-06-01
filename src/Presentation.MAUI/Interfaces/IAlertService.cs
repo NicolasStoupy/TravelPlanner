@@ -48,6 +48,8 @@ namespace Presentation.MAUI.Interfaces
         /// <param name="cancel">Label for the negative button.</param>
         /// <returns>True if the user tapped the accept button; otherwise false.</returns>
         Task<bool> ConfirmAsync(string title, string message, string accept = "Yes", string cancel = "No", params object?[]? args);
+        Task ShowAsync(MessageType messageType,  string message, params object?[]? args);
+
         Task ShowAsync(IServiceResult result, bool showSuccess = false);
     }
 

@@ -22,4 +22,10 @@ namespace Presentation.MAUI
         Edit
     }
 
+
+    public enum NoteTo
+    {
+        Travel,Activity
+    }
+
 }

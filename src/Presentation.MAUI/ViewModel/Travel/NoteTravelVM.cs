@@ -5,6 +5,9 @@ using CommunityToolkit.Mvvm.Input;
 using Presentation.MAUI.Validators;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Presentation.MAUI.Interfaces;
+using Commons.ErrorsHandlings;
+using System.Collections.ObjectModel;
+using Commons.Extensions;
 
 
 namespace Presentation.MAUI.ViewModel
@@ -14,10 +17,49 @@ namespace Presentation.MAUI.ViewModel
     /// Inherits from <see cref="TravelVM"/> to reuse base travel-related functionality. Provides
     /// features to add, edit, and delete notes with validation support.
     /// </summary>
+    /// 
+    [QueryProperty(nameof(ActivityIDParam), "ActivityID")]
     public partial class NoteTravelVM : TravelVM
     {
+        public string ActivityIDParam
+        {
+            set
+            {
+
+                if (int.TryParse(value, out var parsed))
+                {
+                    ActivityID = parsed;
+                    OnActivityIDChanged(ActivityID);
+                }
+                else
+                {
+                    ActivityID = null;
+                }
+            }
+        }
+        [ObservableProperty] private bool navigationVisible = false;
+        [ObservableProperty] private int? _activityID;
 
         [ObservableProperty] private Note _note = new();
+
+        [ObservableProperty] private NoteTo _noteTo = NoteTo.Travel;
+
+        [ObservableProperty] private ObservableCollection<Note> _noteCollection = new ObservableCollection<Note>();
+
+
+        partial void OnActivityIDChanged(int? value)
+        {
+            if (value == null)
+            {
+                NavigationVisible = false;
+                NoteTo = NoteTo.Travel;
+            }
+            else
+            {
+                NavigationVisible = true;
+                NoteTo = NoteTo.Activity;
+            }
+        }
 
         /// <summary>
         /// Triggered when the <see cref="Note"/> property changes.
@@ -49,6 +91,7 @@ namespace Presentation.MAUI.ViewModel
         /// </summary>
         public async void loadData()
         {
+
             if (CurrentTravel != null && CurrentTravel.Id != 0)
             {
                 var result = _services.Application.TravelService.GetTravel(CurrentTravel.Id);
@@ -60,6 +103,22 @@ namespace Presentation.MAUI.ViewModel
                 {
                     await _services.Alert.ShowAsync(result);
                 }
+
+                if (NoteTo == NoteTo.Travel)
+                {
+                    if (CurrentTravel?.TravelNotes != null)
+                        NoteCollection = CurrentTravel.TravelNotes.ToObservableCollection();
+                }
+                if (NoteTo == NoteTo.Activity)
+                {
+                    var loggingServiceResult = await _services.Application.LogBookService.GetActivityNotes(ActivityID);
+
+                    await _services.Alert.ShowAsync(result);
+
+                    if (loggingServiceResult.IsSuccess)
+                        NoteCollection = loggingServiceResult.Value.ToObservableCollection();
+                }
+
             }
             else
             {
@@ -77,23 +136,36 @@ namespace Presentation.MAUI.ViewModel
         [RelayCommand]
         public async Task AddNote()
         {
+
             if (!await _services.Validation.ValidateAndNotifyAsync(this))
                 return;
-            if (CurrentTravel != null)
+
+            if (CurrentTravel == null)
+            {
+                await NoTravelSelected();
+                return;
+            }
+            if (NoteTo == NoteTo.Travel)
             {
                 var result = await _services.Application.LogBookService.AddNoteAsync(Note, CurrentTravel.Id);
 
                 if (result.IsSuccess) Note = new Note();
                 await _services.Alert.ShowAsync(result);
-                loadData();
-
 
             }
-            else
+            if (NoteTo == NoteTo.Activity)
             {
-                await NoTravelSelected();
+                if (ActivityID == null || ActivityID <= 0)
+                    await _services.Navigation.GoBack();
+
+                var result = await _services.Application.LogBookService.AddNoteToActivityAsync(Note, ActivityID, CurrentTravel.Id);
+
+                if (result.IsSuccess) Note = new Note();
+                await _services.Alert.ShowAsync(result);
+
             }
 
+            loadData();
         }
 
         /// <summary>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Commons.Resources {
+namespace Presentation.MAUI.Resources.Localization {
     using System;
     
     
@@ -22,24 +22,24 @@ namespace Commons.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class LogBookServiceMessages {
+    internal class Explication {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal LogBookServiceMessages() {
+        internal Explication() {
         }
         
         /// <summary>
         ///   Retourne l'instance ResourceManager mise en cache utilisée par cette classe.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Commons.Resources.LogBookServiceMessages", typeof(LogBookServiceMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Presentation.MAUI.Resources.Localization.Explication", typeof(Explication).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace Commons.Resources {
         ///   les recherches de ressources à l'aide de cette classe de ressource fortement typée.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,56 +61,11 @@ namespace Commons.Resources {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Activité introuvable.
+        ///   Recherche une chaîne localisée semblable à En cliquant sur ce bouton, vous pouvez importer un fichier au format .tbin contenant un voyage précédemment exporté..
         /// </summary>
-        public static string ACTIVITY_NOT_FOUND {
+        internal static string ExplicationImport {
             get {
-                return ResourceManager.GetString("ACTIVITY_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Une erreur s’est produite lors de l’accès à la base de données..
-        /// </summary>
-        public static string DATABASE_ERROR {
-            get {
-                return ResourceManager.GetString("DATABASE_ERROR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Note invalide fournie..
-        /// </summary>
-        public static string INVALID_NOTE {
-            get {
-                return ResourceManager.GetString("INVALID_NOTE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Note introuvable..
-        /// </summary>
-        public static string NOTE_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("NOTE_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Voyage introuvable..
-        /// </summary>
-        public static string TRAVEL_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("TRAVEL_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Une erreur inattendue s’est produite. Veuillez contacter le support..
-        /// </summary>
-        public static string UNKNOWN_ERROR {
-            get {
-                return ResourceManager.GetString("UNKNOWN_ERROR", resourceCulture);
+                return ResourceManager.GetString("ExplicationImport", resourceCulture);
             }
         }
     }

@@ -169,4 +169,8 @@
     <value>Le fichier n'est pas au bon format </value>
     <comment>Le fichier n'est pas au bon format </comment>
   </data>
+  <data name="INVALID_TBIN_FORMAT" xml:space="preserve">
+    <value>Le  fichier tbin est conrompu </value>
+    <comment>Le  fichier tbin est conrompu </comment>
+  </data>
 </root>

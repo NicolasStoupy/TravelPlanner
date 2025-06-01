@@ -117,22 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="INVALID_NOTE" xml:space="preserve">
-    <value>Note invalide fournie.</value>
-  </data>
-  <data name="NOTE_NOT_FOUND" xml:space="preserve">
-    <value>Note introuvable.</value>
-  </data>
-  <data name="TRAVEL_NOT_FOUND" xml:space="preserve">
-    <value>Voyage introuvable.</value>
-  </data>
-  <data name="DATABASE_ERROR" xml:space="preserve">
-    <value>Une erreur s’est produite lors de l’accès à la base de données.</value>
-  </data>
-  <data name="UNKNOWN_ERROR" xml:space="preserve">
-    <value>Une erreur inattendue s’est produite. Veuillez contacter le support.</value>
-  </data>
-  <data name="ACTIVITY_NOT_FOUND" xml:space="preserve">
-    <value>Activité introuvable</value>
+  <data name="ExplicationImport" xml:space="preserve">
+    <value>En cliquant sur ce bouton, vous pouvez importer un fichier au format .tbin contenant un voyage précédemment exporté.</value>
   </data>
 </root>

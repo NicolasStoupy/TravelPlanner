@@ -1,4 +1,6 @@
 ﻿using Commons;
+using Commons.Models;
+using CommunityToolkit.Maui.Storage;
 using Infrastructure.EntityModels;
 using Presentation.MAUI.Interfaces;
 using Presentation.MAUI.Models;
@@ -71,6 +73,12 @@ namespace Presentation.MAUI.Services
                 return null;
             }
 
+        }
+
+        public async Task SaveFileAsync(byte[] file, string fileName, CancellationToken cancellationToken)
+        {
+            using var streamFile = new MemoryStream(file);
+            var fileSaverResult = await FileSaver.Default.SaveAsync(fileName, streamFile, cancellationToken);
         }
 
         public async Task ShowFileAsync(byte[]? fileToShow)

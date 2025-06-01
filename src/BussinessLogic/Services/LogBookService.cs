@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BussinessLogic.Entities;
+using BussinessLogic.Extensions;
 using BussinessLogic.Interfaces;
 using Commons.Models;
 using Commons.Resources;
@@ -17,7 +18,7 @@ namespace BussinessLogic.Services
     /// </summary>
     public class LogBookService(
         IDbContextFactory<TravelPlannerContext> context,
-        IMapper mapper,ILogger<LogBookService> logger) : ILogBookService
+        IMapper mapper, ILogger<LogBookService> logger) : ILogBookService
     {
         private readonly ILogger<LogBookService> _logger = logger;
         private readonly IDbContextFactory<TravelPlannerContext> _context = context;
@@ -67,8 +68,34 @@ namespace BussinessLogic.Services
             {
                 _logger.LogError(dbEx, "DB error adding note to travel {TravelID}", travelID);
                 return ServiceResult<bool>.Failure(LogBookServiceMessages.DATABASE_ERROR);
-            }           
+            }
         }
+
+        public async Task<ServiceResult<bool>> AddNoteToActivityAsync(Note? note, int? activityID, int? travelID)
+        {
+            if (activityID <= 0)
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.INVALID_NOTE);
+
+            await using var ctx = _context.CreateDbContext();
+            var activity = await ctx.Activities.FindAsync(travelID, activityID);
+            if (activity == null)
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.ACTIVITY_NOT_FOUND);
+
+            try
+            {
+                var logEntity = _mapper.Map<LogBook>(note);
+                activity.LogBooks.Add(logEntity);
+                await ctx.SaveChangesAsync();
+                return ServiceResult<bool>.Success(true);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "DB error adding note to Activity {activityID}", activityID);
+                return ServiceResult<bool>.Failure(LogBookServiceMessages.DATABASE_ERROR);
+            }
+
+        }
+
         /// <summary>
         /// Deletes an existing note.
         /// If the note is not found, no state change occurs.
@@ -111,7 +138,7 @@ namespace BussinessLogic.Services
                 _logger.LogError(dbEx, "DB error deleting note {NoteId}", note.NoteId);
                 return ServiceResult<bool>.Failure(LogBookServiceMessages.DATABASE_ERROR);
             }
-           
+
         }
         /// <summary>
         /// Updates the content of an existing note.
@@ -156,8 +183,40 @@ namespace BussinessLogic.Services
                 _logger.LogError(dbEx, "DB error updating note {NoteId}", note.NoteId);
                 return ServiceResult<bool>.Failure(LogBookServiceMessages.DATABASE_ERROR);
             }
-           
-        }    
-    
+
+        }
+
+        public async Task<ServiceResult<List<Note>>> GetActivityNotes(int? activityID)
+        {
+            //Vérifier que l’ID est valide
+            if (activityID == null || activityID <= 0)
+            {
+                return ServiceResult<List<Note>>
+                    .Failure(ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
+            }
+
+            //Charger en base tous les LogBooks (notes) liés à cette activité
+            await using var ctx = _context.CreateDbContext();
+            var logBooks = await ctx.LogBooks
+                                     .Where(l => l.ActivityId == activityID)
+                                     .ToListAsync();
+
+            //Si aucune note associée n’a été trouvée, renvoyer un échec
+            if (logBooks == null )
+            {
+                return ServiceResult<List<Note>>
+                    .Failure(LogBookServiceMessages.NOTE_NOT_FOUND);
+            }
+
+            //Mapper les entités LogBook vers vos objets métier Note
+            if (!_mapper.TryMap(logBooks, out List<Note> notes, _logger))
+            {
+                return ServiceResult<List<Note>>
+                    .Warning(GlobalServiceMessage.UNKNOWN_ERROR);
+            }
+
+            //Retourner la liste mappée en succès
+            return ServiceResult<List<Note>>.Success(notes);
+        }
     }
 }

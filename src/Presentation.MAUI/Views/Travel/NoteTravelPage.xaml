@@ -3,10 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Presentation.MAUI.Views.Travel.NoteTravelPage"
              xmlns:vm="clr-namespace:Presentation.MAUI.ViewModel"
+              xmlns:views="clr-namespace:Presentation.MAUI.Views"
              xmlns:bu="clr-namespace:BussinessLogic.Entities;assembly=BussinessLogic"
              x:DataType="vm:NoteTravelVM"
              Title="Notes">
 
+    <VerticalStackLayout>
+         <Grid RowDefinitions="*">
+         <views:NavigationLayout Grid.Row="0" IsVisible="{Binding NavigationVisible}"></views:NavigationLayout>
+    </Grid>
+   
     <Grid RowDefinitions="Auto,*,Auto" Padding="15" RowSpacing="10">
 
         <!-- Saisie -->
@@ -28,7 +34,7 @@
         <!-- Scrollable list -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="6"
-                                 BindableLayout.ItemsSource="{Binding CurrentTravel.TravelNotes}">
+                                 BindableLayout.ItemsSource="{Binding NoteCollection}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="bu:Note">
                         <Grid ColumnDefinitions="*,Auto,Auto"
@@ -71,5 +77,7 @@
                            HorizontalOptions="Center"
                            HeightRequest="30" />
     </Grid>
+    </VerticalStackLayout>
+   
 
 </ContentPage>

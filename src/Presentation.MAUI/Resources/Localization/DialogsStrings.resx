@@ -185,4 +185,8 @@ Tous ces éléments seront également supprimés de façon définitive.</value>
   <data name="DeleteExpense_NOK" xml:space="preserve">
     <value>Annuler</value>
   </data>
+  <data name="IMPORT_SUCCESS" xml:space="preserve">
+    <value>Le voyage {0} a été importé correctement</value>
+    <comment>Le voyage {0} a été importé correctement</comment>
+  </data>
 </root>

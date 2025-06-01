@@ -1,5 +1,6 @@
 ﻿using BussinessLogic.Entities;
 using Commons.Models;
+using System.Collections.ObjectModel;
 
 namespace BussinessLogic.Interfaces
 {
@@ -42,6 +43,8 @@ namespace BussinessLogic.Interfaces
         /// </list>
         /// </returns>
         Task<ServiceResult<bool>> AddNoteAsync(Note? note, int travelID);
+
+        Task<ServiceResult<bool>> AddNoteToActivityAsync(Note? note, int? activityID,int? travelID);
 
         /// <summary>
         /// Deletes an existing note.
@@ -102,6 +105,7 @@ namespace BussinessLogic.Interfaces
         /// </list>
         /// </returns>
         Task<ServiceResult<bool>> EditNoteAsync(Note note);
+        Task<ServiceResult<List<Note>>> GetActivityNotes(int? activityID);
     }
 
 }

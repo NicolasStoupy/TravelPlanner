@@ -126,7 +126,7 @@ public partial class FinderTravelPageVM : TravelVM
         IsBusy = true;
         _allTravelItems.Clear();
         TravelItems.Clear();
-        var result = await _services.Application.TravelService.GetTravels();
+        var result = await _services.Application.TravelService.GetTravels(includeNotes:true);
         if (result.IsSuccess)
         {
             _allTravelItems = result.Value;
@@ -143,7 +143,7 @@ public partial class FinderTravelPageVM : TravelVM
     [RelayCommand]
     public async Task ExtractTravelToPdf(Travel travel, CancellationToken cancellationToken)
     {
-        var PDFFileServiceResult = _services.Application.MediaService.GeneratePdfSummary(travel);
+        var PDFFileServiceResult = _services.Application.TravelService.GeneratePdfSummary(travel);
 
         if (PDFFileServiceResult.IsSuccess)
         {

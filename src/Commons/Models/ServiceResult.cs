@@ -13,6 +13,7 @@ namespace Commons.Models
 
         private ServiceResult(T value, bool success, MessageType messageType, string message = "")
         {
+            MessageType = messageType;
             Value = value;
             IsSuccess = success;
             Message = message;
@@ -25,7 +26,7 @@ namespace Commons.Models
         public static ServiceResult<T> Warning(string errorWarning)
            => new(default, true, messageType: MessageType.Warning);
         public static ServiceResult<T> Failure(string error)
-            => new(default, false, MessageType.Warning, error);
+            => new(default, false, MessageType.Error, error);
 
         public static ServiceResult<bool> Failure(object iNVALID_TRAVEL_FILE)
         {

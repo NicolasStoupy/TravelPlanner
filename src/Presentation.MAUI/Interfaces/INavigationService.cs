@@ -24,5 +24,9 @@ namespace Presentation.MAUI.Interfaces
 
         Task NavigateToTravelActivities();
         Task GoHome();
+
+        Task NavigationToNoteForActivity(int activityID);
+
+        Task NavigationToNoteForTravel(int travelID);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Commons.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace Presentation.MAUI.Interfaces
         /// </returns>
         Task<byte[]?> LoadFileAsync(FilePickerFileType mediaType, string pickerTitle);
         Task <byte[]?> LoadTbinFile();
+        Task SaveFileAsync(byte[] file, string fileName, CancellationToken cancellationToken);
 
         /// <summary>
         /// Writes the provided byte array to a temporary cache file and opens it

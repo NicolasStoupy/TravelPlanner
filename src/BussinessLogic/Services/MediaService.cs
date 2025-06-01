@@ -15,11 +15,12 @@ namespace BussinessLogic.Services
     {
         private readonly IDbContextFactory<TravelPlannerContext> _context;
         private readonly DocumentProvider _document;
-
+      
         public MediaService(IDbContextFactory<TravelPlannerContext> context, DocumentProvider documentProvider)
         {
             _context = context;
             _document = documentProvider;
+          
         }
 
         public async Task<ServiceResult<string>> ExportMemoriesToZip(
@@ -37,15 +38,7 @@ namespace BussinessLogic.Services
             return ServiceResult<string>.Success(path);
         }
 
-        public ServiceResult<byte[]> GeneratePdfSummary(Travel travel)
-        {
-            if (travel == null)
-                return ServiceResult<byte[]>.Failure(MediaServiceMessages.INVALID_INPUT);
-
-            var document = new TravelDocumentPDF(travel);
-            var pdf = document.GeneratePdf();
-            return ServiceResult<byte[]>.Success(pdf);
-        }
+      
 
         public ServiceResult<byte[]> GetMedia(Guid fileGuid, TypeMedia typeMedia)
         {

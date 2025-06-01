@@ -28,6 +28,11 @@
             <x:String x:Key="BillIcon">bill.png</x:String>
             <x:String x:Key="AirPlaneIcon" >airplane.png</x:String>
             <x:String x:Key="TravelIcon" >countrylocationicon.svg</x:String>
+            <x:String x:Key="UploadIcon" >upload.png</x:String>
+            <x:String x:Key="ExportIcon" >export.png</x:String>
+            <x:String x:Key="GoogleMapIcon" >googlemaps.png</x:String>
+            <x:String x:Key="FollowersIcon" >youth.png</x:String>
+       
         </ResourceDictionary>
     </Application.Resources>
 </Application>

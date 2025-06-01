@@ -29,4 +29,7 @@ public partial class NavigationLayout : ContentView
         }
         return;
     }
+
+
+    
 }

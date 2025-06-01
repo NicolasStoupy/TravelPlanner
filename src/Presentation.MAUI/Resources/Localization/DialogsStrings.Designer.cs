@@ -212,6 +212,15 @@ namespace Presentation.MAUI.Resources.Localization {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Le voyage {0} a été importé correctement.
+        /// </summary>
+        internal static string IMPORT_SUCCESS {
+            get {
+                return ResourceManager.GetString("IMPORT_SUCCESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Vous avez des changements non enregistrés. Voulez-vous les enregistrer avant de quitter ?.
         /// </summary>
         internal static string WIP_Confirmation {
