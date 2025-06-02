@@ -210,7 +210,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Controls\" />
-	  <Folder Include="Extensions\" />
 	  <Folder Include="ViewModel\Models\" />
 	</ItemGroup>
 

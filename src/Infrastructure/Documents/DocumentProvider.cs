@@ -28,7 +28,6 @@ public class DocumentProvider
         _configuration = configuration;
         _logger = logger;
         _basePath = _configuration["Storage:BasePath"] ?? "storage";
-
         _logger.LogInformation("DocumentProvider initialisé avec base path : {BasePath}", _basePath);
     }
 

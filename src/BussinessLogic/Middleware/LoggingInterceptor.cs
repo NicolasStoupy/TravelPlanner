@@ -4,9 +4,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.Logging;
-using Commons.Models;           // ServiceResult<T>
 
-using Commons.Resources;  // GlobalServiceMessage
+using Commons.Resources;
+using Commons.ErrorsHandlings;  // GlobalServiceMessage
 
 public class LoggingInterceptor : IInterceptor
 {

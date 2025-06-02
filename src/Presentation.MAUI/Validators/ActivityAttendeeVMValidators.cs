@@ -12,9 +12,14 @@ namespace Presentation.MAUI.Validators
     {
         public  ActivityAttendeeVMValidators()
         {
-           RuleFor(f=>f.Name).NotEmpty().NotNull();
+           RuleFor(f=>f.Name)
+                .MaximumLength(50).WithMessage("La nom ne peut pas dépasser 50 caractères.")
+                .NotEmpty()
+                .NotNull();
 
-            RuleFor(f=>f.Forname).NotEmpty().NotNull();
+            RuleFor(f=>f.Forname)
+                .MaximumLength(50).WithMessage("La Prénom ne peut pas dépasser 50 caractères.")
+                .NotEmpty().NotNull();
 
        
           

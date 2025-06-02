@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Presentation.MAUI.Models.BaseVM" Collapsed="true">
+    <Position X="4.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAABAAQAkAAQAAAAAAAAAAAAABAIAAAAAA=</HashCode>
+      <FileName>ViewModel\BaseVM\BaseVM.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Presentation.MAUI.ViewModel.ActivityVM" Collapsed="true">
+    <Position X="2.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAgAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>ViewModel\BaseVM\ActivityVM.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Presentation.MAUI.ViewModel.TravelVM" Collapsed="true">
+    <Position X="6.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAABAAAgAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>ViewModel\BaseVM\TravelVM.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

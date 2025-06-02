@@ -1,6 +1,6 @@
 ﻿using Commons;
 using Commons.ErrorsHandlings;
-using Commons.Models;
+
 using Presentation.MAUI.Interfaces;
 using Presentation.MAUI.Models;
 
@@ -38,16 +38,6 @@ namespace Presentation.MAUI.Services
             if (messages != null && messages.Count() > 0)
             {
                 await DisplayAlertAsync(messageType.ToString(), string.Join("\n", messages));
-            }
-        }
-
-        public async Task ShowAsync(Result result)
-        {
-            if (result != null)
-            {
-                var messageType = result.IsSuccess ? MessageType.Success : MessageType.Error;
-                var message = result.Message ?? string.Empty;
-                await DisplayAlertAsync(messageType.ToString(), message);
             }
         }
 

@@ -13,9 +13,11 @@ namespace Infrastructure
 
         public static IServiceCollection AddInfrastructure(this IServiceCollection collection, IConfiguration configuration)
         {
+            // Register a DbContext factory for TravelPlannerContext, enabling lazy loading proxies
+            // and configuring SQL Server using the "DbConnection" connection string.
             collection.AddDbContextFactory<TravelPlannerContext>(options =>
-            //options.UseLazyLoadingProxies()
-            options.UseSqlServer(configuration.GetConnectionString("DbConnection")));// Scoped pour une instance par requête
+                options.UseSqlServer(configuration.GetConnectionString("DbConnection"))
+            );
 
             collection.AddScoped<DocumentProvider>();
 

@@ -11,6 +11,7 @@ namespace Presentation.MAUI.Validators
         {
 
             RuleFor(x => x.Travel.name)
+                .MaximumLength(50).WithMessage("Le nom ne peut excéder 50 caractère")
                 .NotEmpty()
                 .WithMessage("Le nom est obligatoire.");
 

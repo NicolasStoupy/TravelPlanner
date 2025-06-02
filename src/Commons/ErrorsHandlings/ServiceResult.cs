@@ -1,57 +1,35 @@
-﻿using Ardalis.SmartEnum;
-using Commons.Models;
+﻿using Commons.Resources;
 
 namespace Commons.ErrorsHandlings
 {
-    public abstract class ServiceResult<T, TStatus>
-        where TStatus : SmartEnum<TStatus>, IServiceResult
+    public class ServiceResult<T> : IServiceResult
     {
-        public TStatus Status { get; }
+        public bool IsSuccess { get; }
         public T Value { get; }
+        public string Message { get; }
+        public MessageType MessageType { get; }
 
-        // On considère systématiquement la première valeur SmartEnum
-        // déclarée (celle qu’on nomme "Success") comme le statut de succès.
-        private static readonly TStatus SuccessStatus =
-            SmartEnum<TStatus>.List.First();
 
-        protected ServiceResult(TStatus status, T value)
+        private ServiceResult(T value, bool success, MessageType messageType, string message = "")
         {
-            Status = status ?? throw new ArgumentNullException(nameof(status));
+            MessageType = messageType;
             Value = value;
+            IsSuccess = success;
+            Message = message;
         }
 
-        public bool IsSuccess => Status.Equals(SuccessStatus);
-    }
+        public static ServiceResult<T> Success(T value, string mess = "")
+            => new(value, true, messageType: MessageType.Success, message: string.IsNullOrEmpty(mess)
+                  ? GlobalServiceMessage.SUCCESS : mess);
 
-    public sealed class SuccessResult<T, TStatus> : ServiceResult<T, TStatus>
-        where TStatus : SmartEnum<TStatus>, IServiceResult
-    {
-        public SuccessResult(T value)
-            : base(SmartEnum<TStatus>.FromName("Success"), value)
-        {
-        }
+        public static ServiceResult<T> Warning(string errorWarning)
+           => new(default, true, messageType: MessageType.Warning);
+        public static ServiceResult<T> Failure(string error)
+            => new(default, false, MessageType.Error, error);
 
-        /// <summary>
-        /// Si vous préférez passer explicitement le statut (utile si vous avez
-        /// plusieurs niveaux de succès), exposez aussi ce constructeur :
-        /// </summary>
-        public SuccessResult(TStatus successStatus, T value)
-            : base(successStatus, value)
+        public static ServiceResult<bool> Failure(object iNVALID_TRAVEL_FILE)
         {
-            if (!successStatus.Equals(SmartEnum<TStatus>.FromName("Success")))
-                throw new ArgumentException("Le statut fourni n'est pas la valeur de succès par défaut.");
+            throw new NotImplementedException();
         }
     }
-
-    public sealed class ErrorResult<T, TStatus> : ServiceResult<T, TStatus>
-        where TStatus : SmartEnum<TStatus>, IServiceResult
-    {
-        public ErrorResult(TStatus errorStatus)
-            : base(errorStatus, default!)
-        {
-            if (errorStatus.Equals(SmartEnum<TStatus>.FromName("Success")))
-                throw new ArgumentException("Le statut d'erreur ne peut pas être la valeur 'Success'.");
-        }
-    }
-
 }

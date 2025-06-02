@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BussinessLogic.Entities;
 using Commons;
-using Commons.Models;
+using Commons.ErrorsHandlings;
 
 namespace BussinessLogic.Interfaces
 {
@@ -249,7 +249,6 @@ namespace BussinessLogic.Interfaces
         /// </returns>
         Task<ServiceResult<bool>> UpdateTravel(Travel travel);
 
-        ServiceResult<byte[]> ExportTravel(int travelID);
         /// <summary>
         /// Generates a PDF summary document for the specified travel.
         /// </summary>
@@ -259,6 +258,38 @@ namespace BussinessLogic.Interfaces
         /// or a failure result containing an error message. No state changes occur on failure.
         /// </returns>
         ServiceResult<byte[]> GeneratePdfSummary(Travel travel);
+
+        /// <summary>
+        /// Imports travel data from a file provided as a byte array.
+        /// </summary>
+        /// <param name="travelFile">
+        /// A byte array containing the contents of the travel file to import. 
+        /// </param>
+        /// <returns>
+        /// A task representing the asynchronous import operation. The result is a <see cref="ServiceResult{T}"/>
+        /// whose <c>Data</c> property contains a string—typically an identifier for the newly created travel record
+        /// or a descriptive message. If the import fails, the <see cref="ServiceResult{T}.Success"/> flag will be
+        /// <c>false</c>, and <see cref="ServiceResult{T}.ErrorMessage"/> will indicate the reason.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if <paramref name="travelFile"/> is <c>null</c> or empty.
+        /// </exception>
         Task<ServiceResult<string>> ImportTravel(byte[] travelFile);
+
+        /// <summary>
+        /// Exports the travel data associated with the specified <paramref name="travelID"/>.
+        /// </summary>
+        /// <param name="travelID">
+        /// The unique identifier of the travel record to export.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ServiceResult{T}"/> whose <c>Data</c> property is a byte array representing the exported
+        /// travel file (e.g., a PDF, ZIP, or other serialized format). If the export succeeds, 
+        /// <see cref="ServiceResult{T}.Success"/> is <c>true</c>; otherwise, it is <c>false</c>, and
+        /// <see cref="ServiceResult{T}.ErrorMessage"/> will contain details about the failure.
+        /// </returns>       
+        /// Thrown if no travel record exists for the given <paramref name="travelID"/>.
+        /// </exception>
+        ServiceResult<byte[]> ExportTravel(int travelID);
     }
 }

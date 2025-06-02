@@ -23,14 +23,12 @@ namespace Presentation.MAUI.Interfaces
         /// <param name="messageType">The type of message (e.g., Info, Warning, Error).</param>
         /// <param name="messages">The collection of message strings to display.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        Task ShowAsync(MessageType messageType, IEnumerable<string?>? messages);
-        Task ShowAsync(Commons.Models.Result result);
+        Task ShowAsync(MessageType messageType, IEnumerable<string?>? messages);       
 
         /// <summary>
         /// Displays the result to the user and conditionally calls the <see cref="Reset"/> method
         /// based on the success status of the result.
-        /// </summary>
-        /// <param name="result">The <see cref="Commons.Models.Result"/> object to display and evaluate.</param>
+        /// </summary>       
         /// <param name="resetWhenResultIsSuccess">
         /// Determines when the <see cref="Reset"/> method should be called.
         /// If true (default), <see cref="Reset"/> is called only when the result is successful;

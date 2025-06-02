@@ -11,6 +11,7 @@ namespace Presentation.MAUI.ViewModel.Activity
           
             // Le nom de l'activité est requis
             RuleFor(x => x.CurrentTravelActivity.Name)
+                .MaximumLength(50).WithMessage("Le nom ne peut pas dépasser 50 caractères.")
                 .NotEmpty()
                 .WithMessage("Le nom de l'activité est requis.");
 

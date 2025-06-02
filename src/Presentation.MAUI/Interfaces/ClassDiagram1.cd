@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Presentation.MAUI.Services.AlertService" Collapsed="true">
+    <Position X="1.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIABAAgAAAAAAAAAAAAgAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Services\AlertService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Presentation.MAUI.Services.FilePresentationService" Collapsed="true">
+    <Position X="3.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAgAAAAAoAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\FilePresentationService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Presentation.MAUI.Services.GoogleUrlBuilder" Collapsed="true">
+    <Position X="6.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Services\GoogleUrlBuilder.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Presentation.MAUI.Services.OutputFileNameProvider" Collapsed="true">
+    <Position X="5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQACAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\OutputFileNameProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Presentation.MAUI.Services.ValidationService" Collapsed="true">
+    <Position X="10.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAgAAAAEAAAAAAAAQAAAABAAA=</HashCode>
+      <FileName>Services\ValidationService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Presentation.MAUI.Services.ViewModelServices" Collapsed="true">
+    <Position X="6" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAABAAAAAAACAAAAAAAAAAAAAAAAAAAIAAQAI=</HashCode>
+      <FileName>Services\ViewModelServices.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Presentation.MAUI.Services.NavigationService" Collapsed="true">
+    <Position X="8.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAACBAAAAAAAAAAgBAAAABAAQCEAAAAYIAAAAQA=</HashCode>
+      <FileName>Services\NavigationService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Presentation.MAUI.Interfaces.IAlertService" Collapsed="true">
+    <Position X="1.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Interfaces\IAlertService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Presentation.MAUI.Interfaces.IFilePresentationService" Collapsed="true">
+    <Position X="3.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAAAoAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IFilePresentationService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Presentation.MAUI.Interfaces.INavigationService" Collapsed="true">
+    <Position X="8.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAACBAAAAAAAAAAgBAAAABAAQCEAAAAIIAAAAQA=</HashCode>
+      <FileName>Interfaces\INavigationService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Presentation.MAUI.Interfaces.IOutputFileNameProvider" Collapsed="true">
+    <Position X="5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IOutputFileNameProvider.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Presentation.MAUI.Interfaces.IUrlBuilder" Collapsed="true">
+    <Position X="6.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IUrlBuilder.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Presentation.MAUI.Interfaces.IViewModelServices">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAABAAAAAAACAAAAAAAAAAAAAAAAAAAIAAQAI=</HashCode>
+      <FileName>Interfaces\IViewModelServices.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Presentation.MAUI.Services.IValidationService" Collapsed="true">
+    <Position X="10.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAEAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IValidationService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

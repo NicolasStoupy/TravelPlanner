@@ -7,9 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Exception\" />
-    <Folder Include="LogService\" />
-    <Folder Include="Utilities\" />
+    <Compile Remove="Exception\**" />
+    <Compile Remove="LogService\**" />
+    <Compile Remove="Utilities\**" />
+    <EmbeddedResource Remove="Exception\**" />
+    <EmbeddedResource Remove="LogService\**" />
+    <EmbeddedResource Remove="Utilities\**" />
+    <None Remove="Exception\**" />
+    <None Remove="LogService\**" />
+    <None Remove="Utilities\**" />
   </ItemGroup>
 
   <ItemGroup>
