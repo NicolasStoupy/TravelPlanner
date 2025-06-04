@@ -137,13 +137,13 @@
 
             <!-- Spinner -->
             <ActivityIndicator 
-        Grid.Row="3"
-        IsRunning="{Binding IsBusy}" 
-        IsVisible="{Binding IsBusy}" 
-        Color="DeepPink"
-        HorizontalOptions="Center"
-        WidthRequest="100"
-        HeightRequest="150" />
+                Grid.Row="3"
+                IsRunning="{Binding IsBusy}" 
+                IsVisible="{Binding IsBusy}" 
+                Color="DeepPink"
+                HorizontalOptions="Center"
+                WidthRequest="100"
+                HeightRequest="150" />
 
         </Grid>
     </Border>

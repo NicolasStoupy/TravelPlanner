@@ -8,15 +8,9 @@ namespace Presentation.MAUI.Services
     {
         private async Task Navigate(string query)
         {
-            try
-            {
+            
                 await Shell.Current.GoToAsync(query);
-            }
-            catch (Exception ex)
-            {
-
-               
-            }
+            
 
         }
         public async Task NavigateToNewTravelPageAsync()

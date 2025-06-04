@@ -14,8 +14,7 @@ public partial class NewActivityPage : ContentPage
 
     protected override void OnAppearing()
     {
-        try
-        {
+       
             base.OnAppearing();
 
             if (BindingContext is NewActivityVM vm)
@@ -23,13 +22,7 @@ public partial class NewActivityPage : ContentPage
                
                 vm.Reset();
             }
-        }
-        catch (Exception ex)
-        {
-
-            Console.WriteLine(ex.Message);
-        }
-        return;
+       
 
     }
     protected override void OnDisappearing()

@@ -32,6 +32,7 @@ namespace Presentation.MAUI
             collection.AddValidators();
             return collection;
 
+
          
         }
 

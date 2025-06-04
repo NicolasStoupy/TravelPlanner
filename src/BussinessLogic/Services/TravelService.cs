@@ -11,6 +11,7 @@ using Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -315,6 +316,10 @@ namespace BussinessLogic.Services
                 context.Remove(activity);
             }
 
+
+            context.LogBooks.RemoveRange(trip.LogBooks);
+
+
             context.Remove(trip);
             await context.SaveChangesAsync();
             return ServiceResult<bool>.Success(true, TravelServiceMessage.TRAVEL_REMOVED);
@@ -329,8 +334,8 @@ namespace BussinessLogic.Services
             var travel = context.Trips
                 .Include(a => a.Activities)
                     .ThenInclude(t => t.ActivityCosts)
-                .Include(a=>a.Activities)
-                    .ThenInclude(n=>n.LogBooks)
+                .Include(a => a.Activities)
+                    .ThenInclude(n => n.LogBooks)
                 .Include(l => l.LogBooks)
                 .Include(c => c.Media)
                 .FirstOrDefault(t => t.TripId == travelID);
@@ -378,9 +383,6 @@ namespace BussinessLogic.Services
 
             if (travel == null)
                 return ServiceResult<byte[]>.Failure(MediaServiceMessages.INVALID_INPUT);
-
-
-
             var fullTravel = GetTravel(travel.Id);
             if (fullTravel.IsSuccess)
             {
@@ -516,7 +518,7 @@ namespace BussinessLogic.Services
                 opts.Items[MappingContextExclusion.Memories.ToString()] = true;
             };
 
-            if (!_mapper.TryMap(entity, out Travel travel, _logger,mappingOptions))
+            if (!_mapper.TryMap(entity, out Travel travel, _logger, mappingOptions))
                 return ServiceResult<Travel>
                     .Warning(GlobalServiceMessage.UNKNOWN_ERROR);
 
@@ -555,7 +557,7 @@ namespace BussinessLogic.Services
                 bool includeActivity = false,
                 bool includeNotes = false,
                 bool includeFollowers = false,
-                bool includeMemories =false)
+                bool includeMemories = false)
         {
             using var context = _context.CreateDbContext();
             var trips = await context.Trips.OrderBy(t => t.CreatedAt).ToListAsync();
@@ -568,7 +570,7 @@ namespace BussinessLogic.Services
                 opts.Items[MappingContextExclusion.Memories.ToString()] = includeMemories;
             };
 
-            if (!_mapper.TryMap(trips, out List<Travel> travelItems, _logger,mappingOptions))
+            if (!_mapper.TryMap(trips, out List<Travel> travelItems, _logger, mappingOptions))
             {
                 return ServiceResult<List<Travel>>
                    .Warning(GlobalServiceMessage.UNKNOWN_ERROR);
@@ -602,7 +604,7 @@ namespace BussinessLogic.Services
             string payload;
             Trip importedTravel = new Trip();
             TBinModel? binModel = new TBinModel();
-           List<Guid> fileSaved= new List<Guid>();
+            List<Guid> fileSaved = new List<Guid>();
             try
             {
                 payload = UTF32Encoding.UTF8.GetString(travelFile);
@@ -636,9 +638,9 @@ namespace BussinessLogic.Services
                 importedTravel.TripId = 0;
                 importedTravel.Name = importedTravel.Name + "(Imported)";
                 _document.SetMediaType(TypeMedia.Images);
-                var savedFileGuid= _document.SaveFile(binModel.medias[importedTravel.TripBackgroundGuid.Value]);
+                var savedFileGuid = _document.SaveFile(binModel.medias[importedTravel.TripBackgroundGuid.Value]);
                 importedTravel.TripBackgroundGuid = savedFileGuid;
-                 if(savedFileGuid.HasValue)
+                if (savedFileGuid.HasValue)
                     fileSaved.Add(savedFileGuid.Value);
                 if (importedTravel.Activities != null)
                 {
@@ -656,7 +658,7 @@ namespace BussinessLogic.Services
                             }
                         }
 
-                        
+
                         if (activity.LogBooks.Any())
                         {
                             foreach (var actNote in activity.LogBooks)
@@ -664,12 +666,12 @@ namespace BussinessLogic.Services
                                 actNote.LogBookId = 0;
                                 actNote.ActivityId = 0;    // FK vers Activity
                                 actNote.TripId = 0;    // FK vers Trip dans le cadre d’une activité
-                                actNote.TripLogBook = null; 
+                                actNote.TripLogBook = null;
 
                                 // On précise la navigation : 
                                 // ce log appartient à cette activité précisément
                                 actNote.Activity = activity;
-                               
+
                             }
                         }
                     }
@@ -683,7 +685,7 @@ namespace BussinessLogic.Services
                     }
                 }
 
-                
+
                 if (importedTravel.Media != null)
                 {
                     foreach (var media in importedTravel.Media)
@@ -693,7 +695,7 @@ namespace BussinessLogic.Services
                         {
                             fileSaved.Add(newGuid.Value);
                         }
-                        
+
                         if (newGuid.HasValue)
                         {
                             media.FileGuid = newGuid.Value;
@@ -718,10 +720,10 @@ namespace BussinessLogic.Services
                         entry.Entry.State = EntityState.Added;
                     });
                     await context2.SaveChangesAsync();
-                }                
+                }
                 catch (DbUpdateException ex)
                 {
-                    
+
                     _document.RemoveFiles(fileSaved, TypeMedia.Images);
                     _logger.LogError(ex, "Error during importation of a Tbin file ");
                     return ServiceResult<string>.Failure(
@@ -729,7 +731,7 @@ namespace BussinessLogic.Services
                     );
                 }
             }
-            return ServiceResult<string>.Success(importedTravel?.Name??string.Empty);
+            return ServiceResult<string>.Success(importedTravel?.Name ?? string.Empty);
         }
 
         /// <summary>

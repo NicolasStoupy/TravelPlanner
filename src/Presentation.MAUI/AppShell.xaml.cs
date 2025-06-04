@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace Presentation.MAUI
 {
-    public partial class AppShell : Shell, INotifyPropertyChanged
+    public partial class AppShell : Shell
     {
         public AppShell()
         {

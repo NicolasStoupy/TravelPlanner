@@ -2,6 +2,7 @@
 
 using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 
 namespace Presentation.MAUI
@@ -11,33 +12,28 @@ namespace Presentation.MAUI
         private readonly ILogger<App> _logger;
         public App(ILogger<App> logger)
         {
-            _logger = logger;
-            InitializeComponent();
-
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-           
+    
+            InitializeComponent();
+            _logger = logger;
+         
         }
 
-        private void CurrentDomain_FirstChanceException(object? sender,FirstChanceExceptionEventArgs e)
+      
+
+        private void CurrentDomain_FirstChanceException(object? sender, FirstChanceExceptionEventArgs e)
         {
             try
             {
-               
-                // logguer
-                Console.WriteLine(e.Exception.Message);
+                _logger.LogError(e.Exception, "FirstChanceException");
             }
             catch
             {
-                // HACK : l'échec du log de l'exception ne doit pas être bloquante
+                // Si le log échoue, on ne bloque pas l'application
             }
         }
 
 
-        private void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-           
-        }
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
