@@ -2,7 +2,7 @@
 using Autofac;
 using Autofac.Extras.DynamicProxy;
 using BussinessLogic;
-
+using BussinessLogic.Middleware;
 using BussinessLogic.Services;
 using CommunityToolkit.Maui;
 using Infrastructure;
@@ -20,20 +20,20 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         MauiAppBuilder builder = MauiApp.CreateBuilder();
-      
-        builder.Configuration.LoadConfigurationsFile();     
+
+        builder.Configuration.LoadConfigurationsFile();
         builder.UseMauiCommunityToolkit();
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddBussiness();
         builder.Services.AddPresentation();
         builder.Services.AddConfigurations(builder);
-    
+
         QuestPDF.Settings.License = LicenseType.Community;
 
 #pragma warning disable CA1416 // Valider la compatibilité de la plateforme
         builder
-            .UseMauiApp<App>()           
-          
+            .UseMauiApp<App>()
+
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -56,7 +56,7 @@ public static class MauiProgram
                     .EnableInterfaceInterceptors()
                     .InterceptedBy(typeof(LoggingInterceptor));
             }
-            
+
         );
 #pragma warning restore CA1416 // Valider la compatibilité de la plateforme
 

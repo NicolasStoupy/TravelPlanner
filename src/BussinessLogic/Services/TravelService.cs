@@ -601,6 +601,7 @@ namespace BussinessLogic.Services
         /// </remarks>
         public async Task<ServiceResult<string>> ImportTravel(byte[] travelFile)
         {
+
             string payload;
             Trip importedTravel = new Trip();
             TBinModel? binModel = new TBinModel();
@@ -787,10 +788,11 @@ namespace BussinessLogic.Services
             if (trip == null)
                 return ServiceResult<bool>.Failure(TravelServiceMessage.TRAVEL_NOT_FOUND);
 
-            bool anyFailure = false;
+            bool anyFailure = false;    
             foreach (var memory in selectedMemories)
             {
                 var media = await context.Media.FindAsync(memory.FileID);
+
                 if (media != null)
                 {
                     var removed = _document.RemoveFile(media.FileGuid, TypeMedia.Images);
@@ -804,9 +806,7 @@ namespace BussinessLogic.Services
                     }
                 }
             }
-
             await context.SaveChangesAsync();
-
             if (anyFailure)
                 return ServiceResult<bool>.Failure(TravelServiceMessage.ERROR_WHEN_REMOVING_FILE);
 
@@ -1024,8 +1024,10 @@ namespace BussinessLogic.Services
                 if (travel?.image != null)
                 {
                     _document.SetMediaType(Commons.TypeMedia.Images);
-                    savedFileGuid = _document.ReplaceFile(travel.imageID, travel.image);
-
+                    var documentServiceResult = _document.ReplaceFile(travel.imageID, travel.image);
+                    if (!documentServiceResult.IsSuccess)
+                        return ServiceResult<bool>.Failure(documentServiceResult.Message);
+                    savedFileGuid = documentServiceResult.Value;
                     // 3. Mise à jour du GUID image
                     existingTrip.TripBackgroundGuid = savedFileGuid;
                     context.Trips.Update(existingTrip);

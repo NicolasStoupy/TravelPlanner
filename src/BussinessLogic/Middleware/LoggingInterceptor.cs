@@ -1,113 +1,171 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
-using System.Threading.Tasks;
 using Castle.DynamicProxy;
+using Commons.ErrorsHandlings;
 using Microsoft.Extensions.Logging;
 
-using Commons.Resources;
-using Commons.ErrorsHandlings;  // GlobalServiceMessage
+namespace BussinessLogic.Middleware;
 
+/// <summary>
+/// Interceptor using Castle DynamicProxy to log method entry, exit, and exceptions for service methods returning ServiceResult or Task<ServiceResult>.
+/// </summary>
 public class LoggingInterceptor : IInterceptor
 {
     private readonly ILogger<LoggingInterceptor> _logger;
-    private  string DefaultError = GlobalServiceMessage.UNKNOWN_ERROR;
+    private readonly string _defaultError = "Une erreur inattendue est survenue.";
 
-    // Cached MethodInfos for reflection
-    private static readonly MethodInfo _syncFailureFactory = typeof(ServiceResult<>)
+    // Retrieves MethodInfo for ServiceResult<T>.Failure(string)
+    private static readonly MethodInfo _failureMethodDef = typeof(ServiceResult<>)
         .GetMethod(nameof(ServiceResult<object>.Failure), new[] { typeof(string) })!;
-    private static readonly MethodInfo _asyncHelperDef = typeof(LoggingInterceptor)
-        .GetMethod(nameof(InterceptAsyncGeneric), BindingFlags.NonPublic | BindingFlags.Instance)!;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoggingInterceptor"/> class.
+    /// </summary>
+    /// <param name="logger">The logger used to record method execution details and errors.</param>
     public LoggingInterceptor(ILogger<LoggingInterceptor> logger)
-        => _logger = logger;
+    {
+        _logger = logger;
+    }
 
+    /// <summary>
+    /// Intercepts method calls, logging entry, execution time, and handling exceptions for methods returning ServiceResult or Task<ServiceResult>.
+    /// </summary>
+    /// <param name="invocation">The invocation information for the intercepted method.</param>
     public void Intercept(IInvocation invocation)
     {
         var sw = Stopwatch.StartNew();
+        var methodName = invocation.Method.Name;
         var returnType = invocation.Method.ReturnType;
-        var name = invocation.Method.Name;
 
-        _logger.LogInformation("→ Entering {Method}", name);
+        _logger.LogInformation("Entering {Method}", methodName);
 
-        // 1) sync: ServiceResult<T>
-        if (IsSyncServiceResult(returnType))
+        // 1) Méthodes asynchrones retournant Task<ServiceResult<T>>
+        if (IsAsyncServiceResult(returnType))
         {
             try
             {
-                invocation.Proceed();
-                _logger.LogInformation("√ {Method} succeeded in {Elapsed}ms", name, sw.ElapsedMilliseconds);
+                invocation.Proceed(); // invocation.ReturnValue est alors Task<ServiceResult<T>>
+                invocation.ReturnValue = WrapAsync((Task)invocation.ReturnValue!, methodName, sw, returnType);
             }
             catch (Exception ex)
             {
                 sw.Stop();
-                _logger.LogError(ex, "× {Method} threw after {Elapsed}ms", name, sw.ElapsedMilliseconds);
-                invocation.ReturnValue = CreateSyncFailure(returnType, DefaultError);
+                _logger.LogError(ex, " {Method} threw synchronously after {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
+                invocation.ReturnValue = CreateFaultedTask(returnType, _defaultError);
             }
             return;
         }
 
-        // 2) async: Task<ServiceResult<T>>
-        if (IsAsyncServiceResult(returnType))
+        // 2) Méthodes synchrones retournant ServiceResult<T>
+        if (IsSyncServiceResult(returnType))
         {
-            invocation.Proceed();
-
-            // build Task<ServiceResult<T>> wrapper
-            var task = (Task)invocation.ReturnValue!;
-            var serviceT = returnType.GetGenericArguments()[0];   // ServiceResult<T>
-            var resultType = serviceT.GetGenericArguments()[0];     // T
-            var helper = _asyncHelperDef.MakeGenericMethod(resultType);
-
-            invocation.ReturnValue = helper.Invoke(this, new object[] { task, name, sw })!;
+            try
+            {
+                invocation.Proceed(); // invocation.ReturnValue est ServiceResult<T>
+                sw.Stop();
+                _logger.LogInformation("{Method} succeeded in {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                _logger.LogError(ex, " {Method} threw after {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
+                invocation.ReturnValue = CreateSyncFailure(returnType, _defaultError);
+            }
             return;
         }
 
-        // 3) non-ServiceResult → pass-through
-        invocation.Proceed();
-        sw.Stop();
-        _logger.LogInformation("→ Exiting {Method} in {Elapsed}ms", name, sw.ElapsedMilliseconds);
+        try
+        {
+            invocation.Proceed();
+            sw.Stop();
+            _logger.LogInformation(" {Method} succeeded in {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
+        }
+        catch (Exception ex)
+        {
+            sw.Stop();
+            _logger.LogError(ex, " {Method} threw after {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
+            throw; // on relaie l’exception
+        }
     }
 
-    private object CreateSyncFailure(Type serviceResultType, string message)
+    /// <summary>
+    /// Wraps an asynchronous Task<ServiceResult> to log completion or exception and return a ServiceResult&lt;T&gt;.
+    /// </summary>
+    /// <param name="task">The original Task<ServiceResult> to await.</param>
+    /// <param name="methodName">The name of the intercepted method.</param>
+    /// <param name="sw">The stopwatch tracking execution time.</param>
+    /// <param name="returnType">The return type of the intercepted method (Task<ServiceResult>).</param>
+    /// <returns>A Task<ServiceResult> that completes with the mapped result or a failure ServiceResult on exception.</returns>
+    private object WrapAsync(Task task, string methodName, Stopwatch sw, Type returnType)
     {
-        // ServiceResult<T>.Failure(message)
-        var resultType = serviceResultType.GetGenericArguments()[0];
-        var generic = _syncFailureFactory.DeclaringType!.MakeGenericType(resultType);
-        var failure = generic.GetMethod(_syncFailureFactory.Name, new[] { typeof(string) })!;
-        return failure.Invoke(null, new object[] { message })!;
+        // On génère un appel à HandleAsync<T>(Task<ServiceResult<T>>, string, Stopwatch)
+        var serviceResultType = returnType.GetGenericArguments()[0];      // ex. ServiceResult<MyDto>
+        var resultType = serviceResultType.GetGenericArguments()[0];      // ex. MyDto
+        var helper = typeof(LoggingInterceptor)
+            .GetMethod(nameof(HandleAsync), BindingFlags.NonPublic | BindingFlags.Instance)!
+            .MakeGenericMethod(resultType);
+
+        return helper.Invoke(this, new object[] { task, methodName, sw })!;
     }
 
-    private async Task<ServiceResult<T>> InterceptAsyncGeneric<T>(
-        Task originalTask, string methodName, Stopwatch sw)
+    // HandleAsync<T> attend la Task<ServiceResult<T>>, logue puis retourne un ServiceResult<T>
+    private async Task<ServiceResult<T>> HandleAsync<T>(Task originalTask, string methodName, Stopwatch sw)
     {
         try
         {
-            // cast & await the underlying Task<ServiceResult<T>>
             var typedTask = (Task<ServiceResult<T>>)originalTask;
             var result = await typedTask.ConfigureAwait(false);
-
-            _logger.LogInformation("√ {Method} succeeded in {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
+            sw.Stop();
+            _logger.LogInformation(" {Method} succeeded in {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "× {Method} threw after {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
-            
-            return ServiceResult<T>.Failure(DefaultError);
+            sw.Stop();
+            _logger.LogError(ex, " {Method} threw after {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
+            return ServiceResult<T>.Failure(_defaultError);
         }
-        finally
-        {
-            if (sw.IsRunning) sw.Stop();
-            _logger.LogInformation("→ Finished {Method} in {Elapsed}ms", methodName, sw.ElapsedMilliseconds);
-        }
+    }
+
+    // Crée un Task<ServiceResult<T>> déjà en échec
+    private object CreateFaultedTask(Type taskResultType, string message)
+    {
+        // taskResultType == typeof(Task<ServiceResult<T>>)
+        var serviceResultType = taskResultType.GetGenericArguments()[0]; // ServiceResult<T>
+        var resultType = serviceResultType.GetGenericArguments()[0];     // T
+
+        // Appel de ServiceResult<T>.Failure(message)
+        var genericFailure = _failureMethodDef.DeclaringType!.MakeGenericType(resultType);
+        var failureMethod = genericFailure.GetMethod(_failureMethodDef.Name, new[] { typeof(string) })!;
+        var failureResult = failureMethod.Invoke(null, new object[] { message });
+
+        // Crée Task.FromResult<ServiceResult<T>>( failureResult )
+        var fromResult = typeof(Task)
+            .GetMethod(nameof(Task.FromResult))!
+            .MakeGenericMethod(serviceResultType)
+            .Invoke(null, new[] { failureResult })!;
+
+        return fromResult;
+    }
+
+    // Crée un ServiceResult<T> en échec pour le synchrone
+    private object CreateSyncFailure(Type serviceResultType, string message)
+    {
+        // serviceResultType == typeof(ServiceResult<T>)
+        var resultType = serviceResultType.GetGenericArguments()[0];
+        var genericFailure = _failureMethodDef.DeclaringType!.MakeGenericType(resultType);
+        var failureMethod = genericFailure.GetMethod(_failureMethodDef.Name, new[] { typeof(string) })!;
+        return failureMethod.Invoke(null, new object[] { message })!;
     }
 
     private static bool IsSyncServiceResult(Type t) =>
         t.IsGenericType && t.GetGenericTypeDefinition() == typeof(ServiceResult<>);
 
-    private static bool IsAsyncServiceResult(Type t) =>
-        typeof(Task).IsAssignableFrom(t)
-        && t.IsGenericType
-        && t.GetGenericArguments()[0].IsGenericType
-        && t.GetGenericArguments()[0].GetGenericTypeDefinition() == typeof(ServiceResult<>);
+    private static bool IsAsyncServiceResult(Type t)
+    {
+        // true si t hérite de Task<ServiceResult<T>>
+        if (!typeof(Task).IsAssignableFrom(t) || !t.IsGenericType) return false;
+        var inner = t.GetGenericArguments()[0];
+        return inner.IsGenericType && inner.GetGenericTypeDefinition() == typeof(ServiceResult<>);
+    }
 }

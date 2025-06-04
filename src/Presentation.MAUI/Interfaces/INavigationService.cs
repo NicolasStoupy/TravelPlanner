@@ -13,7 +13,7 @@ namespace Presentation.MAUI.Interfaces
     public interface INavigationService
     {
 
-        Task NavigateToNewTravelPageAsync();
+        Task NavigateToNewTravelPageAsync(bool newTravel);
         Task NavigateToNewTravel(string travelID);
         Task NavigateToTravelFinder();
         Task NavigateToNewActivity();

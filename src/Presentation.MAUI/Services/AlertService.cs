@@ -10,7 +10,11 @@ namespace Presentation.MAUI.Services
     {
         private Task DisplayAlertAsync(string title, string message, string validationBtn = "OK")
         {
-            return Shell.Current.DisplayAlert(title, message, validationBtn);
+            if (Shell.Current != null)
+                return Shell.Current.DisplayAlert(title, message, validationBtn);
+
+            return Application.Current?.MainPage?.DisplayAlert(title, message, validationBtn)
+                ?? Task.CompletedTask;
         }
 
         private Task<bool> DisplayConfirmationAsync(string title, string message, string accept, string cancel)

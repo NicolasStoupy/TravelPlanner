@@ -17,6 +17,7 @@ namespace Infrastructure
             // and configuring SQL Server using the "DbConnection" connection string.
             collection.AddDbContextFactory<TravelPlannerContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DbConnection"))
+                
             );
 
             collection.AddScoped<DocumentProvider>();

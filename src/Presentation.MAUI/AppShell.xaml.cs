@@ -1,10 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Presentation.MAUI.ViewModel;
-using Presentation.MAUI.Views;
-using Presentation.MAUI.Views.Activity;
-using System.ComponentModel;
-
-namespace Presentation.MAUI
+﻿namespace Presentation.MAUI
 {
     public partial class AppShell : Shell
     {
@@ -14,8 +8,6 @@ namespace Presentation.MAUI
             AppRouting.RegisterRoutes();
         }
 
-        private void MenuItem_Clicked_1(object sender, EventArgs e)
-        {
-        }
+       
     }
 }

@@ -18,15 +18,15 @@ namespace BussinessLogic.Services
 
         public async Task<ServiceResult<bool>> SaveNewActivity(TravelActivity newActivity)
         {
-            // 1. Input validation
+            //  Input validation
             if (newActivity is null)
                 return ServiceResult<bool>.Failure(ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
 
-            // 2. Mapping
+            // Mapping
             if (!_mapper.TryMap(newActivity, out Activity entity, _logger))
                 return ServiceResult<bool>.Failure(ActivityServiceMessage.ActivityServiceStatus_MappingError_Message);
 
-            // 3. Business logic
+            // Business logic
             entity.Sequence = GetSequenceForActivity(newActivity.TravelID);
             entity.ActivityType = default!;
 
@@ -72,7 +72,7 @@ namespace BussinessLogic.Services
         public async Task<ServiceResult<bool>> UpdateActivity(
             TravelActivity travelActivity, int travelID)
         {
-            // 1. Validate input
+            // Validate input
             if (travelActivity is null)
                 return ServiceResult<bool>.Failure(ActivityServiceMessage
                     .ActivityServiceStatus_InvalidActivity_Message);
@@ -80,7 +80,7 @@ namespace BussinessLogic.Services
                 return ServiceResult<bool>.Failure(ActivityServiceMessage
                     .ActivityServiceStatus_InvalidActivity_Message);
 
-            // 2. Map DTO to entity
+            // Map DTO to entity
             if (!_mapper.TryMap(travelActivity, out Activity entity, _logger))
                 return ServiceResult<bool>.Failure(ActivityServiceMessage
                     .ActivityServiceStatus_MappingError_Message);
@@ -338,7 +338,7 @@ namespace BussinessLogic.Services
 
         public async Task<ServiceResult<bool>> RemoveFollower(Follower follower, int activityID)
         {
-            // 1. Validate input
+            //  Validate input
             if (follower is null || activityID <= 0)
                 return ServiceResult<bool>.Failure(
                       ActivityServiceMessage.ActivityServiceStatus_InvalidActivity_Message);
@@ -347,7 +347,7 @@ namespace BussinessLogic.Services
             {
                 await using var ctx = _contextFactory.CreateDbContext();
 
-                // 2. Find the activity including its attendees
+                //  Find the activity including its attendees
                 var activity = await ctx.Activities
                     .Include(a => a.Attendees)
                     .FirstOrDefaultAsync(a => a.ActivityId == activityID);
@@ -356,11 +356,11 @@ namespace BussinessLogic.Services
                     return ServiceResult<bool>.Failure(
                         ActivityServiceMessage.ActivityServiceStatus_ActivityNotFound_Message);
 
-                // 3. Locate the attendee
+                // Locate the attendee
                 var attendee = activity.Attendees
                     .FirstOrDefault(a => a.AttendeeId == follower.FollowerID);
 
-                // 4. Remove if found
+                // Remove if found
                 if (attendee != null)
                 {
                     ctx.Attendees.Remove(attendee);

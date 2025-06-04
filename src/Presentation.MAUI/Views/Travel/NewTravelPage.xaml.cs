@@ -11,7 +11,23 @@ public partial class NewTravelPage : ContentPage
 		this.BindingContext = vm;
 	}
 
-  
+    /// <summary>
+    /// Called when the page appears. Resets the ViewModel to refresh the data.
+    /// </summary>
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
 
-   
+        if (BindingContext is NewTravelVM vm)
+        {
+            if (vm.Mode == Mode.New)
+            {
+                vm.Reset();
+            }
+        }
+      
+        return;
+    }
+
+
 }

@@ -4,7 +4,8 @@
     {
 
         public const string PDF_TRAVEL_CONFIG = "PDF_Travel";
-        public const string ZIP_TRAVEL_EXPORT = "TRAVEL_EXPORT";
+
+        public const string TBIN_TRAVEL_EXPORT = "TRAVEL_EXPORT";
 
         public const string ZIP_MEMORIES_CONFIG = "ZIP_Memories";
 

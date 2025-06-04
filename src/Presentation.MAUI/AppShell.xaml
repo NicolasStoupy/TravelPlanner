@@ -78,12 +78,8 @@
         Route="TravelActivities"
         ContentTemplate="{DataTemplate views:ImportExport}" />
     </FlyoutItem>
-    <!-- Actions globales en bas du menu -->
    
-    <MenuItem
-        
-        Text="Déconnexion"
-        IconImageSource="logout.png"
-    Command="{Binding LogoutCommand}" />
+   
+   
 
 </Shell>

@@ -1,20 +1,25 @@
 ﻿using BussinessLogic.Entities;
-using Infrastructure.EntityModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 
 namespace BussinessLogic.Models
-{
+{   /// <summary>
+    /// Generates a PDF document representation of a Travel entity, including metadata, overview, statistics, activities, memories, and notes.
+    /// </summary>
     public class TravelDocumentPDF (Travel travel) : IDocument
     {
        
       
         private readonly Travel _travel = travel;
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TravelDocumentPDF"/> class using the provided travel data.
+        /// </summary>
+        /// <param name="travel">The <see cref="Travel"/> entity to generate the PDF for.</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="travel"/> is null.</exception>
         public void Compose(IDocumentContainer container)
         {
             

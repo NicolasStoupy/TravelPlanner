@@ -54,6 +54,11 @@ namespace Presentation.MAUI.ViewModel.Activity
                 LoadData();
             }
         }
+        /// <summary>
+        /// Adds a ticket to the specified cost by uploading an image file.
+        /// </summary>
+        /// <param name="costID">The identifier of the cost to which the ticket belongs.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task AddTicket(int costID)
         {
@@ -68,7 +73,11 @@ namespace Presentation.MAUI.ViewModel.Activity
                     await _services.Application.ExpenseService.SaveNewCostAsync(CurrentTravel.Id, costID, file));
             LoadData();
         }
-
+        /// <summary>
+        /// Removes a ticket by its unique identifier.
+        /// </summary>
+        /// <param name="ticketId">The unique identifier of the ticket to remove.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task RemoveTicket(Guid ticketId)
         {
@@ -76,6 +85,11 @@ namespace Presentation.MAUI.ViewModel.Activity
                 await _services.Application.ExpenseService.RemoveTicketAsync(ticketId));
             LoadData();
         }
+        /// <summary>
+        /// Removes an entire cost category after prompting for confirmation if tickets exist.
+        /// </summary>
+        /// <param name="costID">The identifier of the cost category to remove.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task RemoveCost(int costID)
         {
@@ -96,7 +110,11 @@ namespace Presentation.MAUI.ViewModel.Activity
                 }
             }
         }
-
+        /// <summary>
+        /// Opens a ticket image by retrieving it from the media service and displaying it in a file dialog.
+        /// </summary>
+        /// <param name="ticketId">The unique identifier of the ticket image to open.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task OpenTicketAsync(Guid ticketId)
         {
@@ -111,7 +129,9 @@ namespace Presentation.MAUI.ViewModel.Activity
             }
            await _services.Alert.ShowAsync(serviceResult);
         }
-
+        /// <summary>
+        /// Loads the current activity data, including cost categories and tickets, and resets new cost input fields.
+        /// </summary>
         public void LoadData()
         {
             NewCostAmount = 0;

@@ -1,16 +1,10 @@
 ﻿using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
-using Commons;
-using Commons.ErrorsHandlings;
 using Commons.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FluentValidation;
 
 using Presentation.MAUI.Interfaces;
 using Presentation.MAUI.Resources.Localization;
-using Presentation.MAUI.Validators;
-using System.Threading.Tasks;
 
 namespace Presentation.MAUI.ViewModel
 {
@@ -20,6 +14,7 @@ namespace Presentation.MAUI.ViewModel
     /// </summary>
 
     [QueryProperty(nameof(TravelID), "travelID")]
+    //[QueryProperty(nameof(NewTravel), "newTravel")]
     public partial class NewTravelVM : TravelVM
     {
         [ObservableProperty] private string _travelID;
@@ -40,12 +35,23 @@ namespace Presentation.MAUI.ViewModel
 
         partial void OnCurrencySelectedChanged(string? value) => Travel.currencie = value;
 
+        //private bool newTravel { get; set; }
 
+        //public bool NewTravel
+        //{
+        //    get => newTravel; set
+        //    {
+        //        newTravel = value;
+        //        if (value)
+        //        {
+        //            = Mode.New;
+        //        }
+        //    }
 
         [ObservableProperty]
         private Mode _currentMode = Mode.New;
 
-        partial void OnCurrentModeChanged(Mode value) => CurrentModeFriendly = value.ToDisplayName();
+       partial void OnCurrentModeChanged(Mode value) => CurrentModeFriendly = value.ToDisplayName();
 
         [ObservableProperty]
         private string _currentModeFriendly;
@@ -53,7 +59,7 @@ namespace Presentation.MAUI.ViewModel
 
         public NewTravelVM(IViewModelServices viewModelServices) : base(viewModelServices)
         {
-            title = PageTitle.NewTravelPage;
+          
 
             CurrencyList = _dataStore.Currencies.ToList();
         }
@@ -103,8 +109,9 @@ namespace Presentation.MAUI.ViewModel
         {
             if (value == null)
             {
-
+                title = PageTitle.NewTravelPage;
                 CurrentMode = Mode.New;
+                Reset();
             }
             else
             {

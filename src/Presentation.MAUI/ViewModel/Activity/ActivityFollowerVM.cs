@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 namespace Presentation.MAUI.ViewModel.Activity
 {
     [QueryProperty(nameof(ActivityID), "ActivityID")]
-    public partial class ActivityFollowerVM : ActivityVM
+    public partial class ActivityFollowerVM(IViewModelServices viewModelServices) : ActivityVM(viewModelServices)
     {
 
         [ObservableProperty]
@@ -21,10 +21,6 @@ namespace Presentation.MAUI.ViewModel.Activity
             {
                 CurrentTravelActivity = result.Value;
             }
-
-        }
-        public ActivityFollowerVM(IViewModelServices viewModelServices) : base(viewModelServices)
-        {
         }
 
         [ObservableProperty]
@@ -33,7 +29,14 @@ namespace Presentation.MAUI.ViewModel.Activity
 
         [ObservableProperty]
         private TravelActivity? _currentTravelActivity;
+        partial void OnCurrentTravelActivityChanged(TravelActivity? value)
+        {
+            if (value != null)
+            {
+                FollowerList = value.Followers.ToObservableCollection<Follower>();
+            }
 
+        }
 
         private Follower newFollower = new Follower();
 
@@ -55,19 +58,19 @@ namespace Presentation.MAUI.ViewModel.Activity
                 newFollower.LastName = value;
 
         }
-        partial void OnCurrentTravelActivityChanged(TravelActivity? value)
-        {
-            if (value != null)
-            {
-                FollowerList = value.Followers.ToObservableCollection<Follower>();
-            }
 
-        }
-
+        /// <summary>
+        /// Adds a follower to the currently selected travel activity.
+        /// </summary>
+        /// <remarks>
+        /// If no activity is selected, displays a notification. Otherwise, validates and notifies.
+        /// On successful addition, displays the result and refreshes the activity view.
+        /// </remarks>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
         public async Task AddFollower()
         {
-            
+
             if (CurrentTravelActivity == null) { await NoActivitySelected(); return; }
 
             if (await _services.Validation.ValidateAndNotifyAsync(this))
@@ -81,17 +84,20 @@ namespace Presentation.MAUI.ViewModel.Activity
 
             }
         }
-
+        /// <summary>
+        /// Removes a follower from the specified travel activity.
+        /// </summary>
+        /// <param name="follower">The follower to remove.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [RelayCommand]
-
         public async Task RemoveFollower(Follower follower)
         {
             if (follower == null || CurrentTravelActivity == null) return;
 
             var result = await _services.Application.ActivityService.RemoveFollower(follower, CurrentTravelActivity.ActivityID);
             await _services.Alert.ShowAsync(result);
-            if (result.IsSuccess) { OnActivityIDChanged(CurrentTravelActivity.ActivityID);}
-          
+            if (result.IsSuccess) { OnActivityIDChanged(CurrentTravelActivity.ActivityID); }
+
         }
         public override void Reset()
         {

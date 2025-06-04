@@ -88,7 +88,7 @@ public partial class FinderTravelPageVM : TravelVM
     /// Navigates to the page for creating a new travel entry.  
     /// </summary>
     [RelayCommand]
-    private async Task NewTravel() => await _services.Navigation.NavigateToNewTravelPageAsync();
+    private async Task NewTravel() => await _services.Navigation.NavigateToNewTravelPageAsync(true);
 
 
     /// <summary>

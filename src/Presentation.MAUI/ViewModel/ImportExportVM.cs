@@ -41,12 +41,17 @@ namespace Presentation.MAUI.ViewModel
         {
             return;
         }
-
+        /// <summary>
+        /// Exports the specified travel data to a .tbin file and prompts the user to save it.
+        /// </summary>
+        /// <param name="travel">The travel instance to export.</param>
+        /// <param name="cancellationToken">Optional cancellation token for the save file operation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous export operation.</returns>
         [RelayCommand]
         public async Task Export(Travel travel, CancellationToken cancellationToken = default)
         {
             var file = _services.Application.TravelService.ExportTravel(travel.Id);
-            var fileName = _services.OutputFileNameProvider.GetFileName(Constants.ZIP_TRAVEL_EXPORT, travel.name);
+            var fileName = _services.OutputFileNameProvider.GetFileName(Constants.TBIN_TRAVEL_EXPORT, travel.name);
             await _services.Alert.ShowAsync(file);
             if (file.IsSuccess)
                 await _services.DialogFile.SaveFileAsync(file.Value, fileName, cancellationToken);

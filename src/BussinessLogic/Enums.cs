@@ -1,28 +1,30 @@
 ﻿
 namespace BussinessLogic
 {
-    public enum ExecutionStatus
-    {
-        Success = 1,
-        Failure = 0,
-        Pending = -1
 
-    }
-   
-
-    public enum Currency
-    {
-        EUR,USD
-    }
-
-
+    /// <summary>
+    /// Specifies properties or collections to exclude during object mapping operations in custom mapping contexts.
+    /// </summary>
     public enum MappingContextExclusion
     {
-        Notes,Activities,Memories,
+        /// <summary>
+        /// Exclude notes during mapping.
+        /// </summary>
+        Notes,
+
+        /// <summary>
+        /// Exclude activities during mapping.
+        /// </summary>
+        Activities,
+
+        /// <summary>
+        /// Exclude memory files (souvenirs) during mapping.
+        /// </summary>
+        Memories,
+
+        /// <summary>
+        /// Exclude follower information during mapping.
+        /// </summary>
         Followers
     }
-   
-
-
-
 }

@@ -1,18 +1,18 @@
-﻿
-using System.ComponentModel.DataAnnotations;
-
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Commons.Extensions
 {
+    /// <summary>
+    /// /// Provides an extension method to obtain the display name of an enum value using its DisplayAttribute.
+    /// </summary>
     public static class EnumDisplayName
     {
         /// <summary>
-        /// Obtient le nom d’affichage d’une valeur d’énumération en utilisant l’attribut <see cref="DisplayAttribute"/>.
+        /// Retrieves the display name for an enum value based on the DisplayAttribute if present; otherwise, returns the enum's string representation.
         /// </summary>
-        /// <param name="value">La valeur d’énumération pour laquelle récupérer le nom d’affichage.</param>
+        /// <param name="value">The enum value to retrieve the display name for.</param>
         /// <returns>
-        /// Si l’attribut <see cref="DisplayAttribute"/> est présent sur la valeur d’énumération, retourne sa propriété <c>Name</c>;
-        /// sinon, retourne le résultat de <c>value.ToString()</c>.
+        /// A string representing the display name of the enum value if a DisplayAttribute is applied; otherwise, the enum value's name.
         /// </returns>
         public static string ToDisplayName(this Enum value)
         {

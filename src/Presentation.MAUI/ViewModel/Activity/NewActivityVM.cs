@@ -52,10 +52,10 @@ namespace Presentation.MAUI.ViewModel.Activity
             if (value is null)
                 return;
 
-            // 1) Initialiser le champ de texte
+            //Initialiser le champ de texte
             ActivityName = value.Name;
 
-            // 2) Initialiser l’URL
+            //Initialiser l’URL
             CurrentUrl = !string.IsNullOrWhiteSpace(value.GoogleLink)
                 ? value.GoogleLink
                 : _urlBuilder.Url.BaseUrl;
@@ -86,6 +86,11 @@ namespace Presentation.MAUI.ViewModel.Activity
             _urlBuilder = urlBuilder;
             Reset();
         }
+
+        /// <summary>
+        /// Saves the current travel activity. Validates inputs, then either updates an existing activity or creates a new one.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous save operation.</returns>
         [RelayCommand]
         public async Task Save()
         {
@@ -132,6 +137,7 @@ namespace Presentation.MAUI.ViewModel.Activity
                 case Mode.New:
                     CurrentTravelActivity = new();
                     CurrentUrl = _urlBuilder.Url.BaseUrl;
+                    CurrentTravelActivity.ActivityDate = MinDate;
 
                     return;
 

@@ -7,6 +7,9 @@ using Presentation.MAUI.Services;
 using Presentation.MAUI.Validators;
 using Presentation.MAUI.ViewModel;
 using Presentation.MAUI.ViewModel.Activity;
+using Presentation.MAUI.Views;
+using Presentation.MAUI.Views.Activity;
+using Presentation.MAUI.Views.Travel;
 using Serilog;
 
 namespace Presentation.MAUI
@@ -69,6 +72,8 @@ namespace Presentation.MAUI
             collection.AddScoped<NewCostActivityVM>();
             collection.AddScoped<ActivityFollowerVM>();
             collection.AddScoped<ImportExportVM>();
+
+         
             return collection;
         }
 

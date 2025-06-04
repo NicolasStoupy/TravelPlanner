@@ -13,9 +13,9 @@ namespace Presentation.MAUI.Services
             
 
         }
-        public async Task NavigateToNewTravelPageAsync()
+        public async Task NavigateToNewTravelPageAsync(bool newTravel)
         {
-            await Navigate($"//TravelInformations");
+            await Navigate($"//TravelInformations?New={newTravel}");
         }
 
         public async Task NavigateToNewTravel(string travelID)
