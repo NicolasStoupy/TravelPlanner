@@ -90,6 +90,8 @@ namespace Presentation.MAUI.ViewModel.Activity
         public async Task Save()
         {
             var resultValidation = await _services.Validation.ValidateAndNotifyAsync(this);
+            if (!resultValidation)
+                return;
             if (CurrentTravel != null && CurrentTravelActivity != null)
             {
                 if (Mode == Mode.Edit)

@@ -1,14 +1,7 @@
 ﻿using BussinessLogic.Entities;
-using BussinessLogic.Interfaces;
 using Commons;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Presentation.MAUI.Interfaces;
-using Presentation.MAUI.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Presentation.MAUI.ViewModel
 {

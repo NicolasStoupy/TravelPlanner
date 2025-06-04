@@ -328,7 +328,9 @@ namespace BussinessLogic.Services
             using var context = _context.CreateDbContext();
             var travel = context.Trips
                 .Include(a => a.Activities)
-                .ThenInclude(t => t.ActivityCosts)
+                    .ThenInclude(t => t.ActivityCosts)
+                .Include(a=>a.Activities)
+                    .ThenInclude(n=>n.LogBooks)
                 .Include(l => l.LogBooks)
                 .Include(c => c.Media)
                 .FirstOrDefault(t => t.TripId == travelID);
@@ -600,6 +602,7 @@ namespace BussinessLogic.Services
             string payload;
             Trip importedTravel = new Trip();
             TBinModel? binModel = new TBinModel();
+           List<Guid> fileSaved= new List<Guid>();
             try
             {
                 payload = UTF32Encoding.UTF8.GetString(travelFile);
@@ -633,8 +636,10 @@ namespace BussinessLogic.Services
                 importedTravel.TripId = 0;
                 importedTravel.Name = importedTravel.Name + "(Imported)";
                 _document.SetMediaType(TypeMedia.Images);
-                importedTravel.TripBackgroundGuid = _document.SaveFile(binModel.medias[importedTravel.TripBackgroundGuid.Value]);
-
+                var savedFileGuid= _document.SaveFile(binModel.medias[importedTravel.TripBackgroundGuid.Value]);
+                importedTravel.TripBackgroundGuid = savedFileGuid;
+                 if(savedFileGuid.HasValue)
+                    fileSaved.Add(savedFileGuid.Value);
                 if (importedTravel.Activities != null)
                 {
                     foreach (var activity in importedTravel.Activities)
@@ -647,6 +652,24 @@ namespace BussinessLogic.Services
                             {
                                 cost.ActivityCostId = 0;
                                 cost.ActivityId = 0;
+                                cost.TripId = 0;
+                            }
+                        }
+
+                        
+                        if (activity.LogBooks.Any())
+                        {
+                            foreach (var actNote in activity.LogBooks)
+                            {
+                                actNote.LogBookId = 0;
+                                actNote.ActivityId = 0;    // FK vers Activity
+                                actNote.TripId = 0;    // FK vers Trip dans le cadre d’une activité
+                                actNote.TripLogBook = null; 
+
+                                // On précise la navigation : 
+                                // ce log appartient à cette activité précisément
+                                actNote.Activity = activity;
+                               
                             }
                         }
                     }
@@ -659,11 +682,18 @@ namespace BussinessLogic.Services
                         log.TripId = 0;
                     }
                 }
+
+                
                 if (importedTravel.Media != null)
                 {
                     foreach (var media in importedTravel.Media)
                     {
                         var newGuid = _document.SaveFile(binModel.medias[media.FileGuid]);
+                        if (newGuid.HasValue)
+                        {
+                            fileSaved.Add(newGuid.Value);
+                        }
+                        
                         if (newGuid.HasValue)
                         {
                             media.FileGuid = newGuid.Value;
@@ -688,9 +718,11 @@ namespace BussinessLogic.Services
                         entry.Entry.State = EntityState.Added;
                     });
                     await context2.SaveChangesAsync();
-                }
+                }                
                 catch (DbUpdateException ex)
                 {
+                    
+                    _document.RemoveFiles(fileSaved, TypeMedia.Images);
                     _logger.LogError(ex, "Error during importation of a Tbin file ");
                     return ServiceResult<string>.Failure(
                         GlobalServiceMessage.DATABASE_ERROR

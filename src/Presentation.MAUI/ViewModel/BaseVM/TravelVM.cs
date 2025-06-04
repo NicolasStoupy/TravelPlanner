@@ -12,6 +12,11 @@ namespace Presentation.MAUI.ViewModel
         [ObservableProperty]
         protected static Travel? _currentTravel;
 
+        [ObservableProperty]
+        protected static DateTime _minDate;       
+       
+        [ObservableProperty]
+        protected static DateTime _maxDate;
         partial void OnCurrentTravelChanged(Travel? value)
         {
             if (value == null) { 
@@ -19,6 +24,9 @@ namespace Presentation.MAUI.ViewModel
                         
             }
             Mode = Mode.Edit;
+
+            MinDate = value?.StartDate?? DateTime.Now;
+            MaxDate = value?.EndDate ?? DateTime.Now;
         }
         protected async Task NoTravelSelected()
         {

@@ -133,10 +133,7 @@ public partial class TravelPlannerContext : DbContext
             entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Email)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+                .HasColumnType("datetime");           
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .IsUnicode(false);

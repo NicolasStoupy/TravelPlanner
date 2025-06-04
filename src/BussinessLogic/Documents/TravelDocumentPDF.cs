@@ -45,7 +45,7 @@ namespace BussinessLogic.Models
                     col.Item().PaddingTop(5).Text($"Du {_travel.StartDate:d} au {_travel.EndDate:d}");
 
                     // Participants
-                    col.Item().PaddingTop(5).Text("Participants : " + (_travel.Followers.Any() ? string.Join(", ", _travel.Followers) : "Aucun"));
+                    col.Item().PaddingTop(5).Text("Participants : " + _travel.people.ToString());
 
                     // Statistiques en bulles
                     col.Item().PaddingVertical(10).Row(row =>
@@ -65,7 +65,37 @@ namespace BussinessLogic.Models
                         StatBox("Budget", $"{_travel.budget:F1} €");
                      
                     });
+                    col.Item().PageBreak();
+                    // === Détail des activités ===
+                    if (_travel.TravelActivities?.Any() == true)
+                    {
+                        col.Item().PaddingTop(20).Text("Détail des activités :").FontSize(14).Bold();
 
+                        foreach (var activity in _travel.TravelActivities.OrderBy(a => a.Sequence))
+                        {
+                            col.Item().PaddingVertical(5).BorderBottom(1).Column(act =>
+                            {
+                                act.Item().Text($"#{activity.Sequence} : {activity.Name}").FontSize(12).Bold();
+
+                                act.Item().Text($"{activity.Name} | {activity.ActivityDate:d} | Coût Planifié: {activity.PlannedCost:F2} €")
+                                          .FontSize(10).Italic().FontColor(Colors.Grey.Darken1);
+
+                                if (!string.IsNullOrWhiteSpace(activity.Description))
+                                {
+                                    act.Item().Text(activity.Description).FontSize(10);
+                                }
+
+
+
+                                //if (activity.Costs?.Any() == true)
+                                //{
+                                //    var totalCost = activity.Costs.Sum(c => (decimal?)c.Amount) ?? 0;
+                                //    act.Item().Text($"Coût total : {totalCost:F2} €").FontSize(10).FontColor(Colors.Blue.Darken2);
+                                //}
+                            });
+                        }
+                    }
+                    col.Item().PageBreak();
                     // Souvenirs (photos)
                     if (_travel.MemoryFiles.Any(m => m.Files != null && m.Files.Length > 0))
                     {
@@ -86,34 +116,26 @@ namespace BussinessLogic.Models
                                 });
                             }
                         });
-                    }
-                  col.Item().PageBreak();
-                    // === Détail des activités ===
-                    if (_travel.TravelActivities?.Any() == true)
+                    }                  
+                  
+                    col.Item().PageBreak();
+                    if (_travel.TravelNotes.Any())
                     {
-                        col.Item().PaddingTop(20).Text("Détail des activités :").FontSize(14).Bold();
-
-                        foreach (var activity in _travel.TravelActivities.OrderBy(a=>a.Sequence))
+                        col.Item().PaddingTop(10).Text("Mes Notes Voyages :").Bold();
+                        var notes = _travel.TravelNotes.ToList();
+                        col.Item().Grid(grid =>
                         {
-                            col.Item().PaddingVertical(5).BorderBottom(1).Column(act =>
+                            grid.Columns(3); // 3 images par ligne
+
+                            foreach (var note in notes)
                             {
-                                act.Item().Text($"#{activity.Sequence} : {activity.Name}").FontSize(12).Bold();
-
-                                act.Item().Text($"{activity.Name} | {activity.ActivityDate:d} | Coût Planifié: {activity.PlannedCost:F2} €") 
-                                          .FontSize(10).Italic().FontColor(Colors.Grey.Darken1);
-
-                                if (!string.IsNullOrWhiteSpace(activity.Description))
+                                grid.Item().Padding(5).Column(col2 =>
                                 {
-                                    act.Item().Text(activity.Description).FontSize(10);
-                                }
 
-                                //if (activity.Costs?.Any() == true)
-                                //{
-                                //    var totalCost = activity.Costs.Sum(c => (decimal?)c.Amount) ?? 0;
-                                //    act.Item().Text($"Coût total : {totalCost:F2} €").FontSize(10).FontColor(Colors.Blue.Darken2);
-                                //}
-                            });
-                        }
+                                    col2.Item().Text(note.NoteContent ?? "").FontSize(10).Italic();
+                                });
+                            }
+                        });
                     }
                 });
             });

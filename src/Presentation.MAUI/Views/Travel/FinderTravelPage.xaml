@@ -68,6 +68,8 @@
                                         <Image Source="{Binding image, Converter={StaticResource ByteArrayToImageConverter}}"
                                        HeightRequest="150"
                                        Aspect="AspectFill" />
+
+
                                         <Label Text="{Binding name}"
                                        FontAttributes="Bold"
                                        FontSize="14"

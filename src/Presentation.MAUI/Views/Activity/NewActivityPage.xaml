@@ -42,7 +42,7 @@
                 <!-- Activity Date -->
                 <VerticalStackLayout Grid.Column="0" Spacing="4">
                     <Label Text="Date Activité:" FontSize="Small" />
-                    <DatePicker Date="{Binding CurrentTravelActivity.ActivityDate, Mode=TwoWay}"></DatePicker>
+                    <DatePicker Date="{Binding CurrentTravelActivity.ActivityDate, Mode=TwoWay}" MinimumDate="{Binding MinDate}" MaximumDate="{Binding MaxDate}"></DatePicker>
                 </VerticalStackLayout>
                 <Picker    Title="Type d’activité"
                            ItemsSource="{Binding DataStore.ActivityType}"

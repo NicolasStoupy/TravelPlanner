@@ -9,46 +9,50 @@
              Title="Notes">
 
     <VerticalStackLayout>
-         <Grid RowDefinitions="*">
-         <views:NavigationLayout Grid.Row="0" IsVisible="{Binding NavigationVisible}"></views:NavigationLayout>
-    </Grid>
-   
-    <Grid RowDefinitions="Auto,*,Auto" Padding="15" RowSpacing="10">
+        <Grid RowDefinitions="*">
+            <views:NavigationLayout Grid.Row="0" IsVisible="{Binding NavigationVisible}"></views:NavigationLayout>
+        </Grid>
 
-        <!-- Saisie -->
-        <HorizontalStackLayout Grid.Row="0" Spacing="8">
-            <Editor Placeholder="Nouvelle note" 
+        <Grid RowDefinitions="Auto,*,Auto" Padding="15" RowSpacing="10">
+
+            <!-- Saisie -->
+            <HorizontalStackLayout Grid.Row="0" Spacing="8">
+                <Editor Placeholder="Nouvelle note" 
                    Text="{Binding Note.NoteContent}"
                    FontSize="13"
-                    MinimumWidthRequest="400"
+                   
+                        WidthRequest="500"
                     AutoSize="TextChanges"
                    />
-           
-            <Button  ImageSource="{StaticResource PlusIcon}"
+
+                <Button  ImageSource="{StaticResource PlusIcon}"
                     FontSize="14"
                     Padding="6"
                     WidthRequest="40"
                     Command="{Binding AddNoteCommand}" />
-        </HorizontalStackLayout>
+            </HorizontalStackLayout>
 
-        <!-- Scrollable list -->
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="6"
+            <!-- Scrollable list -->
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Spacing="6"
                                  BindableLayout.ItemsSource="{Binding NoteCollection}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="bu:Note">
-                        <Grid ColumnDefinitions="*,Auto,Auto"
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="bu:Note">
+                            <Grid ColumnDefinitions="*,Auto,Auto"
                               Padding="8"
                               BackgroundColor="#F9F9F9"
                            >
 
-                            <Editor Grid.Column="0"
+                                <Editor Grid.Column="0"
                                    Text="{Binding NoteContent}"
                                    FontSize="13"
+                                    
+                                    
+                                   
                                    BackgroundColor="Transparent"
                                    TextColor="Black" />
 
-                            <Button Grid.Column="1"
+                                <Button Grid.Column="1"
                                     ImageSource="{StaticResource EditIcon}"
                                     FontSize="13"
                                     WidthRequest="40"
@@ -56,28 +60,28 @@
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NoteTravelVM}}, Path=EditNoteCommand}"
                                     CommandParameter="{Binding .}" />
 
-                            <Button Grid.Column="2"
+                                <Button Grid.Column="2"
                                      ImageSource="{StaticResource RemoveIcon}"
                                     FontSize="13"
                                     WidthRequest="40"
                                     BackgroundColor="Transparent"
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NoteTravelVM}}, Path=DeleteNoteCommand}"
                                     CommandParameter="{Binding .}" />
-                        </Grid>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
-        </ScrollView>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </ScrollView>
 
-        <!-- Spinner -->
-        <ActivityIndicator Grid.Row="2"
+            <!-- Spinner -->
+            <ActivityIndicator Grid.Row="2"
                            IsRunning="{Binding IsBusy}"
                            IsVisible="{Binding IsBusy}"
                            Color="DarkBlue"
                            HorizontalOptions="Center"
                            HeightRequest="30" />
-    </Grid>
+        </Grid>
     </VerticalStackLayout>
-   
+
 
 </ContentPage>

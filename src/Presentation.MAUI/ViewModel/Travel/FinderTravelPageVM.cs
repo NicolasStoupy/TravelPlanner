@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Storage;
 using Presentation.MAUI.Resources.Localization;
 using Presentation.MAUI.Interfaces;
+using Presentation.MAUI.Views;
 
 namespace Presentation.MAUI.ViewModel;
 
@@ -116,7 +117,7 @@ public partial class FinderTravelPageVM : TravelVM
         Reset();
         IsBusy = false;
     }
-
+    
     /// <summary>
     /// Resets the travel item lists by clearing and reloading them
     /// from the travel service. Sets the busy state during the operation.
